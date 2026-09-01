@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>11Adv-12Gen 2026-2027 · School Work</title>
+<style>
+  :root{
+    --ink:#1a2238; --muted:#697089; --line:#e5e8f0; --bg:#f6f7fb;
+    --red:#c0392b; --blue:#2B5FA6; --purple:#7A2FD0; --teal:#0FA98B;
+    --good:#1a9d6b; --bad:#d65656; --amber:#F2A93B;
+    --shadow:0 10px 30px rgba(30,40,90,.10);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:22px 18px 80px}
+  a{color:inherit}
+  h1{font-family:Georgia,"Times New Roman",serif}
+  .btn{border:0;border-radius:10px;padding:9px 15px;font-weight:700;cursor:pointer;font-size:.9rem;background:#eef1f6;color:#33405a;transition:.15s;font-family:inherit}
+  .btn:hover{filter:brightness(.97)}
+  .btn.pri{background:var(--ink);color:#fff}
+  .btn.sm{padding:7px 12px;font-size:.85rem}
+  .back{background:none;border:0;color:var(--muted);font-weight:700;cursor:pointer;padding:4px 0;font-size:.95rem}
+  .back:hover{color:var(--ink)}
+
+  /* hub */
+  .hero{background:linear-gradient(120deg,#1a2238,#2B5FA6 55%,#7A2FD0);color:#fff;border-radius:18px;padding:26px 28px;box-shadow:var(--shadow);margin-bottom:22px}
+  .hero .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:800}
+  .hero h1{font-size:2rem;margin:6px 0 4px}
+  .hero p{margin:0;opacity:.95;max-width:760px}
+  .week{margin-bottom:26px}
+  .week-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .wk-badge{background:var(--ink);color:#fff;border-radius:999px;padding:5px 14px;font-weight:800;font-size:.8rem}
+  .wk-skill{font-weight:800}
+  .wk-skill.ls{color:var(--purple)} .wk-skill.rw{color:var(--teal)}
+  .wk-dates{color:var(--muted);font-size:.85rem}
+  .lesson-card{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px 18px;cursor:pointer;margin-bottom:12px;transition:.15s}
+  .lesson-card:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateY(-1px)}
+  .lesson-card .lk{font-size:.7rem;font-weight:800;letter-spacing:.05em;color:var(--red);text-transform:uppercase}
+  .lesson-card .lt{font-size:1.2rem;font-weight:800;margin:3px 0 2px}
+  .lesson-card .lb{color:var(--muted);font-size:.85rem}
+  .lesson-card .lm{color:var(--muted);font-size:.78rem;margin-top:6px}
+  .soon{opacity:.6;cursor:default}
+  .soon:hover{transform:none;border-color:var(--line);box-shadow:none}
+
+  /* lesson player */
+  .lp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  .lp-title h1{font-size:1.7rem;margin:2px 0 2px}
+  .lp-eyebrow{font-size:.72rem;font-weight:800;letter-spacing:.05em;color:var(--red)}
+  .lp-book{color:var(--muted);font-size:.85rem}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 2px}
+  .chip{background:#eef1f6;color:#40506e;border-radius:999px;padding:3px 11px;font-size:.72rem;font-weight:700}
+  .lp-page{background:#fff7e6;border:1px solid #f0d9a8;border-radius:10px;padding:8px 13px;margin:10px 0;font-size:.86rem;color:#7a5a12;display:inline-block}
+  #timer{background:var(--ink);color:#fff;border-radius:14px;padding:12px 22px;min-width:140px;text-align:center;cursor:pointer;box-shadow:var(--shadow);user-select:none;flex:0 0 auto}
+  #timer .tl{font-size:.6rem;letter-spacing:.14em;opacity:.82;font-weight:700}
+  #timer .tv{font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+
+  .lp-grid{display:grid;grid-template-columns:1fr 240px;gap:22px;margin-top:14px;align-items:start}
+  .lp-body{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px 26px;min-height:300px}
+  .lp-menu{position:sticky;top:16px;display:flex;flex-direction:column;gap:6px}
+  .lp-menu button{border:0;text-align:right;background:#5a6b8c;color:#fff;padding:11px 14px;border-radius:9px;cursor:pointer;font-weight:700;font-size:.82rem;transition:.12s;font-family:inherit;line-height:1.2}
+  .lp-menu button small{display:block;font-weight:600;opacity:.85;font-size:.68rem}
+  .lp-menu button:hover{filter:brightness(1.08)}
+  .lp-menu button.on{background:var(--red);box-shadow:var(--shadow)}
+  .stage-head{display:flex;justify-content:space-between;align-items:center;margin:0 0 14px}
+  .stage-head h2{font-size:1.3rem;margin:0}
+  .stage-min{color:var(--muted);font-size:.8rem}
+  .nav-row{display:flex;justify-content:space-between;margin-top:22px}
+
+  /* blocks */
+  .lp-body p{line-height:1.65}
+  .note{background:#eef4ff;border-left:4px solid var(--blue);border-radius:0 10px 10px 0;padding:12px 14px;margin:10px 0;font-size:.94rem}
+  ol,ul{line-height:1.75}
+  .objbox{background:#f4f7fb;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .objbox b{color:var(--blue)}
+  .vrow{display:flex;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line)}
+  .vrow:last-child{border-bottom:0}
+  .vrow b{min-width:170px;color:var(--ink)}
+  .wordday{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px}
+  .wordday .l{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+  .wordday .w{font-size:1.3rem;font-weight:800}
+  textarea,select,input[type=text]{font-family:inherit}
+  textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px}
+  label.q{display:block;font-weight:700;margin:10px 0 4px}
+  .passage p{margin:8px 0}
+  .pl{color:var(--red);font-weight:800;margin-right:.4em}
+  .graded select{padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;min-width:180px}
+  .grow{display:flex;gap:10px;align-items:center;margin:7px 0;flex-wrap:wrap}
+  .grow span.l{flex:1;min-width:220px}
+  .gap{border:0;border-bottom:2px solid var(--blue);text-align:center;font-size:1em;background:#f4f7ff}
+  .fb{display:none;margin-top:10px;font-size:.92rem}
+  .rate{font-size:1.7rem;color:var(--amber);user-select:none;display:inline-flex;gap:6px}
+  .rate span{cursor:pointer;padding:2px 4px;line-height:1;transition:transform .08s}
+  .rate span:hover{transform:scale(1.15)}
+  details summary{cursor:pointer;font-weight:700;color:var(--blue)}
+
+  /* speaking role-play cards */
+  .roles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .rolecard{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:#fcfcff}
+  .rolecard h4{margin:0 0 4px;color:var(--purple)}
+  @media (max-width:600px){ .roles{grid-template-columns:1fr} }
+
+  /* Activity 2 · writing model + phased timer */
+  .a2write .wtimer{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 4px}
+  .wt-clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.5rem;min-width:96px;text-align:center;background:var(--ink);color:#fff;border-radius:10px;padding:8px 12px}
+  .wt-clock.run{background:var(--teal)} .wt-clock.done{background:var(--red)}
+  .wt-phase{font-weight:700;color:var(--muted);font-size:.85rem}
+  .hlk{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .hlk span{padding:2px 9px;border-radius:6px;font-weight:700;font-size:.76rem}
+  .hl-topic{background:#dff5e8;color:#0b6b43}
+  .hl-r1{background:#e4eeff;color:#1c4e9c}
+  .hl-r2{background:#efe4ff;color:#5a2ea6}
+  .hl-close{background:#fff1cf;color:#8a5a12}
+  .model-ans{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fcfcff;line-height:1.95}
+  .model-ans span{padding:2px 4px;border-radius:4px}
+
+  /* Spelling Bee pop-up */
+  .beebtn{margin-top:14px}
+  .bee-ov{position:fixed;inset:0;background:rgba(20,26,48,.55);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:30px 14px;overflow:auto}
+  .bee-ov.open{display:flex}
+  .bee{background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(20,30,80,.35);width:100%;max-width:440px;padding:22px 22px 20px;animation:beein .18s ease}
+  @keyframes beein{from{transform:translateY(8px);opacity:.6}to{transform:none;opacity:1}}
+  .bee-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .bee-hd h3{margin:0;font-size:1.25rem;display:flex;gap:8px;align-items:center}
+  .bee-x{border:1px solid var(--line);background:#fff;border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:1rem;font-weight:800;color:var(--muted)}
+  .bee-sub{color:var(--muted);font-size:.82rem;margin:2px 0 10px}
+  .bee-bar{height:8px;border-radius:999px;background:#eceef5;overflow:hidden;margin-bottom:6px}
+  .bee-bar > i{display:block;height:100%;background:var(--amber);width:0;transition:width .3s}
+  .bee-time{text-align:right;color:var(--muted);font-size:.82rem;margin-bottom:10px}
+  .bee-hear{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 14px;font-weight:800;cursor:pointer;color:var(--ink)}
+  .bee-pos{color:var(--purple);font-weight:800;font-size:.8rem;margin:12px 0 2px;text-transform:lowercase}
+  .bee-def{font-size:1.02rem;margin:0 0 6px}
+  .bee-ex{font-style:italic;color:#6b6f86;margin:0 0 12px}
+  .bee-in{width:100%;border:2px solid var(--ink);border-radius:12px;padding:12px 14px;font-size:1rem}
+  .bee-chk{background:var(--bad);color:#fff;border:0;border-radius:12px;padding:11px 20px;font-weight:800;cursor:pointer;margin-top:12px;font-size:1rem}
+  .bee-fb{margin-top:10px;font-weight:700;min-height:1.2em}
+  .bee-note{background:#fff8ea;border:1px solid #f0d9a8;border-radius:12px;padding:12px 14px;color:#7a5a12;font-size:.86rem;margin-top:14px}
+
+  @media (max-width:800px){ .lp-grid{grid-template-columns:1fr} .lp-menu{position:static;flex-direction:row;overflow-x:auto} .lp-menu button{text-align:center;flex:0 0 auto} .lp-menu button small{display:none} #timer{position:fixed;top:12px;right:12px;z-index:40;padding:8px 14px;min-width:104px} #timer .tv{font-size:1.4rem} }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<!-- Spelling Bee pop-up -->
+<div class="bee-ov" id="beeOv" onclick="if(event.target===this)closeBee()">
+  <div class="bee" id="beeCard"></div>
+</div>
+
+<script>
+/* =======================================================================
+   11Adv-12Gen 2026-2027 · School Work
+   Standalone lesson platform for New Interactions · Money… Talks! (Ch.1).
+   Hub division follows the Term 1 Scope & Sequence (Weeks 1–3).
+   All content is original; textbook passages are NOT reproduced.
+   ======================================================================= */
+
+var STAGES=[
+ ["kwl","KWL","Prior knowledge","🧠","5 min"],
+ ["warm","Warm-up","Get talking","🔥","5 min"],
+ ["obj","Learning Objectives","Today's goals","🎯","3 min"],
+ ["watch","Watch","Video for the topic","▶️","4 min"],
+ ["vocab","Vocabulary","Key words","📖","5 min"],
+ ["a1","Activity 1","First task","❶","10 min"],
+ ["a2","Activity 2","Second task","❷","10 min"],
+ ["culture","Culture Connection","UAE & the world","🌍","5 min"],
+ ["enrich","Enrichment","Go further","✨","5 min"],
+ ["exit","Exit Ticket","Show what you learned","🎫","2 min"]
+];
+
+var BOOK="New Interactions · Money… Talks! (Ch.1) · Grade 11 Advanced / 12 General";
+
+/* ---------------- LESSONS (named as in the Scope & Sequence) ---------------- */
+var LESSONS={
+
+/* ================= WEEK 1 ================= */
+
+/* ---- Lesson 1-2: Borrowing Money (Listening) ---- */
+"l12":{
+ num:"1-2", focus:"Listening", title:"Borrowing Money", book:BOOK,
+ grammar:"", fl:"FL.24 Asking & giving advice", charter:"Financial Literacy",
+ page:"Resource: Lessons 1–2 PPT · Listening & Speaking",
+ stages:{
+  watch:[{t:"video",id:"M6itm-ZsNUE",caption:"Watch this short video on borrowing money and budgeting, then note one thing you learned."}],
+  kwl:[{t:"note",html:"<b>English Bites — prior knowledge (KWL).</b> Before we start, think about money: earning it, spending it, and saving it."},{t:"kwl"}],
+  warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["When did you last really want something that “cost an arm and a leg”? What did you do?","Do you save your money or spend it quickly? Why?","If a friend asked to borrow money from you, what would you say?"]}],
+  obj:[{t:"obj",items:["listen to a conversation and make and check predictions","notice stressed words, weak forms and intonation as people speak","catch numbers and amounts of money when you listen","recognise the phrases people use to ask for and give advice"]},{t:"note",html:"We climb Bloom’s ladder today: from <i>remembering</i> the words to <i>applying</i> them and <i>evaluating</i> the advice you hear."}],
+  vocab:[{t:"p",html:"<b>Key vocabulary</b> — listen, repeat, and use. Then take the Spelling Bee below."},{t:"vocab",items:[
+    ["budget","a plan for how you spend and save money","noun","On a tight …… , every dirham counts."],
+    ["income","the money you receive for work or from other sources","noun","Don’t spend more than your …… ."],
+    ["earn","to receive money for work","verb","Try not to spend more than you …… ."],
+    ["broke","having no money at all","adjective","He lost his job and now he is …… ."],
+    ["make ends meet","to have just enough money to live on","phrase","It’s hard to …… without a job."],
+    ["costs an arm and a leg","to be very expensive","phrase","That new phone …… ."],
+    ["drop out (of)","to leave a course or school without finishing","phrasal verb","He had to …… of the course."]
+  ]},{t:"wordday",word:"budget",def:"a plan for how you will spend and save your money",ex:"On a tight budget, every dirham counts."}],
+  a1:[{t:"p",html:"<b>Before you listen.</b>"},{t:"prompts",intro:"Topic — discuss:",items:["Is it easy or hard for you to manage money? Why?","Do you keep a budget each month?","What do you usually do when you need more money?"]},{t:"match",intro:"Vocabulary in context — choose the meaning that fits each sentence:",pairs:[["Everything <b>costs an arm and a leg</b> these days.","to be very expensive"],["It’s hard to <b>make ends meet</b> without a job.","to have just enough money to live on"],["Tim lost his job and now he is <b>broke</b>.","having no money at all"],["We’re on a <b>tight budget</b> this month.","a plan that lets you spend only a little"],["Sara has an <b>income</b> of 3,500 dirhams a month.","the money you receive for work or other sources"],["Try not to spend more than you <b>earn</b>.","to receive money for work"],["He had to <b>drop out of</b> the race with an injury.","to leave without finishing"]]},{t:"mcq",intro:"Thinking & predicting — you will hear a student ask a parent for money. Predict before you listen:",qs:[{q:"The student probably needs money for…",opts:["a school trip","a new phone","a birthday gift"],ans:1},{q:"Is this the first time they have asked?",opts:["Yes, the first time","No, they have asked before"],ans:1},{q:"The parent will most likely…",opts:["give the money with no questions","suggest a budget or a plan","refuse and hang up"],ans:1},{q:"At the end, the student probably feels…",opts:["satisfied","a little frustrated","completely calm"],ans:1}]}],
+  a2:[{t:"p",html:"<b>While you listen.</b> Read (or listen to your teacher read) the conversation between <b>Adam</b> and his <b>mother</b>."},{t:"dialogue",intro:"Listening for stressed words — fill each gap with the word you hear:",lines:[["Mum","Hello?"],["Adam","Hi, Mum. Can I ask you a quick [[favour]]?"],["Mum","Of course. What is [[it]]?"],["Adam","Well… I’m a bit [[broke]] again. Could you send me two [[hundred]] dirhams, just till the end of the month?"],["Mum","Broke again? Adam, when you moved out you said you could [[make]] ends meet. This is the [[third]] time you’ve asked this month."],["Adam","I know, I’m [[sorry]]. My old phone broke and I had to buy a new [[one]]."],["Mum","A new phone costs an arm and a [[leg]]! You need a [[budget]]. Write down your income and don’t spend more than you [[earn]]."],["Adam","But that’s the problem — my expenses are bigger than my [[income]]."],["Mum","Then maybe you should work a few more [[hours]] at the shop."],["Adam","Mum! I already work fifteen hours a [[week]]!"],["Mum","All right, calm down. I’ll help you this [[time]], but let’s make a plan together."]]},{t:"mcq",intro:"Main ideas, details, numbers & advice — choose the best answer:",qs:[{q:"What is Adam’s main problem?",opts:["his job","managing his money","his studies"],ans:1},{q:"How much money does Adam ask for?",opts:["two hundred dirhams","two thousand dirhams","twenty dirhams"],ans:0},{q:"How many hours a week does Adam work?",opts:["five","fifteen","fifty"],ans:1},{q:"What does his mother advise him to do?",opts:["quit his job","make a budget","drop out"],ans:1},{q:"How does Adam most likely feel at the end?",opts:["satisfied","a little frustrated","completely calm"],ans:1}]}],
+  culture:[{t:"p",html:"<b>UAE–World Connection.</b> In the UAE, families and schools often talk about saving early and spending wisely. The currency is the <b>dirham (AED)</b>, and many people set aside part of their income each month. Living within a budget — not spending more than you earn — is valued everywhere, from Abu Dhabi to Tokyo."},{t:"prompts",intro:"Connect it to you:",items:["In your family or culture, what is one piece of money advice young people are given?","Name one thing that “costs an arm and a leg” where you live — and a cheaper alternative."]}],
+  enrich:[{t:"p",html:"<b>Expressions of advice.</b> Notice how people ask for and give advice."},{t:"note",html:"<b>Asking:</b> “What do you think I should do?” · “Could you help me with…?”<br><b>Giving:</b> “Maybe you should…” · “Why don’t you…?” · “You’d better…” · “If I were you, I’d…”"},{t:"mcq",intro:"Asking or giving advice? Choose for each:",qs:[{q:"“Why don’t you make a budget?”",opts:["asking for advice","giving advice"],ans:1},{q:"“What should I do about my expenses?”",opts:["asking for advice","giving advice"],ans:0},{q:"“If I were you, I’d work a few more hours.”",opts:["asking for advice","giving advice"],ans:1}]},{t:"note",html:"<b>Weak forms.</b> In speech, small words are reduced: <i>can</i> → “kin”, <i>to</i> → “tuh”, <i>and</i> → “n”. Say aloud: “I can save” vs “I can’t save.” Which one sounds stronger?"}],
+  exit:[{t:"reflect",items:["Write one new word or phrase you learned today, and what it means.","Write one phrase you can use to give someone advice.","(KWL “L”) Write one thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel now about listening for stressed words and numbers?"}]
+ }
+},
+
+/* ---- Lesson 3-4: Good Advice (Speaking) ---- */
+"l34":{
+ num:"3-4", focus:"Speaking", title:"Good Advice", book:BOOK,
+ grammar:"G.19.2 Verb forms (to-inf / inf / -ing)", fl:"FL.24 Asking & giving advice", charter:"Financial Literacy",
+ page:"Resource: Lessons 3–4 PPT · Listening & Speaking",
+ stages:{
+  watch:[{t:"video",id:"m5vSU6IR9_Y",caption:"Watch this short video about giving and taking advice, then note one useful phrase you hear."}],
+  kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about a big decision a young person faces — a course, a job, a big purchase. Who do they ask for advice, and why?"},{t:"kwl"}],
+  warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["Who gives you the best advice about money or study? Why do you trust them?","Have you ever followed advice you later regretted — or ignored good advice?","Is it better to save for something or to take a student loan? Say why."]}],
+  obj:[{t:"obj",items:["ask for and give advice using natural expressions","use the right verb form after advise, suggest, recommend and should","speak with correct stress, rhythm and intonation","start, keep going and take turns in a longer conversation"]},{t:"note",html:"Today you mostly <i>produce</i> language — the top of Bloom’s ladder: you <i>apply</i>, <i>evaluate</i> and <i>create</i> advice in a real role-play."}],
+  vocab:[{t:"p",html:"<b>Key vocabulary</b> — decisions about money & study. Then take the Spelling Bee below."},{t:"vocab",items:[
+    ["tuition fees","the money you pay for a course or university","noun","University …… can be very high."],
+    ["scholarship","money given to a student to help pay for study","noun","She won a …… to study abroad."],
+    ["student loan","money you borrow for study and pay back later","noun","He took out a …… to cover his fees."],
+    ["put aside","to save money regularly for later","phrasal verb","Try to …… a little each month."],
+    ["take time off","to stop work or study for a period","phrase","He decided to …… before university."],
+    ["wages","money paid for work, usually weekly or hourly","noun","Her weekly …… cover the rent."],
+    ["alternatively","used to suggest another choice","adverb","Save up; …… , apply for a loan."]
+  ]},{t:"wordday",word:"scholarship",def:"money awarded to a student so they can study, usually for good results or need",ex:"A scholarship meant she paid no tuition fees at all."}],
+  a1:[{t:"p",html:"<b>The language of advice.</b> Study the patterns, then do the controlled practice."},{t:"note",html:"<b>Asking:</b> “What would you do?” · “Do you think I should…?” · “Any advice?”<br><b>Giving (soft → strong):</b> “You could…” · “Why don’t you…?” · “I’d suggest…” · “If I were you, I’d…” · “You really should…”"},{t:"note",html:"<b>Grammar — verb forms after advice verbs (G.19.2):</b><br>• advise / encourage <b>someone to do</b> → “I advise you <b>to save</b>.”<br>• suggest / recommend <b>doing</b> → “I suggest <b>saving</b> first.”<br>• should / could <b>+ base verb</b> → “You should <b>apply</b> for a scholarship.”"},{t:"mcq",intro:"Choose the correct verb form:",qs:[{q:"My teacher advised me ____ for a scholarship.",opts:["to apply","applying","apply"],ans:0},{q:"I’d suggest ____ some money aside each month.",opts:["to put","putting","put"],ans:1},{q:"If I were you, I ____ take a student loan.",opts:["wouldn’t","don’t","not"],ans:0},{q:"You really should ____ your options first.",opts:["comparing","to compare","compare"],ans:2}]},{t:"match",intro:"Match each problem to a good piece of advice:",pairs:[["“I can’t afford the tuition fees.”","“Why don’t you apply for a scholarship?”"],["“I keep spending all my wages.”","“I’d suggest putting some aside each week.”"],["“I’m exhausted from work and study.”","“If I were you, I’d take some time off.”"],["“I’m not sure which course to choose.”","“You could talk to a careers advisor.”"]]}],
+  a2:[{t:"p",html:"<b>Speak — role-play.</b> Work in pairs. Student A has a problem; Student B asks questions and gives advice. Then <b>swap roles</b>. Use at least three advice expressions and one verb pattern from Activity 1."},{t:"roles",cards:[["Card A · The dilemma","You have been offered a place at university, but the tuition fees are high. You could take a student loan, apply for a scholarship, or work for a year first. Ask your partner for advice and explain your worries."],["Card B · The adviser","Listen carefully. Ask two questions to understand the problem, then give at least two clear pieces of advice. Use “If I were you…”, “I’d suggest…”, and one verb pattern (advise + to / suggest + -ing)."]]},{t:"note",html:"<b>Speaking checklist —</b> tick as you go: ☐ I asked questions ☐ I gave 3+ pieces of advice ☐ I used a verb pattern correctly ☐ I used stress and intonation ☐ I kept the conversation going."},{t:"rating",label:"Rate your partner’s advice: clear, polite and easy to follow?"}],
+  culture:[{t:"p",html:"<b>UAE–World Connection.</b> Many Emirati and international students weigh scholarships, government support and family advice when choosing a path. Across cultures, asking elders and mentors for advice is a sign of respect, not weakness."},{t:"prompts",items:["Who would you ask for advice about your future — and why them?","What is one wise piece of advice you have received about money or study?"]}],
+  enrich:[{t:"p",html:"<b>Softening advice.</b> Direct advice can sound bossy. Notice how tone changes the message."},{t:"mcq",intro:"Which reply sounds the most polite / softest?",qs:[{q:"A friend is overspending. You say…",opts:["“Stop wasting money!”","“Maybe you could try a budget?”","“You’re bad with money.”"],ans:1},{q:"Choose the softest advice:",opts:["“You must save more.”","“You’d better save more.”","“You might want to save a little more.”"],ans:2}]},{t:"reflect",items:["Write one problem and two different ways to advise on it (one soft, one stronger).","Write one sentence using suggest + -ing and one using advise + to."]}],
+  exit:[{t:"reflect",items:["Write one advice expression you used well today.","Write one verb pattern you want to remember (e.g., suggest + -ing).","(KWL “L”) One thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel giving advice in a longer conversation?"}]
+ }
+},
+
+/* ================= WEEK 2 ================= */
+
+/* ---- Lesson 5-6: Consumerism and the Human Brain (Reading & Viewing) ---- */
+"l56":{
+ num:"5-6", focus:"Reading & Viewing", title:"Consumerism and the Human Brain", book:BOOK,
+ grammar:"G.10.1 Passives (present simple)", fl:"", charter:"Critical Thinking",
+ page:"Resource: Lessons 5–6 PPT · Reading & Writing",
+ stages:{
+  watch:[{t:"video",id:"6kzPwDXfN1I",caption:"Watch this short clip on consumerism and the brain, then note one technique it mentions."}],
+  kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about the last thing you bought that you didn’t really need. <i>Why</i> did you buy it? Activate what you already know about advertising."},{t:"kwl"}],
+  warm:[{t:"prompts",intro:"Warm-up — discuss (5 min):",items:["What makes you want to buy something — the price, the brand, or the advert?","Which shops or apps are best at getting you to spend? How?","Are two identical products ever really “different” because of the brand?"]}],
+  obj:[{t:"obj",items:["apply reading strategies: context clues, word choice, and your own experience","read and identify the main points of an article","interpret and analyse how a text influences the reader","notice the present simple passive (e.g., we are influenced)"]}],
+  vocab:[{t:"p",html:"<b>Key vocabulary</b> — the language of buying & selling. Then take the Spelling Bee below."},{t:"vocab",items:[
+    ["consumer","a person who buys and uses goods or services","noun","Every …… wants a good deal."],
+    ["consume","to buy and use goods or services","verb","We …… more than we need."],
+    ["marketing","the ways a company promotes and sells its products","noun","Clever …… makes us want more."],
+    ["brand","a product name that customers recognise and trust","noun","People pay more for a familiar …… ."],
+    ["economy","the system of money, jobs and trade in a place","noun","Spending drives the …… ."],
+    ["identical","exactly the same","adjective","The two items were …… inside."],
+    ["items","separate things or products","noun","She added three …… to her cart."],
+    ["access","the chance or right to use or get something","noun","Apps give instant …… to thousands of goods."]
+  ]},{t:"wordday",word:"marketing",def:"everything a company does to make people notice, want and buy its products",ex:"Good marketing sells the feeling, not just the item."}],
+  a1:[{t:"p",html:"<b>Read the article</b> (paragraphs are lettered A–E). Use the reading strategies as you go, then answer the questions."},{t:"passage",title:"Why We Buy: Consumerism and the Human Brain",paras:["Every day we are surrounded by things to buy. Shops, screens and streets are filled with products, and consumers are encouraged to want more of them. This way of living — always buying and using — is called consumerism.","Companies know how the human brain works, and marketing is designed around it. Bright colours, happy faces and the word “new” all catch our attention. When we see something we like, a chemical called dopamine is released, and we feel a small burst of pleasure — even before we buy.","Scarcity is another trick. When a sign says “only two left”, we are pushed to decide quickly. The fear of missing out is stronger than the wish to save, so items are bought that were never really needed.","Brands matter too. Two products can be almost identical, yet one is chosen because its brand feels trustworthy or “cool”. We are not only buying an object; we are buying an image of ourselves.","None of this makes shoppers foolish. But when we understand how marketing works, better choices are made. The smartest consumer is not the one who never buys — it is the one who knows <i>why</i> they are buying."]},{t:"mcq",intro:"Read for the main points — questions name the paragraph:",qs:[{q:"[A] What does “consumerism” mean?",opts:["a way of living based on always buying and using","saving as much money as possible","a type of shop"],ans:0},{q:"[B] Why is dopamine mentioned?",opts:["it makes products cheaper","it gives us pleasure and pulls us toward buying","it is a kind of advert"],ans:1},{q:"[C] How does “scarcity” affect shoppers?",opts:["it makes them wait","it pushes them to decide quickly","it lowers the price"],ans:1},{q:"[E] What is the writer’s main point in paragraph E?",opts:["you should never buy anything","understanding marketing helps you choose better","brands are always dishonest"],ans:1}]},{t:"match",intro:"Vocabulary in context — choose the meaning:",pairs:[["A smart <b>consumer</b> asks questions before buying.","a person who buys and uses goods"],["The two phones were nearly <b>identical</b>.","exactly the same"],["Their <b>marketing</b> targets young people.","the ways a company promotes and sells"],["A trusted <b>brand</b> can charge more.","a product name customers recognise"]]}],
+  a2:[{t:"p",html:"<b>Viewing & analysis.</b> Now “read” an advertisement the way you read the article — look for the technique behind it."},{t:"video",id:"0Dz3Psj3pV4",query:"how advertising manipulates the brain short",caption:"Watch this clip about advertising and the brain, then identify the techniques below."},{t:"mcq",intro:"Which persuasion technique is used?",qs:[{q:"“Only 3 left in stock — order now!”",opts:["scarcity / fear of missing out","celebrity image","low price"],ans:0},{q:"A famous athlete wears the shoes in the advert.",opts:["scarcity","brand image / role model","information only"],ans:1},{q:"“Join 2 million happy customers!”",opts:["everyone-is-doing-it (social proof)","scarcity","a discount"],ans:0}]},{t:"reflect",items:["Describe one advert you know and the technique it uses.","Rewrite this sentence in the present simple passive: “Companies design adverts for the brain.” → “Adverts ____.”"]}],
+  culture:[{t:"p",html:"<b>UAE–World Connection.</b> The UAE is a global shopping hub, from giant malls to shopping festivals. Being a <i>critical</i> consumer — comparing, questioning and buying with purpose — is a life skill valued in the National Education Charter’s focus on critical thinking."},{t:"prompts",items:["Name one way you could shop more thoughtfully this month.","Do sales and festivals help shoppers, sellers, or both? Explain."]}],
+  enrich:[{t:"p",html:"<b>Grammar — present simple passive (G.10.1).</b> We use it when the action matters more than who does it: <i>subject + is/are + past participle</i>."},{t:"mcq",intro:"Choose the correct passive form:",qs:[{q:"Millions of adverts ____ online every day.",opts:["are shown","show","is shown"],ans:0},{q:"This brand ____ by teenagers worldwide.",opts:["is trusted","trusts","are trusted"],ans:0},{q:"Products ____ to look better than they are.",opts:["are designed","design","designs"],ans:0}]}],
+  exit:[{t:"reflect",items:["Write one new word you learned and its meaning.","In one sentence, explain how marketing affects the brain.","(KWL “L”) One thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel identifying the main points and techniques in a text?"}]
+ }
+},
+
+/* ---- Lesson 7-8: Consumerism and the Human Brain (Writing & Representing) ---- */
+"l78":{
+ num:"7-8", focus:"Writing & Representing", title:"Consumerism and the Human Brain", book:BOOK,
+ grammar:"G.10.1 Passives (present simple)", fl:"FL.46 Evidence-based argument", charter:"Critical Thinking",
+ page:"Resource: Lessons 7–8 PPT · Reading & Writing",
+ stages:{
+  kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> You have read how marketing works. Today you turn your research into a clear, written summary. What makes a summary <i>good</i>?"},{t:"kwl"}],
+  warm:[{t:"prompts",intro:"Warm-up — discuss (5 min):",items:["In one sentence, what is the single biggest way marketing influences us?","Which is stronger evidence in writing: an opinion, or an example? Why?","What linking words help you connect ideas (for example, however, as a result…)?"]}],
+  obj:[{t:"obj",items:["summarise and synthesise your research findings in your own words","use cohesive devices to connect ideas so writing flows","use the present simple passive to sound formal and objective","build an evidence-based argument (claim + example)"]},{t:"note",html:"You are now <i>creating</i> — the top of Bloom’s ladder. You take ideas you read and represent them in your own writing."}],
+  vocab:[{t:"p",html:"<b>Key vocabulary</b> (same set as Lessons 5–6). Warm up your spelling before you write."},{t:"vocab",items:[
+    ["consumer","a person who buys and uses goods or services","noun","Every …… is a target for adverts."],
+    ["consume","to buy and use goods or services","verb","We …… far more than we need."],
+    ["marketing","the ways a company promotes and sells its products","noun","…… is built around how we think."],
+    ["brand","a product name that customers recognise and trust","noun","A strong …… earns loyalty."],
+    ["economy","the system of money, jobs and trade in a place","noun","Consumer spending fuels the …… ."],
+    ["identical","exactly the same","adjective","Two …… items, two different prices."],
+    ["items","separate things or products","noun","Impulse buys are small …… near the till."],
+    ["access","the chance or right to use or get something","noun","One-click …… makes buying easy."]
+  ]},{t:"wordday",word:"synthesise",def:"to combine ideas from several sources into one clear whole",ex:"A good summary synthesises many facts into a few sentences."}],
+  a1:[{t:"p",html:"<b>Deconstruct a model & plan.</b> A strong summary paragraph has: (1) a <b>topic sentence</b> (the main idea), (2) two or three <b>techniques + examples</b> as evidence, connected with <b>linkers</b>, and (3) a <b>closing sentence</b>."},{t:"note",html:"<b>Cohesive devices (G.10.1 support):</b> <i>First… , In addition… , For example… , As a result… , However… , Overall…</i>"},{t:"mcq",intro:"Plan your paragraph — choose the best option:",qs:[{q:"Which is the best topic sentence for a summary of marketing techniques?",opts:["I like shopping a lot.","Marketing uses several techniques to influence how consumers buy.","Adverts are everywhere."],ans:1},{q:"Which sentence gives evidence (a technique + example)?",opts:["Marketing is clever.","Scarcity is used; for example, “only 2 left” pushes quick decisions.","Shopping is fun."],ans:1},{q:"Which linker best introduces a second point?",opts:["Because","In addition","Finally, first"],ans:1}]},{t:"reflect",items:["Plan — Topic sentence (the main idea of your summary):","Technique + example 1:","Technique + example 2:","One linking word you will use between your points:"]}],
+  a2:[{t:"writemodel",task:"Write a short summary paragraph (5–7 sentences) explaining the marketing techniques used to influence consumers. Use your plan, two techniques with examples, cohesive devices, and at least one present simple passive.",plan:["Topic sentence:","Technique + example 1:","Technique + example 2:"],model:{
+    topic:"Marketing is carefully designed to influence how consumers think and buy.",
+    r1:"First, scarcity is used to create urgency; for example, a message such as “only two left” pushes shoppers to decide quickly before they can compare prices.",
+    r2:"In addition, brand image is built around emotion, so a familiar or “cool” brand is often chosen even when two items are almost identical.",
+    close:"Overall, when consumers understand these techniques, wiser choices are made and money is spent with real purpose."
+  }}],
+  culture:[{t:"p",html:"<b>UAE–World Connection.</b> Writing clearly and honestly about evidence is part of being a critical, informed citizen — a value at the heart of the UAE National Education Charter. Around the world, media-literate consumers question the messages they are sold."},{t:"prompts",items:["Which technique do you think is the most powerful — and the least fair? Why?","How could a company market a product honestly?"]}],
+  enrich:[{t:"p",html:"<b>Sharpen your writing.</b> Passive voice and linkers make a summary sound formal and connected."},{t:"mcq",intro:"Choose the more formal / better-connected version:",qs:[{q:"Formal summary style:",opts:["They trick people with colours.","Bright colours are used to catch attention.","Colours are so nice."],ans:1},{q:"Best linker to show a result:",opts:["As a result,","Because of,","Also of,"],ans:0}]},{t:"reflect",items:["Rewrite one sentence of your paragraph in the passive voice.","Add one linking word to improve the flow of your writing."]}],
+  exit:[{t:"reflect",items:["Write your topic sentence from today.","Name one cohesive device you used.","(KWL “L”) One thing you learned about summarising."]},{t:"rating",label:"How confident do you feel writing a clear, evidence-based summary?"}]
+ }
+},
+
+/* ================= WEEK 3 ================= */
+
+/* ---- Lesson 9-10: Entrepreneurs (Listening) ---- */
+"l910":{
+ num:"9-10", focus:"Listening", title:"Entrepreneurs", book:BOOK,
+ grammar:"G.4.5 Participle clauses", fl:"FL.13 Describing processes", charter:"Resilience & Adaptability",
+ page:"Resource: Lessons 9–10 PPT · Listening & Speaking",
+ stages:{
+  kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think of a business you admire. Who started it, and what problem did it solve?"},{t:"kwl"}],
+  warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["What qualities does a successful entrepreneur need?","Would you rather have a safe job or start your own business? Why?","What problem in your community could become a business idea?"]}],
+  obj:[{t:"obj",items:["take accurate, organised notes in your own words while listening","listen for the main points of a lecture","use participle clauses to describe a process","recognise the language used to describe how something is built or started"]},{t:"note",html:"<b>Note-taking tip:</b> don’t write full sentences — use key words, symbols and short phrases, then rebuild the idea afterwards."}],
+  vocab:[{t:"p",html:"<b>Key vocabulary</b> — the world of start-ups. Then take the Spelling Bee below."},{t:"vocab",items:[
+    ["found","to start a company or organisation","verb","They …… the company in a small garage."],
+    ["capital","money used to start or grow a business","noun","She needed …… to launch her idea."],
+    ["raise","to collect money for a purpose","verb","They hope to …… funds from investors."],
+    ["hire","to give someone a job","verb","The start-up will …… ten engineers."],
+    ["vision","a clear idea of what you want to achieve","noun","A leader needs a strong …… ."],
+    ["identify","to recognise or name something clearly","verb","Good founders …… a real problem first."],
+    ["remarkable","unusually good or surprising","adjective","Her growth this year was …… ."],
+    ["take risks","to do something that might fail","phrase","Entrepreneurs must …… to succeed."]
+  ]},{t:"wordday",word:"capital",def:"money and resources used to start or grow a business",ex:"With enough capital, the founders could hire their first team."}],
+  a1:[{t:"prompts",intro:"Before you listen — predict:",items:["What steps do you think a person takes to start a business?","What might go wrong along the way?"]},{t:"match",intro:"Vocabulary in context — match each sentence to its meaning:",pairs:[["They <b>found</b> the company after college.","to start a company"],["We need <b>capital</b> to buy equipment.","money to start or grow a business"],["She wants to <b>raise</b> money from investors.","to collect money for a purpose"],["Good founders <b>identify</b> a real need.","to recognise or name clearly"],["He is willing to <b>take risks</b>.","to do something that might fail"],["Her results were <b>remarkable</b>.","unusually good or surprising"]]},{t:"note",html:"<b>Grammar — participle clauses (G.4.5):</b> a short way to describe a process.<br>“<b>Having found</b> a gap in the market, she started the company.”<br>“<b>Founded</b> in 2018, the app now has millions of users.”"}],
+  a2:[{t:"p",html:"<b>While you listen.</b> Read (or listen to your teacher read) part of a lecture about a young entrepreneur. Take notes as you go."},{t:"dialogue",intro:"Listen & take notes — fill each gap with the word you hear:",lines:[["Lecturer","Good morning. Today we look at how a start-up is [[built]], step by step."],["Lecturer","First, the founder must [[identify]] a real problem that people actually have."],["Lecturer","Next, she needs money — or [[capital]] — to begin, so she must [[raise]] funds from investors or a bank."],["Lecturer","With that money, she can rent space, buy [[equipment]], and [[hire]] her first team."],["Lecturer","Of course, she must be ready to [[take]] risks, because not every idea will [[work]]."],["Lecturer","What separates the successful ones is a clear [[vision]] and the resilience to keep going after failure."],["Lecturer","Our example today [[founded]] her company at just twenty-two, and the growth has been [[remarkable]]."]]},{t:"mcq",intro:"Listen for the main points — choose the best answer:",qs:[{q:"What is the FIRST step the lecturer describes?",opts:["hiring a team","identifying a real problem","buying equipment"],ans:1},{q:"What is “capital”?",opts:["a type of office","money to start a business","a business partner"],ans:1},{q:"Why must an entrepreneur take risks?",opts:["not every idea will work","risks are fun","the law requires it"],ans:0},{q:"What separates successful founders, according to the lecturer?",opts:["luck only","a clear vision and resilience","a big office"],ans:1}]}],
+  culture:[{t:"p",html:"<b>UAE–World Connection.</b> The UAE actively supports young entrepreneurs through incubators, funds and free zones. Resilience and adaptability — bouncing back and adjusting your plan — are exactly the qualities the National Education Charter encourages."},{t:"prompts",items:["Name one UAE company or product you admire. What problem does it solve?","What is one risk a young founder in your city might face?"]}],
+  enrich:[{t:"p",html:"<b>Describe a process (FL.13) with participle clauses.</b>"},{t:"mcq",intro:"Choose the correct participle clause:",qs:[{q:"____ the funds, they hired their first staff.",opts:["Having raised","Raise","To raising"],ans:0},{q:"____ in 2020, the company grew fast.",opts:["Founding","Founded","Founds"],ans:1},{q:"____ a real problem, she designed a simple app.",opts:["Identify","Identified by","Having identified"],ans:2}]},{t:"reflect",items:["In 3–4 short notes (not full sentences), summarise how a start-up is built.","Write one sentence using a participle clause to describe a step."]}],
+  exit:[{t:"reflect",items:["Write two words from today about business and their meanings.","Write one step in building a business, using your own words.","(KWL “L”) One thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel taking notes from a spoken lecture?"}]
+ }
+},
+
+/* ---- Lesson 11-12: Research and Present (Speaking) ---- */
+"l1112":{
+ num:"11-12", focus:"Speaking", title:"Research and Present", book:BOOK,
+ grammar:"G.4.5 Participle clauses", fl:"FL.13 Describing processes", charter:"Effective Communication",
+ page:"Resource: Lessons 11–12 PPT · Listening & Speaking p. 20",
+ stages:{
+  kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about a great presentation you have seen. What made it clear and interesting?"},{t:"kwl"}],
+  warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["What makes a mobile app worth downloading?","What is one app you use every day — what is its purpose and best feature?","What goes wrong in a boring presentation?"]}],
+  obj:[{t:"obj",items:["deliver a prepared presentation with connected, cohesive ideas","interpret and describe trends and details in charts and visuals","answer follow-up questions with fluency and confidence","use participle clauses to describe how your product works"]},{t:"note",html:"Your task this lesson: research and pitch a <b>business plan for a new mobile app</b>."}],
+  vocab:[{t:"p",html:"<b>Key vocabulary</b> — pitching a product. Then take the Spelling Bee below."},{t:"vocab",items:[
+    ["purpose","the reason something exists or is made","noun","Every app needs a clear …… ."],
+    ["features","the special things a product can do","noun","List the three main …… of your app."],
+    ["equipment","the tools or machines you need","noun","What …… does the team need to build it?"],
+    ["hire","to give someone a job","verb","We will …… two designers to start."],
+    ["test-market","to try a product with a small group first","verb","They …… the app before the full launch."],
+    ["business plan","a document describing how a business will work","noun","Investors read your …… first."]
+  ]},{t:"wordday",word:"features",def:"the useful things a product can do that make people want it",ex:"Its best feature is that it works offline."}],
+  a1:[{t:"p",html:"<b>Plan your pitch.</b> A clear app pitch covers five points. Prepare short notes for each — you will speak, not read."},{t:"prompts",intro:"Your business plan — make notes on:",items:["Purpose — what problem does your app solve?","Features — the 3 best things it does","Users & test-market — who is it for, and how will you try it out?","Team & equipment — who and what you need","Money — how it will earn (or be funded)"]},{t:"note",html:"<b>Presenting language:</b> “Our app is designed to…”, “The main features are…”, “As you can see in the chart…”, “To sum up…”"},{t:"mcq",intro:"Describe the visual — choose the best phrase:",qs:[{q:"A chart shows downloads rising month by month. You say…",opts:["“Downloads have increased steadily.”","“Downloads are a chart.”","“There is a chart.”"],ans:0},{q:"A pie chart shows most users are teenagers. You say…",opts:["“The chart is round.”","“The majority of our users are teenagers.”","“Teenagers exist.”"],ans:1},{q:"Best way to describe how it works (participle clause):",opts:["“Using AI, the app suggests plans.”","“The app is nice.”","“App good.”"],ans:0}]}],
+  a2:[{t:"p",html:"<b>Present.</b> In pairs or small groups, deliver your 2-minute pitch for the new app. Your partner/audience asks <b>two follow-up questions</b> at the end, which you answer."},{t:"note",html:"<b>Presentation checklist —</b> ☐ Clear purpose ☐ 3 features ☐ Referred to a chart/visual ☐ Used a linking phrase (“As you can see…”, “To sum up…”) ☐ Answered follow-up questions ☐ Good eye contact & pace."},{t:"prompts",intro:"Follow-up questions your audience could ask:",items:["“What makes your app different from others?”","“How will you make money?”","“Who is your app really for?”"]},{t:"rating",label:"Rate the pitch you heard: clear, well-organised, and confident?"}],
+  culture:[{t:"p",html:"<b>UAE–World Connection.</b> The UAE’s tech and start-up scene is booming, from fintech to smart-city apps. Effective communication — presenting your idea so others understand and believe in it — is a core National Education Charter value and a real-world skill investors look for."},{t:"prompts",items:["What kind of app would be useful for students in the UAE?","Why is confidence just as important as a good idea when you present?"]}],
+  enrich:[{t:"p",html:"<b>Handle questions with confidence.</b> Good presenters welcome questions."},{t:"mcq",intro:"Choose the best response to a tough question:",qs:[{q:"“How is this different from apps that already exist?”",opts:["“I don’t know.”","“Good question — unlike others, our app works offline and is free.”","“It just is.”"],ans:1},{q:"You need a moment to think. You say…",opts:["“That’s a great point — let me explain.”","(silence)","“Next question.”"],ans:0}]},{t:"reflect",items:["Write one participle clause describing how your app works.","Write one strong closing line for your pitch."]}],
+  exit:[{t:"reflect",items:["Write your app’s purpose in one sentence.","Name one thing you did well when presenting.","(KWL “L”) One thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel delivering a prepared presentation and answering questions?"}]
+ }
+}
+
+};
+
+/* ---- Week structure (from the Term 1 Scope & Sequence) ---- */
+var WEEKS=[
+ {n:1, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 1", lessons:["l12","l34"]},
+ {n:2, skill:"Reading & Writing",     cls:"rw", dates:"Term 1 · Week 2", lessons:["l56","l78"]},
+ {n:3, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 3", lessons:["l910","l1112"]}
+];
+
+/* ================= ROUTER ================= */
+var app=document.getElementById('app');
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+var CUR={id:null, stage:'kwl'};
+
+function go(view, arg){ if(view==='hub') renderHub(); else if(view==='lesson') renderLesson(arg); window.scrollTo(0,0); }
+
+function renderHub(){
+ stopTimer();
+ var html='<div class="hero"><div class="eyebrow">📘 School Work · 2026–2027</div><h1>11Adv-12Gen 2026-2027</h1>'
+   +'<p>Money… Talks! (Chapter 1), following the Term 1 Scope &amp; Sequence. <b>Week 1</b> Listening &amp; Speaking · <b>Week 2</b> Reading &amp; Writing · <b>Week 3</b> Listening &amp; Speaking. Pick a lesson and move through the ten steps (≈ 40–80 minutes).</p></div>';
+ WEEKS.forEach(function(w){
+   html+='<div class="week"><div class="week-head"><span class="wk-badge">Week '+w.n+'</span><span class="wk-skill '+w.cls+'">'+esc(w.skill)+'</span><span class="wk-dates">'+esc(w.dates)+'</span></div>';
+   if(!w.lessons.length){ html+='<div class="lesson-card soon"><div class="lt">Lessons coming soon</div><div class="lb">This week’s lessons will appear here.</div></div>'; }
+   w.lessons.forEach(function(id){ var L=LESSONS[id]; if(!L) return;
+     html+='<button class="lesson-card" onclick="go(\'lesson\',\''+id+'\')"><div class="lk">'+esc(L.focus)+'</div><div class="lt">Lesson '+esc(L.num)+': '+esc(L.title)+'</div><div class="lb">'+esc(L.book)+'</div><div class="lm">2 periods · 10 steps</div></button>';
+   });
+   html+='</div>';
+ });
+ app.innerHTML=html;
+}
+
+function renderLesson(id){
+ var L=LESSONS[id]; if(!L){ go('hub'); return; }
+ CUR.id=id; CUR.stage='kwl';
+ var wk=(WEEKS.filter(function(w){return w.lessons.indexOf(id)>=0;})[0]||{});
+ var chip=function(t){return t?'<span class="chip">'+esc(t)+'</span>':'';};
+ var chips='<div class="chips">'+chip(L.focus)+chip(L.grammar)+chip(L.fl)+chip(L.charter)+'</div>';
+ var menu=STAGES.map(function(s){ return '<button data-tab="'+s[0]+'" onclick="setStage(\''+s[0]+'\')">'+s[3]+' '+esc(s[1])+'<small>'+esc(s[2])+'</small></button>'; }).join('');
+ app.innerHTML='<div class="lp-top">'
+   +'<div class="lp-title"><button class="back" onclick="go(\'hub\')">← All weeks</button>'
+   +'<div class="lp-eyebrow">Week '+(wk.n||'')+' · '+esc(L.focus)+' · Lesson '+esc(L.num)+'</div>'
+   +'<h1>Lesson '+esc(L.num)+': '+esc(L.title)+'</h1><div class="lp-book">'+esc(L.book)+'</div>'
+   +chips
+   +(L.page?'<div class="lp-page">📖 <b>Your resources:</b> '+esc(L.page)+'</div>':'')+'</div>'
+   +'<div id="timer" onclick="timerToggle()"><div class="tl" id="tl">TAP TO START</div><div class="tv" id="tv">05:00</div></div></div>'
+   +'<div class="lp-grid"><div class="lp-body" id="body"></div><div class="lp-menu" id="menu">'+menu+'</div></div>';
+ setStage('kwl');
+}
+
+/* ---------------- stage render ---------------- */
+var LSTATE={};
+function setStage(stage){
+ CUR.stage=stage;
+ if(window.WT&&WT.iv){clearInterval(WT.iv);WT.iv=null;}
+ var L=LESSONS[CUR.id]; if(!L) return;
+ saveState();
+ Array.prototype.forEach.call(document.querySelectorAll('#menu button'),function(b){ b.classList.toggle('on', b.getAttribute('data-tab')===stage); });
+ var idx=0; STAGES.forEach(function(s,i){ if(s[0]===stage) idx=i; });
+ var blocks=(L.stages&&L.stages[stage])||[];
+ if(stage==='watch' && !blocks.length){ blocks=[{t:"video", query:(L.title+' '+(L.focus||'')), caption:'Watch a short video that connects to this lesson — “'+L.title+'” — then note one thing you learned.'}]; }
+ var head='<div class="stage-head"><h2>'+STAGES[idx][3]+' '+esc(STAGES[idx][1])+'</h2><span class="stage-min">'+esc(STAGES[idx][4])+'</span></div>';
+ var nav='<div class="nav-row">'
+   +(idx>0?'<button class="btn sm" onclick="setStage(\''+STAGES[idx-1][0]+'\')">← '+esc(STAGES[idx-1][1])+'</button>':'<span></span>')
+   +(idx<STAGES.length-1?'<button class="btn sm pri" onclick="setStage(\''+STAGES[idx+1][0]+'\')">'+esc(STAGES[idx+1][1])+' →</button>':'<span></span>')+'</div>';
+ document.getElementById('body').innerHTML=head+blocks.map(block).join('')+nav;
+ var b=document.getElementById('body'); b.oninput=saveState; b.onchange=saveState;
+ restoreState();
+ setTimer(parseFloat(STAGES[idx][4])||5);
+ window.scrollTo(0,0);
+}
+
+/* stable, seeded scramble so dropdown options don't mirror the answer key,
+   yet stay in the same order across re-renders (keeps saved answers valid) */
+function scrambleOpts(base, seedStr){
+  var s=2166136261; for(var i=0;i<seedStr.length;i++){ s^=seedStr.charCodeAt(i); s=Math.imul(s,16777619); }
+  s=s>>>0; var a=base.slice();
+  for(var k=a.length-1;k>0;k--){ s=(Math.imul(s,1664525)+1013904223)>>>0; var j=s%(k+1); var t=a[k];a[k]=a[j];a[j]=t; }
+  if(a.length>1 && a.join('\u0001')===base.join('\u0001')){ a.push(a.shift()); } // never leave it in original order
+  return a;
+}
+function block(b){
+ if(b.t==="p") return '<p>'+b.html+'</p>';
+ if(b.t==="note") return '<div class="note">'+b.html+'</div>';
+ if(b.t==="prompts") return (b.intro?'<p style="font-weight:700;margin-bottom:2px">'+esc(b.intro)+'</p>':'')+'<ol>'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
+ if(b.t==="obj") return '<div class="objbox"><p style="font-weight:800;margin:0 0 6px;color:var(--blue)">In this lesson, I will learn how to…</p><ul style="margin:0">'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';
+ if(b.t==="vocab") return '<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">'+b.items.map(function(v){return '<div class="vrow"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+'</span></div>';}).join('')+'</div><button class="btn pri beebtn" onclick="openBee()">🐝 Spelling Bee — test yourself</button><p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Hear each word, then type it. Two attempts each · 15s per word · score 60%+ for a certificate.</p>';
+ if(b.t==="wordday") return '<div class="wordday"><div class="l">Word of Today</div><div class="w">'+esc(b.word)+'</div><div>'+esc(b.def)+'</div><div style="opacity:.85;font-style:italic;margin-top:4px">“'+esc(b.ex)+'”</div></div>';
+ if(b.t==="passage") return '<div class="passage"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+p+'</p>';}).join('')+'</div>';
+ if(b.t==="kwl") return ["K — what I already KNOW about this topic","W — what I WANT to learn today","L — what I LEARNED (fill in at the end)"].map(function(l){return '<label class="q">'+esc(l)+'</label><textarea rows="2"></textarea>';}).join('');
+ if(b.t==="reflect") return b.items.map(function(x){return '<label class="q">'+esc(x)+'</label><textarea rows="2"></textarea>';}).join('');
+ if(b.t==="rating") return '<p style="font-weight:700;margin:12px 0 4px">'+esc(b.label)+'</p><div class="rate" data-r="0">'+[1,2,3,4,5].map(function(n){return '<span onclick="star(this,'+n+')">☆</span>';}).join('')+'</div>';
+ if(b.t==="roles") return '<div class="roles">'+b.cards.map(function(c){return '<div class="rolecard"><h4>'+esc(c[0])+'</h4><div>'+esc(c[1])+'</div></div>';}).join('')+'</div>';
+ if(b.t==="writemodel"){
+   var plan=(b.plan||[]).map(function(x){return '<label class="q">'+esc(x)+'</label><textarea rows="2"></textarea>';}).join('');
+   var m=b.model||{};
+   var model='<details class="model-d" style="margin-top:14px"><summary>▾ Show the model answer (compare yours with it)</summary>'
+     +'<div class="hlk"><span class="hl-topic">Topic sentence</span><span class="hl-r1">Reason / example 1</span><span class="hl-r2">Reason / example 2</span><span class="hl-close">Closing sentence</span></div>'
+     +'<div class="model-ans">'
+     +(m.topic?'<span class="hl-topic">'+esc(m.topic)+'</span> ':'')
+     +(m.r1?'<span class="hl-r1">'+esc(m.r1)+'</span> ':'')
+     +(m.r2?'<span class="hl-r2">'+esc(m.r2)+'</span> ':'')
+     +(m.close?'<span class="hl-close">'+esc(m.close)+'</span>':'')
+     +'</div></details>';
+   return '<div class="a2write">'
+     +(b.task?'<p><b>Your task.</b> '+esc(b.task)+'</p>':'')
+     +plan
+     +'<label class="q">Write your paragraph here:</label><textarea rows="8" placeholder="Write 5–7 sentences…"></textarea>'
+     +'<div class="wtimer"><div class="wt-clock">07:00</div><span class="wt-phase">Ready — press Start writing</span></div>'
+     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri sm" onclick="wtStart(7,\'Writing\',this)">▶ Start writing · 7 min</button>'
+     +'<button class="btn sm" onclick="wtStart(3,\'Comparing with the model\',this);openModel(this)">▶ Compare with model · 3 min</button></div>'
+     +'<p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Write for 7 minutes. When the timer ends, open the model answer and compare your piece for 3 minutes.</p>'
+     +model+'</div>';
+ }
+ if(b.t==="match"){ var base=[]; b.pairs.forEach(function(p){ if(base.indexOf(p[1])<0) base.push(p[1]); });
+   var opts=scrambleOpts(base, b.intro+'|'+b.pairs.length);
+   return '<div class="graded"><p style="font-weight:700">'+esc(b.intro)+'</p>'+b.pairs.map(function(p){ var a=opts.indexOf(p[1]); return '<div class="grow"><span class="l">'+p[0]+'</span><select class="A" data-a="'+a+'"><option value="">— choose —</option>'+opts.map(function(o,j){return '<option value="'+j+'">'+esc(o)+'</option>';}).join('')+'</select></div>'; }).join('')+'<button class="btn sm pri" onclick="grade(this)" style="margin-top:8px">Check</button><div class="fb"></div></div>'; }
+ if(b.t==="mcq") return '<div class="graded">'+(b.intro?'<p style="font-weight:700">'+esc(b.intro)+'</p>':'')+b.qs.map(function(q){ return '<div style="margin:10px 0"><div style="margin-bottom:4px">'+esc(q.q)+'</div><select class="A" data-a="'+q.ans+'"><option value="">— choose —</option>'+q.opts.map(function(o,j){return '<option value="'+j+'">'+esc(o)+'</option>';}).join('')+'</select></div>'; }).join('')+'<button class="btn sm pri" onclick="grade(this)" style="margin-top:8px">Check</button><div class="fb"></div></div>';
+ if(b.t==="dialogue"){ var sc='<details style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px"><summary style="color:var(--red)">\ud83c\udfa7 Listening script \u2014 teacher reads this aloud (students: don\u2019t peek!)</summary><div style="margin-top:6px">'+b.lines.map(function(ln){ return '<p style="margin:4px 0"><b style="color:var(--blue)">'+esc(ln[0])+':</b> '+esc(ln[1]).replace(/\[\[(.+?)\]\]/g,function(m,w){return '<b style="background:#fff3cd;padding:0 3px;border-radius:3px">'+esc(w)+'</b>';})+'</p>'; }).join('')+'</div></details>';
+   return '<div class="graded"><p style="font-weight:700">'+esc(b.intro)+'</p><div style="border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fcfcff">'+b.lines.map(function(ln){ var txt=esc(ln[1]).replace(/\[\[(.+?)\]\]/g,function(m,w){return '<input class="A gap" data-a="'+w.toLowerCase()+'" autocomplete="off" style="width:'+Math.max(70,w.length*13)+'px" />';}); return '<p style="margin:6px 0;line-height:1.9"><b style="color:var(--blue)">'+esc(ln[0])+':</b> '+txt+'</p>'; }).join('')+'</div><button class="btn sm pri" onclick="grade(this)" style="margin-top:8px">Check</button><div class="fb"></div>'+sc+'</div>'; }
+ if(b.t==="video"){ var q=encodeURIComponent(b.query||''); var vid=(b.id||''); var embed = vid ? '<div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;margin:10px 0"><iframe src="https://www.youtube.com/embed/'+vid+'" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe></div>' : ''; return '<div>'+(b.caption?'<p>'+esc(b.caption)+'</p>':'')+embed+'<div id="vidHost"></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px"><a class="btn pri" href="https://www.youtube.com/results?search_query='+q+'" target="_blank" rel="noopener">\u25b6 Find a video on YouTube</a><input id="vidPaste" placeholder="\u2026or paste a YouTube link / ID to play it here" style="flex:1;min-width:220px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px" onkeydown="if(event.key===\'Enter\'){playVid();}"><button class="btn sm" onclick="playVid()">Play</button></div><p style="font-size:.8rem;color:var(--muted);margin-top:6px">Pick a short clip on the topic. Paste a chosen video to embed it right here for the class.</p></div>'; }
+ return '';
+}
+
+function grade(btn){
+ var box=btn.parentNode, els=box.querySelectorAll('.A'), right=0,tot=0,done=true,keys=[];
+ Array.prototype.forEach.call(els,function(el){ tot++; var a=el.getAttribute('data-a')||''; var ok;
+   if(el.tagName==='SELECT'){ if(el.value==='')done=false; ok=(el.value!==''&&el.value===a); el.style.borderColor=ok?'var(--good)':(el.value===''?'var(--line)':'var(--bad)'); var o=el.querySelector('option[value="'+a+'"]'); keys.push('<li>'+esc(o?o.textContent:a)+'</li>'); }
+   else { var v=(el.value||'').trim().toLowerCase(); if(!v)done=false; ok=(v===a); el.style.borderBottomColor=ok?'var(--good)':(v===''?'var(--blue)':'var(--bad)'); keys.push('<li>'+esc(a)+'</li>'); }
+   if(ok)right++; });
+ var fb=box.querySelector('.fb'); fb.style.display='block';
+ if(!done){ fb.style.color='#8a5a12'; fb.innerHTML='Answer every part first.'; return; }
+ fb.style.color=(right===tot)?'var(--good)':'#8a5a12';
+ fb.innerHTML='<b>'+right+' / '+tot+' correct.</b> '+(right===tot?'Excellent! 🎉':'Review the key answers below.')+'<details style="margin-top:8px"><summary>▾ Show the key answers</summary><ol style="line-height:1.7">'+keys.join('')+'</ol></details>';
+}
+function paintStars(el,r){ var s=el.querySelectorAll('span'); Array.prototype.forEach.call(s,function(sp,i){ sp.textContent=(i<r?'★':'☆'); }); el.setAttribute('data-r',r); }
+function star(sp,val){ var el=sp.parentNode; var cur=parseInt(el.getAttribute('data-r')||'0',10); var r=(val===cur)?0:val; /* click same star again to clear */ paintStars(el,r); saveState(); }
+function ytId(s){ if(!s)return ''; var m=s.match(/(?:v=|\/embed\/|youtu\.be\/|\/shorts\/)([A-Za-z0-9_-]{11})/); if(m)return m[1]; if(/^[A-Za-z0-9_-]{11}$/.test(s))return s; return ''; }
+function playVid(){ var i=document.getElementById('vidPaste'); if(!i)return; var id=ytId(i.value.trim()); var host=document.getElementById('vidHost'); if(!host)return; if(!id){ host.innerHTML='<p style="color:var(--bad);font-size:.85rem">Paste a valid YouTube link or 11-character video ID.</p>'; return; } host.innerHTML='<div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;margin:10px 0"><iframe src="https://www.youtube.com/embed/'+id+'" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen></iframe></div>'; }
+
+/* ---------------- Activity 2 writing: phased timer + model ---------------- */
+var WT=null;
+function wtStart(mins,phase,btn){
+ var host=btn.closest('.a2write'); if(!host)return; var clock=host.querySelector('.wt-clock'); var lab=host.querySelector('.wt-phase'); if(!clock)return;
+ if(WT&&WT.iv){clearInterval(WT.iv);WT.iv=null;}
+ WT={sec:Math.round(mins*60),iv:null};
+ clock.classList.remove('done'); clock.classList.add('run');
+ if(lab)lab.textContent=phase+' — counting down';
+ function paint(){ var mm=Math.floor(WT.sec/60),ss=WT.sec%60; clock.textContent=(mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss; }
+ paint();
+ WT.iv=setInterval(function(){ WT.sec--; if(WT.sec<=0){ WT.sec=0; paint(); clearInterval(WT.iv); WT.iv=null; clock.classList.remove('run'); clock.classList.add('done'); if(lab)lab.innerHTML=phase+" — time\u2019s up"; return; } paint(); },1000);
+}
+function openModel(btn){ var wrap=btn.closest('.a2write'); if(!wrap)return; var d=wrap.querySelector('details.model-d'); if(d)d.open=true; }
+
+/* ---------------- Spelling Bee pop-up ---------------- */
+var BEE=null;
+function currentVocab(){ var L=LESSONS[CUR.id]; if(!L)return[]; var st=(L.stages&&L.stages.vocab)||[]; for(var i=0;i<st.length;i++){ if(st[i].t==='vocab') return st[i].items||[]; } return []; }
+function openBee(){
+ var items=currentVocab().slice();
+ if(!items.length){ alert('No vocabulary list found for this lesson.'); return; }
+ BEE={list:items,i:0,attempt:1,score:0,tleft:15,iv:null};
+ document.getElementById('beeOv').classList.add('open');
+ renderBee();
+}
+function closeBee(){ if(BEE&&BEE.iv){clearInterval(BEE.iv);} BEE=null; try{window.speechSynthesis.cancel();}catch(e){} document.getElementById('beeOv').classList.remove('open'); }
+function beeWord(){ return BEE.list[BEE.i]; }
+function renderBee(){
+ if(!BEE) return; if(BEE.i>=BEE.list.length){ return beeResult(); }
+ var w=beeWord(), term=w[0], def=w[1]||'', pos=w[2]||'', ex=w[3]||'';
+ var total=BEE.list.length, pct=Math.round((BEE.i/total)*100);
+ var exHtml = ex ? '<p class="bee-ex">“'+esc(ex)+'”</p>' : '';
+ var posHtml = pos ? '<div class="bee-pos">'+esc(pos)+'</div>' : '';
+ document.getElementById('beeCard').innerHTML =
+   '<div class="bee-hd"><h3>🐝 Spelling Bee</h3><button class="bee-x" onclick="closeBee()">✕</button></div>'
+   +'<div class="bee-sub">Word '+(BEE.i+1)+' of '+total+' · attempt '+BEE.attempt+' of 2 · score '+BEE.score+'</div>'
+   +'<div class="bee-bar"><i style="width:'+pct+'%"></i></div>'
+   +'<div class="bee-time" id="beeTime">⏱ '+BEE.tleft+'s</div>'
+   +'<button class="bee-hear" onclick="beeSpeak()">🔊 Hear the word</button>'
+   +posHtml+'<p class="bee-def">'+esc(def)+'</p>'+exHtml
+   +'<input class="bee-in" id="beeIn" placeholder="type the word…" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key===\'Enter\')beeCheck()">'
+   +'<div class="bee-fb" id="beeFb"></div>'
+   +'<button class="bee-chk" onclick="beeCheck()">Check ✓</button>'
+   +'<div class="bee-note">🏅 Score at least 60% across the words to earn a spelling certificate.</div>';
+ var inp=document.getElementById('beeIn'); if(inp) inp.focus();
+ beeStartTimer(); beeSpeak();
+}
+function beeStartTimer(){ if(BEE.iv)clearInterval(BEE.iv); BEE.tleft=15; var t=document.getElementById('beeTime'); if(t)t.textContent='⏱ 15s';
+ BEE.iv=setInterval(function(){ if(!BEE)return; BEE.tleft--; var el=document.getElementById('beeTime'); if(el)el.textContent='⏱ '+BEE.tleft+'s'; if(BEE.tleft<=0){ clearInterval(BEE.iv); BEE.iv=null; beeTimeout(); } },1000);
+}
+function beeSpeak(){ try{ var w=beeWord(); window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(w[0]); u.lang='en-GB'; u.rate=.85; window.speechSynthesis.speak(u);}catch(e){} }
+function beeCheck(){
+ if(!BEE) return; var inp=document.getElementById('beeIn'); if(!inp)return;
+ var val=(inp.value||'').trim().toLowerCase(); var ans=(beeWord()[0]||'').trim().toLowerCase();
+ var fb=document.getElementById('beeFb');
+ if(!val){ if(fb){fb.style.color='#8a5a12';fb.textContent='Type the word first.';} return; }
+ if(val===ans){ if(BEE.iv){clearInterval(BEE.iv);BEE.iv=null;} BEE.score++; if(fb){fb.style.color='var(--good)';fb.textContent='✓ Correct!';} setTimeout(beeAdvance,650); }
+ else if(BEE.attempt<2){ BEE.attempt++; if(BEE.iv){clearInterval(BEE.iv);BEE.iv=null;} if(fb){fb.style.color='var(--bad)';fb.textContent='✗ Not quite — one attempt left.';} inp.value=''; inp.focus(); renderBeeCounter(); beeStartTimer(); }
+ else { if(BEE.iv){clearInterval(BEE.iv);BEE.iv=null;} if(fb){fb.style.color='var(--bad)';fb.innerHTML='✗ The word was <b>'+esc(beeWord()[0])+'</b>.';} setTimeout(beeAdvance,1300); }
+}
+function renderBeeCounter(){ var s=document.querySelector('.bee-sub'); if(s)s.textContent='Word '+(BEE.i+1)+' of '+BEE.list.length+' · attempt '+BEE.attempt+' of 2 · score '+BEE.score; }
+function beeTimeout(){ if(!BEE)return; var fb=document.getElementById('beeFb');
+ if(BEE.attempt<2){ BEE.attempt++; if(fb){fb.style.color='var(--bad)';fb.textContent='⏱ Time! One attempt left.';} var inp=document.getElementById('beeIn'); if(inp){inp.value='';inp.focus();} renderBeeCounter(); beeStartTimer(); }
+ else { if(fb){fb.style.color='var(--bad)';fb.innerHTML='⏱ Time! The word was <b>'+esc(beeWord()[0])+'</b>.';} setTimeout(beeAdvance,1300); }
+}
+function beeAdvance(){ if(!BEE)return; BEE.i++; BEE.attempt=1; renderBee(); }
+function beeResult(){
+ if(BEE.iv){clearInterval(BEE.iv);BEE.iv=null;}
+ var total=BEE.list.length, pct=Math.round((BEE.score/total)*100), pass=pct>=60;
+ document.getElementById('beeCard').innerHTML =
+   '<div class="bee-hd"><h3>🐝 Spelling Bee</h3><button class="bee-x" onclick="closeBee()">✕</button></div>'
+   +'<div style="text-align:center;padding:12px 0 4px"><div style="font-size:2.6rem">'+(pass?'🏅':'📚')+'</div>'
+   +'<div style="font-size:1.4rem;font-weight:800;margin-top:4px">'+BEE.score+' / '+total+' correct ('+pct+'%)</div>'
+   +'<p style="color:var(--muted);margin:8px 0 0">'+(pass?'Great spelling! You reached the certificate mark for this word list.':'Keep practising — score 60% or more to earn the certificate.')+'</p></div>'
+   +'<div style="display:flex;gap:10px;justify-content:center;margin-top:16px"><button class="btn" onclick="openBee()">↻ Try again</button><button class="btn pri" onclick="closeBee()">Done</button></div>';
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&BEE) closeBee(); });
+
+/* ---------------- state persistence (per session) ---------------- */
+function fields(){ return document.querySelectorAll('#body textarea, #body select, #body input, #body .rate'); }
+function keyOf(){ return CUR.id+'|'+CUR.stage; }
+function saveState(){ if(!CUR.id) return; var arr=[]; Array.prototype.forEach.call(fields(),function(el){ arr.push((el.className||'').indexOf('rate')>=0 ? (el.getAttribute('data-r')||'') : el.value); }); LSTATE[keyOf()]=arr; }
+function restoreState(){ var s=LSTATE[keyOf()]; if(!s) return; Array.prototype.forEach.call(fields(),function(el,i){ if(s[i]==null) return; if((el.className||'').indexOf('rate')>=0){ var r=parseInt(s[i],10)||0; paintStars(el,r); } else el.value=s[i]; }); }
+
+/* ---------------- timer ---------------- */
+var TM={sec:0,run:false,iv:null};
+function fmt(s){var m=Math.floor(s/60),x=s%60;return (m<10?'0':'')+m+':'+(x<10?'0':'')+x;}
+function paint(label){var tv=document.getElementById('tv'),tl=document.getElementById('tl'),t=document.getElementById('timer'); if(tv)tv.textContent=fmt(TM.sec); if(tl&&label!=null)tl.textContent=label; if(t)t.style.background=(TM.sec<=0?'var(--red)':(TM.run?'var(--teal)':'#1a2238'));}
+function setTimer(mins){ if(TM.iv){clearInterval(TM.iv);TM.iv=null;} TM.run=false; TM.sec=Math.round((mins||5)*60); paint('TAP TO START'); }
+function startTimer(){ if(TM.sec<=0)return; TM.run=true; if(TM.iv)clearInterval(TM.iv); TM.iv=setInterval(function(){ TM.sec--; if(TM.sec<=0){TM.sec=0;TM.run=false;clearInterval(TM.iv);TM.iv=null;paint("TIME'S UP");return;} paint('COUNTING DOWN'); },1000); paint('COUNTING DOWN'); }
+function stopTimer(){ TM.run=false; if(TM.iv){clearInterval(TM.iv);TM.iv=null;} }
+function timerToggle(){ if(TM.run){ TM.run=false; if(TM.iv){clearInterval(TM.iv);TM.iv=null;} paint('PAUSED — TAP TO RESUME'); } else startTimer(); }
+
+renderHub();
+</script>
+</body>
+</html>
