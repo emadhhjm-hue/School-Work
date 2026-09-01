@@ -26,6 +26,17 @@
 
   /* hub */
   .hero{background:linear-gradient(120deg,#1a2238,#2B5FA6 55%,#7A2FD0);color:#fff;border-radius:18px;padding:26px 28px;box-shadow:var(--shadow);margin-bottom:22px}
+  .hero .back{color:#dfe7ff;opacity:.9;margin-bottom:6px}
+  .hero .back:hover{opacity:1;text-decoration:underline}
+  .classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .classcard{display:block;text-align:left;background:#fff;border:1.5px solid var(--line);border-left:5px solid var(--blue);border-radius:16px;padding:20px;cursor:pointer;transition:.15s}
+  .classcard:hover{border-color:var(--blue);box-shadow:var(--shadow);transform:translateY(-2px)}
+  .classcard .cc-name{font-size:1.25rem;font-weight:800;color:var(--ink)}
+  .classcard .cc-chapter{font-weight:700;color:var(--blue);margin-top:2px}
+  .classcard .cc-blurb{color:var(--muted);margin-top:8px;font-size:.9rem;line-height:1.5}
+  .classcard .cc-meta{margin-top:12px;display:inline-block;background:#eef3fb;color:var(--ink);font-weight:800;font-size:.75rem;padding:5px 12px;border-radius:999px}
+  .classcard.soon{border-left-color:var(--muted);opacity:.85}
+  .classcard.soon .cc-meta{background:#f0eff2;color:var(--muted)}
   .hero .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:800}
   .hero h1{font-size:2rem;margin:6px 0 4px}
   .hero p{margin:0;opacity:.95;max-width:760px}
@@ -171,8 +182,8 @@ var STAGES=[
 
 var BOOK="New Interactions · Money… Talks! (Ch.1) · Grade 11 Advanced / 12 General";
 
-/* ---------------- LESSONS (named as in the Scope & Sequence) ---------------- */
-var LESSONS={
+/* ---------------- COURSE 1 · 11Advanced-12General · Money… Talks! ---------------- */
+var C1_LESSONS={
 
 /* ================= WEEK 1 ================= */
 
@@ -349,23 +360,233 @@ var LESSONS={
 };
 
 /* ---- Week structure (from the Term 1 Scope & Sequence) ---- */
-var WEEKS=[
+var C1_WEEKS=[
  {n:1, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 1", lessons:["l12","l34"]},
  {n:2, skill:"Reading & Writing",     cls:"rw", dates:"Term 1 · Week 2", lessons:["l56","l78"]},
  {n:3, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 3", lessons:["l910","l1112"]}
 ];
 
+/* ---------------- COURSE 2 · 11General-10Advanced · A Picture of Health ---------------- */
+var BOOK2="New Interactions · A Picture of Health (Ch.1) · Grade 11 General / 10 Advanced";
+var C2_LESSONS={
+
+ "l12":{
+  num:"1-2", focus:"Listening", title:"Health Clubs", book:BOOK2,
+  grammar:"", fl:"", charter:"Critical Thinking",
+  page:"Listening & Speaking pp. 4–9 · Lesson 1-2 PPT",
+  stages:{
+   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about staying fit and healthy — gyms, sports and daily habits. What do you already know about health clubs?"},{t:"kwl"}],
+   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["Do you go to a gym or health club? Why or why not?","Are health clubs and gyms popular where you live?","What are the advantages and disadvantages of working out at a gym?"]}],
+   obj:[{t:"obj",items:["listen to a conversation and connect it with what you already know","infer the meaning of new words from context and word parts (prefixes/suffixes)","identify the main ideas and details of a spoken tour","notice how stressed words carry the key information"]},{t:"note",html:"<b>Main SLO:</b> ENG.07.L.CS.3.1 — interpret and explain connections between ideas and your own experience when listening.<br><b>Supporting SLO:</b> ENG.07.L.CS.4.1 — infer the meaning of unknown words from context and word parts."}],
+   vocab:[{t:"p",html:"<b>Key vocabulary</b> — the world of fitness. Then take the Spelling Bee below."},{t:"vocab",items:[
+     ["jog","to run at a slow, steady pace","verb","Every morning she goes for a …… in the park."],
+     ["cardio","exercise that raises your heart rate","noun","The trainer said …… is good for the heart."],
+     ["discount","an amount taken off the normal price","noun","Students get a …… on the yearly fee."],
+     ["locker room","a room with lockers for changing and storing your things","noun","Leave your bag in the …… before class."],
+     ["health club","a place with equipment and classes for fitness","noun","The new …… has a pool and a gym."],
+     ["lift weights","to exercise using weights to build muscle","verb phrase","He likes to …… three times a week."],
+     ["in good shape","fit and healthy","phrase","Regular exercise keeps you …… ."]
+   ]}],
+   a1:[{t:"p",html:"<b>Before you listen.</b>"},{t:"prompts",intro:"Topic — discuss:",items:["Which activities have you tried: jogging, boxing, yoga or swimming?","How do people in your area keep fit?","What would you look for when choosing a gym?"]},{t:"match",intro:"Vocabulary in context — choose the meaning that fits each sentence:",pairs:[["I go for a <b>jog</b> before school.","to run at a slow, steady pace"],["The gym has a special <b>discount</b> for students.","money taken off the normal price"],["Please change in the <b>locker room</b>.","a room for changing and storing things"],["I want to <b>lift weights</b> to get stronger.","to exercise using weights"],["Doing <b>cardio</b> is good for your heart.","exercise that raises the heart rate"],["Exercise keeps you <b>in good shape</b>.","fit and healthy"]]},{t:"mcq",intro:"Thinking & predicting — two friends, Peter and Kenji, visit a health club with a guide. Predict before you listen:",qs:[{q:"Where are Peter and Kenji, and why?",opts:["at a health club, thinking about joining","at a library, to study","at a restaurant, to eat"],ans:0},{q:"The guide will most likely…",opts:["show them around and describe the facilities","ask them to leave","teach a maths class"],ans:0},{q:"What might make them decide to join?",opts:["a student discount this month","free food","a longer bus ride"],ans:0}]}],
+   a2:[{t:"p",html:"<b>While you listen.</b> Read (or listen to your teacher read) the tour of the health club. The guide is <b>Adel</b>; the visitors are <b>Peter</b> and <b>Kenji</b>."},{t:"dialogue",intro:"Listening for stressed words — fill each gap with the word you hear:",lines:[["Adel","Welcome! Let me show you [[around]] the club."],["Peter","Thanks. Wow, the [[cardio]] room has the latest equipment."],["Adel","Yes, and over here people [[lift]] weights to build strength."],["Kenji","Do you have [[classes]] too, like yoga or boxing?"],["Adel","We do. I’ll give you a [[schedule]] of all our classes."],["Peter","Look at that woman in the swimming [[lane]] — she’s really fast!"],["Adel","That’s Ellen, one of our [[trainers]]. The [[locker]] room is just here."],["Kenji","How much does it [[cost]] to join?"],["Adel","Well, there’s a special [[discount]] for students this [[month]]."],["Peter","That’s great. We should exercise at least three times a [[week]] to keep in good shape."]]},{t:"mcq",intro:"Main ideas & details — choose the best answer:",qs:[{q:"What is the purpose of the tour?",opts:["to show the club so they might join","to sell them a car","to teach swimming"],ans:0},{q:"What does the club have the latest equipment in?",opts:["the cardio room","the kitchen","the office"],ans:0},{q:"Who is the fastest swimmer in the pool?",opts:["Ellen","Kenji","Adel"],ans:0},{q:"What special offer is there this month?",opts:["a student discount","free cars","a longer tour"],ans:0},{q:"How often does Peter say they should exercise?",opts:["once a month","at least three times a week","never"],ans:1}]}],
+   culture:[{t:"p",html:"<b>UAE–World Connection.</b> The UAE encourages an active, healthy lifestyle — from public running tracks and cycling paths to national fitness challenges. Thinking critically about how you spend your time and money on health is part of being a smart, informed person."},{t:"prompts",items:["Students and senior citizens often get discounts. Do you think this is fair? Why?","Is it better to exercise outdoors or in a gym? Give reasons."]}],
+   enrich:[{t:"p",html:"<b>Word parts (SLO 4.1).</b> You can often guess a new word from its parts — a prefix or a suffix."},{t:"match",intro:"Match each word to its meaning using the prefix or suffix:",pairs:[["<b>un</b>healthy","not healthy"],["train<b>er</b>","a person who trains others"],["<b>re</b>build","to build again"],["power<b>ful</b>","full of power / strong"]]},{t:"reflect",items:["Write one new word you learned and what it means.","Write one sentence about how you keep in good shape."]}],
+   exit:[{t:"reflect",items:["Write one new word or phrase you learned today, and what it means.","Write one thing the guide showed Peter and Kenji.","(KWL “L”) Write one thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel listening for main ideas and stressed words?"}]
+  }
+ },
+
+ "l34":{
+  num:"3-4", focus:"Speaking", title:"Talking about Stress", book:BOOK2,
+  grammar:"G.17.3 Question tags", fl:"FL.31 Describing past experiences", charter:"Physical & Mental Wellbeing",
+  page:"Listening & Speaking pp. 15–17 · Lesson 3-4 PPT",
+  stages:{
+   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about a time you felt stressed — before an exam, a test or an interview. What happened in your body?"},{t:"kwl"}],
+   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["What situations make young people feel stressed?","How does stress affect the body?","What do you do to calm down?"]}],
+   obj:[{t:"obj",items:["tell the story of a stressful situation you experienced","describe symptoms and say how you felt","use question tags to check and keep a conversation going","respond to your partner and ask complex follow-up questions"]},{t:"note",html:"<b>Main SLO:</b> ENG.07.S.IP.4.1 — express ideas, feelings and personal perspectives, giving reasons.<br><b>Supporting SLO:</b> ENG.07.S.IP.2.1 — take part in structured interactions and ask complex questions."}],
+   vocab:[{t:"p",html:"<b>Key vocabulary</b> — talking about stress. Then take the Spelling Bee below."},{t:"vocab",items:[
+     ["symptoms","signs that show how your body or mind feels","noun","A fast heartbeat and sweating are common …… of stress."],
+     ["calm down","to become relaxed after feeling upset or nervous","verb phrase","She took a deep breath to …… before speaking."],
+     ["nervous","worried or a little afraid about something","adjective","He felt …… before the interview."],
+     ["negative effect","a bad result or influence","noun phrase","Too much stress can have a …… on your sleep."],
+     ["causes of stress","the things that make you feel stressed","noun phrase","Exams and deadlines are common …… ."],
+     ["deadline","the time by which something must be finished","noun","I felt stressed as the …… got closer."],
+     ["take a deep breath","to breathe in slowly to relax","phrase","When you feel nervous, …… and slow down."]
+   ]}],
+   a1:[{t:"note",html:"<b>Grammar — question tags (G.17.3):</b> a short question added to the end of a sentence to check or keep talking.<br>Positive sentence → negative tag: “You were nervous, <b>weren’t you</b>?”<br>Negative sentence → positive tag: “They didn’t ask hard questions, <b>did they</b>?”"},{t:"mcq",intro:"Choose the correct question tag:",qs:[{q:"Your interview was today, ____",opts:["wasn’t it?","was it?","didn’t it?"],ans:0},{q:"They couldn’t expect better, ____",opts:["could they?","couldn’t they?","did they?"],ans:0},{q:"You did speak, eventually, ____",opts:["didn’t you?","did you?","weren’t you?"],ans:0},{q:"They haven’t turned you down, ____",opts:["have they?","haven’t they?","did they?"],ans:0}]},{t:"match",intro:"Describing how you felt — match each moment to a natural expression:",pairs:[["Before a big test…","“I never felt so nervous in my life.”"],["When the room went quiet…","“There was a knot in my stomach.”"],["When I forgot my words…","“I wanted to turn around and run out.”"],["After I finished…","“I was so glad it was over.”"]]}],
+   a2:[{t:"p",html:"<b>Speak — role-play.</b> Work in pairs. Student A tells the story of a stressful moment; Student B listens, reacts and asks follow-up questions using question tags. Then <b>swap roles</b>."},{t:"roles",cards:[["Card A · Your story","Choose one: your first time on stage, your driving test, or a deadline you almost missed. Say what happened, describe your symptoms (heartbeat, a knot in your stomach), and say how you felt. Use at least two past-tense expressions from Activity 1."],["Card B · The listener","Listen carefully. React (“Really?”, “Oh no!”). Ask at least two follow-up questions using question tags (“You were nervous, weren’t you?”). Then give one tip to calm down."]]},{t:"note",html:"<b>Speaking checklist —</b> ☐ I described what happened ☐ I named symptoms ☐ I said how I felt ☐ I used a question tag ☐ I asked a follow-up question ☐ I kept the conversation going."},{t:"rating",label:"Rate your partner’s story: clear, with feelings and symptoms described?"}],
+   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Looking after your mental wellbeing is a national priority — schools and workplaces in the UAE promote balance, rest and healthy ways to manage stress. Talking about how you feel is a positive habit."},{t:"prompts",items:["Which causes of stress affect students most, and why?","What healthy ways to calm down could you share with a friend?"]}],
+   enrich:[{t:"p",html:"<b>Describe a past experience (FL.31).</b>"},{t:"mcq",intro:"Choose the best way to describe how you felt:",qs:[{q:"Your heart was beating fast. You say…",opts:["“My heart was racing and I felt shaky.”","“I was completely relaxed.”","“Nothing happened.”"],ans:0},{q:"You were very worried before you spoke. You say…",opts:["“There was a knot in my stomach.”","“I felt bored.”","“I fell asleep.”"],ans:0}]},{t:"reflect",items:["Write one sentence about a time you felt nervous, using the past tense.","Write one question tag you can use to keep a conversation going."]}],
+   exit:[{t:"reflect",items:["Write one expression you used to describe how you felt.","Write one question tag you practised today.","(KWL “L”) One thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel telling a story about a stressful situation?"}]
+  }
+ },
+
+ "l56":{
+  num:"5-6", focus:"Reading & Viewing", title:"What’s The Secret?", book:BOOK2,
+  grammar:"", fl:"", charter:"Critical Thinking",
+  page:"Reading & Writing pp. 4–11 · Lesson 5-6 PPT",
+  stages:{
+   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about people who live very long, healthy lives. Where do they live, and what might their secret be?"},{t:"kwl"}],
+   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["What habits help people stay healthy for a long time?","Do you know anyone who lived to a very old age? What was their lifestyle like?","Is a long life always a healthy life? Why or why not?"]}],
+   obj:[{t:"obj",items:["read a longer text and identify its main points","infer the meaning of new words from context and word parts","connect the ideas in the text with your own experience","evaluate what really helps people live long, healthy lives"]},{t:"note",html:"<b>Main SLO:</b> ENG.07.RV.CS.6.1 — read and identify the main points of a text.<br><b>Supporting SLO:</b> ENG.07.RV.CS.4.1 — infer the meaning of unknown words from context and word parts when reading."}],
+   vocab:[{t:"p",html:"<b>Key vocabulary</b> — living a long life. Then take the Spelling Bee below."},{t:"vocab",items:[
+     ["inhabitants","the people who live in a place","noun","The village …… are friendly and healthy."],
+     ["preservatives","chemicals added to keep food fresh for longer","noun","Fresh food has no artificial ……."],
+     ["longevity","long life; living for a long time","noun","Scientists study the secret of ……."],
+     ["altitude","the height of a place above sea level","noun","The village sits at a high ……."],
+     ["unpolluted","clean; not dirty or contaminated","adjective","They breathe fresh, …… air."],
+     ["long-lived","living for a long time","adjective","The …… villagers stay active for years."],
+     ["prevent","to stop something from happening","verb","Exercise can help …… illness."]
+   ]}],
+   a1:[{t:"p",html:"<b>Read the article</b> (paragraphs are lettered A–E). Use the reading strategies as you go, then answer the questions."},{t:"passage",title:"What’s the Secret?",paras:[
+     "Several places around the world are famous for their inhabitants’ very long lives. These places are usually high in the mountains, far from busy modern cities. Doctors and scientists travel to them hoping to discover the secret of such remarkable longevity.",
+     "One is Hunza, high in the Himalayan Mountains of Asia, where many people over 100 are still healthy. Scientists point to three main advantages: a clean, unpolluted environment with fresh air and water; a simple diet high in vitamins and fibre but low in fat, sugar and chemicals; and hard physical work in the fields.",
+     "The Caucasus Mountains in Russia are also known for longevity, and some inhabitants are said to have lived well beyond 100. People there are almost never sick, and many keep their own teeth, a full head of hair and good eyesight into old age.",
+     "In Vilcabamba in Ecuador, and on the Greek island of Ikaria, the story is similar — high, unpolluted places with clean mountain water, a moderate climate and natural food. The islanders eat a Mediterranean diet of vegetables, olive oil and honey, sleep more than eight hours, and spend much of the day outdoors.",
+     "The diets of these regions differ, but they share three things: the food is natural, with no preservatives or chemicals; people use traditional remedies to prevent and cure illness; and they eat far fewer calories than city people. Their active, low-stress lives may be the real secret — though some scientists argue the great ages cannot be proven, because official birth records are missing."
+   ]},{t:"mcq",intro:"Read for the main points — questions name the paragraph:",qs:[{q:"[A] Where are these long-lived places usually found?",opts:["high in the mountains, far from cities","in the centre of big cities","by the sea"],ans:0},{q:"[B] What are Hunza’s three main advantages?",opts:["a clean environment, a simple diet and physical work","cars, shops and money","medicine, doctors and hospitals"],ans:0},{q:"[E] What do the four regions share?",opts:["natural food, traditional remedies and fewer calories","fast food and little exercise","the same language"],ans:0},{q:"[E] Why do some scientists doubt the claims?",opts:["official birth records are missing","the people look young","the food is expensive"],ans:0}]},{t:"match",intro:"Vocabulary in context — choose the meaning:",pairs:[["The village’s <b>inhabitants</b> are very old.","the people who live in a place"],["Scientists study <b>longevity</b>.","long life"],["Hunza is at a high <b>altitude</b>.","height above sea level"],["The air is clean and <b>unpolluted</b>.","not dirty or contaminated"],["Natural food has no <b>preservatives</b>.","chemicals added to keep food fresh"]]}],
+   a2:[{t:"p",html:"<b>Getting meaning from context (SLO 4.1).</b> Use the words around a new word — and its word parts — to work out its meaning."},{t:"mcq",intro:"Choose the meaning that fits the text:",qs:[{q:"In this article, <b>longevity</b> means…",opts:["many years between birth and death","old people in the mountains","a hundred different ages"],ans:0},{q:"<b>Altitude</b> means…",opts:["vertical distance above sea level","dying at an early age","a healthy diet"],ans:0},{q:"An <b>environment</b> is…",opts:["the conditions of a place that influence people","a type of medicine","a mountain village"],ans:0}]},{t:"match",intro:"Word parts — match each word to its meaning using the prefix or suffix:",pairs:[["<b>un</b>polluted","not polluted"],["long-<b>lived</b>","living for a long time"],["<b>pre</b>vent","to stop before it happens"],["inhabit<b>ants</b>","people who inhabit a place"]]},{t:"reflect",items:["Write the main idea of the article in one sentence.","Write one habit from these regions that you could try yourself."]}],
+   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Around the world, communities famous for long life share simple habits: natural food, daily movement, and strong social ties. The UAE promotes healthy living and family connection as part of national wellbeing."},{t:"prompts",items:["Which ‘secret’ from the text would be easiest to follow in a city? Why?","How do family and friends help people stay healthy?"]}],
+   enrich:[{t:"p",html:"<b>Reading strategies.</b> Good readers guess, question and connect."},{t:"mcq",intro:"Choose the best reading strategy:",qs:[{q:"You meet an unknown word. First you should…",opts:["stop reading","guess from the words around it","skip the whole text"],ans:1},{q:"To find the main idea of a paragraph, look at…",opts:["only the last word","the topic and repeated ideas","the page number"],ans:1}]},{t:"reflect",items:["Write one new word you learned and its meaning.","Write one question you still have about longevity."]}],
+   exit:[{t:"reflect",items:["Write one main point from today’s text.","Write one new word and what it means.","(KWL “L”) Write one thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel finding the main points of a longer text?"}]
+  }
+ },
+
+ "l78":{
+  num:"7-8", focus:"Writing & Representing", title:"Medical Advice and the Internet", book:BOOK2,
+  grammar:"G.10.1 Present simple passive", fl:"", charter:"Mastery of Artificial Intelligence",
+  page:"Reading & Writing pp. 15–17 · Lesson 7-8 PPT",
+  stages:{
+   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Have you ever searched online for a health problem? How do you know if the advice you find is true?"},{t:"kwl"}],
+   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["Where do people usually look for medical information today?","What are the good things about health advice online?","What could go wrong if you trust the wrong website?"]}],
+   obj:[{t:"obj",items:["summarise and paraphrase information from different sources","write an organised paragraph about benefits and dangers","use the present simple passive to sound formal and clear","judge the validity of online sources before trusting them"]},{t:"note",html:"<b>Main SLO:</b> ENG.07.WR.S.6.1 — summarise, paraphrase and describe information and arguments from different texts.<br><b>Supporting SLO:</b> ENG.07.RV.S.3.3 — apply a range of reading strategies to understand and interpret texts."}],
+   vocab:[{t:"p",html:"<b>Key vocabulary</b> — evaluating information. Then take the Spelling Bee below."},{t:"vocab",items:[
+     ["accurate","correct and true","adjective","Always look for …… health information."],
+     ["dishonest","not honest; likely to lie or cheat","adjective","A …… website may sell useless products."],
+     ["patient","a person who is receiving medical treatment","noun","The doctor explained the results to the ……."],
+     ["remedy","a treatment or cure for an illness","noun","There is no quick …… for the common cold."],
+     ["validity","how true, reliable or acceptable something is","noun","Check the …… of a source before you trust it."],
+     ["take advantage of","to make good use of an opportunity something offers (it can also mean to use someone unfairly)","phrase","Many people …… the free health information online."],
+     ["attitude","the way you think or feel about something","noun","A positive …… helps recovery."],
+     ["fraudulent","dishonest and illegal; intended to deceive","adjective","The …… advert promised a miracle cure."]
+   ]}],
+   a1:[{t:"p",html:"<b>Before you write.</b> Today’s reading, <i>“Can you Trust the Internet for Medical Advice?”</i>, asks whether online health information is reliable. Study the grammar and vocabulary, then summarise its ideas in your own words."},{t:"note",html:"<b>Grammar — present simple passive (G.10.1):</b> use <i>am / is / are + past participle</i> when the action matters more than who does it.<br>“Information <b>is shared</b> on many websites.” · “Patients <b>are helped</b> to understand their symptoms.”"},{t:"mcq",intro:"Choose the correct passive form:",qs:[{q:"Health advice ____ on thousands of websites.",opts:["is shared","shares","sharing"],ans:0},{q:"Worried people ____ by dishonest sellers.",opts:["are taken advantage of","take advantage","takes advantage"],ans:0},{q:"A good remedy ____ by real doctors.",opts:["is recommended","recommends","recommend"],ans:0},{q:"The validity of a website ____ before you trust it.",opts:["should be checked","checks","checking"],ans:0}]},{t:"match",intro:"Vocabulary — match each word with the definition (as in the text):",pairs:[["<b>accurate</b>","correct, without any mistakes"],["<b>dishonest</b>","not true"],["<b>patient</b>","someone who is receiving medical treatment"],["<b>remedy</b>","a solution or treatment to an illness"],["<b>take advantage of</b>","to make good use of the opportunities offered by something"],["<b>validity</b>","being true or acceptable"]]}],
+   a2:[{t:"writemodel",task:"Using a mind map (Benefits vs Dangers), write one paragraph that summarises the benefits and dangers of medical advice on the internet. Use the present simple passive at least twice, and end with your opinion: can we expect real solutions to serious problems online?",plan:["Topic sentence — the internet and health information","Benefits branch — how it helps people (use a passive)","Dangers branch — the risks (use a passive)","Closing — your opinion, with a reason"],model:{topic:"On the internet, a huge amount of medical information is shared, and it brings both benefits and dangers.",r1:"On the benefits side, people’s attitudes about healthcare are changed as patients do their own research, and better medical decisions can be made when information is written in clear language.",r2:"On the dangers side, the information is not always accurate, and worried readers are misled by fraudulent claims that are created only to increase sales.",close:"In my view, the internet is a useful tool, but real solutions to serious problems should still be found with a real doctor."}}],
+   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Artificial intelligence now answers health questions in seconds, and the UAE is a world leader in using AI wisely. Mastering AI means using it as a helpful tool while still checking facts and thinking for yourself."},{t:"prompts",items:["How can AI help a patient — and how could it mislead one?","Who should you trust for a serious health problem, and why?"]}],
+   enrich:[{t:"p",html:"<b>More passive practice.</b>"},{t:"mcq",intro:"Rewrite in the present simple passive — choose the best option:",qs:[{q:"“Doctors write prescriptions.” →",opts:["Prescriptions are written by doctors.","Prescriptions write doctors.","Doctors is written."],ans:0},{q:"“Websites promote false cures.” →",opts:["False cures are promoted by websites.","False cures promote websites.","Websites are promote."],ans:0}]},{t:"reflect",items:["Write one sentence in the present simple passive about the internet.","Write one way to check if a website is honest."]}],
+   exit:[{t:"reflect",items:["Write your topic sentence from today.","Name one benefit and one danger of online medical advice.","(KWL “L”) One thing you learned about writing a summary."]},{t:"rating",label:"How confident do you feel writing a clear, organised paragraph?"}]
+  }
+ },
+
+ "l910":{
+  num:"9-10", focus:"Listening", title:"Treating an Illness", book:BOOK2,
+  grammar:"", fl:"", charter:"Physical & Mental Wellbeing",
+  page:"Listening & Speaking pp. 9–11 · Lesson 9-10 PPT",
+  stages:{
+   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about the last time you had a cold or the flu. What symptoms did you have, and what helped you feel better?"},{t:"kwl"}],
+   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["Is it a good idea to go out when you are ill? Why or why not?","What can you do to help someone who is not feeling well?","How can you protect yourself from catching a cold in crowded places?"]}],
+   obj:[{t:"obj",items:["listen to a doctor–patient conversation and identify the main points","infer the meaning of new words from context and word parts","match symptoms with sensible advice (problem–solution)","take short notes while you listen"]},{t:"note",html:"<b>Main SLO:</b> ENG.07.L.CS.6.1 — listen and identify the main points.<br><b>Supporting SLO:</b> ENG.07.L.CS.4.1 — infer the meaning of unknown words from context and word parts when listening."}],
+   vocab:[{t:"p",html:"<b>Key vocabulary</b> — illness and treatment. Then take the Spelling Bee below."},{t:"vocab",items:[
+     ["aspirin","a common medicine for pain and fever","noun","She took an …… for her headache."],
+     ["fever","a body temperature that is higher than normal","noun","He stayed home with a high ……."],
+     ["forehead","the part of your face above your eyes","noun","Her …… felt hot when she was ill."],
+     ["headache","a pain in your head","noun","Too much screen time can cause a ……."],
+     ["prescription","a doctor’s note that lets you get medicine","noun","Take this …… to the pharmacy."],
+     ["sore throat","pain in your throat, often with a cold","noun phrase","A …… can make it hard to swallow."],
+     ["upset stomach","a sick or uncomfortable feeling in your stomach","noun phrase","Bad food can give you an ……."],
+     ["swollen","larger than normal because of illness or injury","adjective","His ankle was …… after the fall."]
+   ]}],
+   a1:[{t:"p",html:"<b>Before you listen.</b>"},{t:"prompts",intro:"Topic — discuss:",items:["What are the most common symptoms of the flu?","What do you usually do to treat a cold at home?","When should a person see a doctor instead of resting at home?"]},{t:"match",intro:"Vocabulary in context — choose the meaning that fits each sentence:",pairs:[["I have a bad <b>headache</b>.","a pain in your head"],["She has a <b>fever</b> and feels hot.","a high body temperature"],["Take this <b>prescription</b> to the pharmacy.","a doctor’s note for medicine"],["My glands feel <b>swollen</b>.","larger than normal"],["A <b>sore throat</b> makes it hard to swallow.","pain in the throat"]]},{t:"mcq",intro:"Thinking & predicting — Barbara is going to see a doctor. Predict before you listen:",qs:[{q:"Why is Barbara visiting the doctor?",opts:["she is not feeling well","she wants a job","she is lost"],ans:0},{q:"The doctor will most likely…",opts:["ask about her symptoms and give advice","sell her a car","teach a class"],ans:0},{q:"What might the doctor give Barbara?",opts:["a prescription and some advice","a bus ticket","homework"],ans:0}]}],
+   a2:[{t:"p",html:"<b>While you listen.</b> Read (or listen to your teacher read) the conversation between <b>Barbara</b> and her <b>doctor</b>."},{t:"dialogue",intro:"Listening for details — fill each gap with the word you hear:",lines:[["Doctor","Good morning, Barbara. What seems to be the [[problem]]?"],["Barbara","I haven’t felt well all week. I have a bad [[headache]] and a sore [[throat]]."],["Doctor","I see. Do you have a [[fever]]?"],["Barbara","Yes, a little. My [[forehead]] feels very hot."],["Doctor","Let me check. Your glands are a bit [[swollen]]. Have you had an upset [[stomach]] too?"],["Barbara","Yes, and I feel tired all the [[time]]."],["Doctor","It sounds like the flu. I’ll write you a [[prescription]]."],["Barbara","Should I take [[aspirin]] for the headache?"],["Doctor","Yes, and you should [[rest]] and drink plenty of water."]]},{t:"mcq",intro:"Main ideas & details — choose the best answer:",qs:[{q:"Where is Barbara?",opts:["at the doctor’s","at school","at a gym"],ans:0},{q:"What are two of Barbara’s symptoms?",opts:["a headache and a sore throat","a broken arm","toothache only"],ans:0},{q:"What does the doctor think Barbara has?",opts:["the flu","a broken leg","nothing at all"],ans:0},{q:"What does the doctor advise?",opts:["rest and drink water","run a race","skip sleep"],ans:0}]}],
+   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Looking after your body is part of national wellbeing. Simple habits — rest, water, good food and seeing a doctor when needed — keep you healthy and ready to learn."},{t:"prompts",items:["When you are ill, is it better to rest or to push through? Why?","What is one healthy habit that helps prevent colds?"]}],
+   enrich:[{t:"p",html:"<b>Problem–solution.</b> Good listeners match a problem to a sensible solution."},{t:"match",intro:"Match each symptom to sensible advice:",pairs:[["a headache","rest and take an aspirin"],["a fever","drink water and stay home"],["a sore throat","drink warm water with honey"],["an upset stomach","eat light food and rest"]]},{t:"reflect",items:["Write two symptoms from today and their meanings.","Write one piece of advice the doctor gave Barbara."]}],
+   exit:[{t:"reflect",items:["Write one new word or phrase you learned today, and what it means.","Write one thing the doctor advised Barbara to do.","(KWL “L”) Write one thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel listening for the main points of a conversation?"}]
+  }
+ },
+
+ "l1112":{
+  num:"11-12", focus:"Speaking", title:"Asking For and Giving Health Advice", book:BOOK2,
+  grammar:"G.13.4 Present perfect continuous", fl:"FL.24 Asking for and giving advice", charter:"Creativity",
+  page:"Listening & Speaking pp. 18–19 · Lesson 11-12 PPT",
+  stages:{
+   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think of a time a friend had a problem and asked you for advice. What did you say?"},{t:"kwl"}],
+   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["What everyday problems do students often need advice about?","What makes advice helpful rather than annoying?","How do you politely ask someone for advice?"]}],
+   obj:[{t:"obj",items:["take part in an extended conversation, asking for and giving advice","use expressions to ask for and give advice naturally","use the present perfect continuous to describe ongoing problems","speak with clear stress, rhythm and intonation"]},{t:"note",html:"<b>Main SLO:</b> ENG.07.S.F.1.1 — engage in extended spoken exchanges.<br><b>Supporting SLO:</b> ENG.07.S.P.2.1 — produce connected speech with correct stress, intonation and rhythm."}],
+   vocab:[{t:"p",html:"<b>Key vocabulary</b> — problems and advice. Then take the Spelling Bee below."},{t:"vocab",items:[
+     ["toothache","a pain in your tooth","noun","She has a bad …… and needs a dentist."],
+     ["assignment","a task or piece of work you are given","noun","The …… is due on Thursday."],
+     ["deadline","the time by which something must be finished","noun","I have been working hard to meet the ……."],
+     ["syndrome","a group of symptoms that happen together","noun","Typing for hours can cause wrist ……."],
+     ["recommend","to suggest that something is good to do","verb","Doctors …… rest and water for the flu."],
+     ["appointment","an arranged time to see someone, such as a doctor","noun","I made an …… with the dentist."],
+     ["remedy","a treatment or cure for an illness","noun","Honey is a simple …… for a sore throat."]
+   ]}],
+   a1:[{t:"p",html:"<b>The language of advice.</b> Study the expressions and grammar, then practise."},{t:"note",html:"<b>Asking for advice (FL.24):</b> “What do you think I should do?” · “Should I…?” · “Can you recommend…?”<br><b>Giving advice:</b> “You should…” · “Why don’t you…?” · “I’d recommend…” · “Try to…”"},{t:"note",html:"<b>Grammar — present perfect continuous (G.13.4):</b> for something that started in the past and is still going on.<br>“I <b>have been getting</b> headaches all week.” · “She <b>has been feeling</b> tired for days.”"},{t:"mcq",intro:"Choose the correct form:",qs:[{q:"I ____ headaches all week.",opts:["have been getting","get","got"],ans:0},{q:"My tooth hurts. What do you think I ____ do?",opts:["should","am","have"],ans:0},{q:"You look tired. ____ take a break?",opts:["Why don’t you","You didn’t","Do you"],ans:0},{q:"I’d ____ you see a dentist.",opts:["recommend","recommending","recommended"],ans:0}]},{t:"match",intro:"Match each problem to a good piece of advice:",pairs:[["“I have a terrible toothache.”","“You should make an appointment with a dentist.”"],["“I’ve missed my assignment deadline.”","“Why don’t you email your teacher and explain?”"],["“My wrist hurts from typing.”","“Try to take regular breaks and use a wrist support.”"],["“I’ve been feeling very stressed.”","“I’d recommend some rest and a short walk.”"]]}],
+   a2:[{t:"p",html:"<b>Speak — role-play.</b> Work in pairs. Student A explains a problem and asks for advice; Student B listens and gives at least two pieces of advice. Then <b>swap roles</b>."},{t:"roles",cards:[["Card A · Ask for advice","Choose a problem: a toothache, a missed assignment deadline, or wrist pain from typing. Explain what has been happening (“I’ve been having…”, “I’ve been working…”) and ask: “What do you think I should do?”"],["Card B · Give advice","Listen and show you understand. Ask one question, then give at least two pieces of advice using “You should…”, “Why don’t you…?”, “I’d recommend…”. Be creative and practical."]]},{t:"note",html:"<b>Speaking checklist —</b> ☐ I explained my problem clearly ☐ I used the present perfect continuous ☐ I asked for advice ☐ I gave 2+ pieces of advice ☐ I used good stress and intonation ☐ I kept the conversation going."},{t:"rating",label:"Rate your partner’s advice: clear, polite and creative?"}],
+   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Giving good advice takes creativity — finding a fresh, practical idea that really helps another person. Supporting friends and classmates with helpful advice builds a strong, caring community."},{t:"prompts",items:["What is the most creative piece of advice you have ever received?","Why is it sometimes hard to take good advice, even when it is right?"]}],
+   enrich:[{t:"p",html:"<b>Present perfect continuous practice.</b>"},{t:"mcq",intro:"Choose the best sentence to describe an ongoing problem:",qs:[{q:"You started studying hours ago and are still going. You say…",opts:["“I’ve been studying all afternoon.”","“I study once.”","“I will study.”"],ans:0},{q:"Your eyes hurt after long screen time. You say…",opts:["“I’ve been looking at screens all day.”","“I looked once.”","“I never use screens.”"],ans:0}]},{t:"reflect",items:["Write one sentence about a problem using the present perfect continuous.","Write one expression you can use to give advice."]}],
+   exit:[{t:"reflect",items:["Write one expression you used to ask for or give advice.","Write one sentence in the present perfect continuous.","(KWL “L”) One thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel asking for and giving advice in a conversation?"}]
+  }
+ }
+
+};
+var C2_WEEKS=[
+ {n:1, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 1", lessons:["l12","l34"]},
+ {n:2, skill:"Reading & Writing",     cls:"rw", dates:"Term 1 · Week 2", lessons:["l56","l78"]},
+ {n:3, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 3", lessons:["l910","l1112"]}
+];
+
+/* ---------------- COURSE 3 · 10General-9Advanced · (material coming later) ---------------- */
+var C3_LESSONS={};
+var C3_WEEKS=[
+ {n:1, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 1", lessons:[]}
+];
+
+/* ---------------- COURSE REGISTRY ---------------- */
+var COURSES={
+ c1:{id:"c1", name:"11Advanced-12General", chapter:"Money… Talks! (Ch.1)", blurb:"Reading, Writing, Listening & Speaking across Weeks 1–3.", lessons:C1_LESSONS, weeks:C1_WEEKS},
+ c2:{id:"c2", name:"11General-10Advanced", chapter:"A Picture of Health (Ch.1)", blurb:"Weeks 1–3 · Listening, Speaking, Reading & Writing.", lessons:C2_LESSONS, weeks:C2_WEEKS},
+ c3:{id:"c3", name:"10General-9Advanced", chapter:"Material coming soon", blurb:"Lessons will be added when the material is uploaded.", lessons:C3_LESSONS, weeks:C3_WEEKS}
+};
+var CORDER=["c2","c1","c3"];
+var LESSONS={}, WEEKS=[];
+function useCourse(cls){ var c=COURSES[cls]; if(!c) return; CUR.cls=cls; LESSONS=c.lessons; WEEKS=c.weeks; }
+
 /* ================= ROUTER ================= */
 var app=document.getElementById('app');
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-var CUR={id:null, stage:'kwl'};
+var CUR={cls:null, id:null, stage:'kwl'};
 
-function go(view, arg){ if(view==='hub') renderHub(); else if(view==='lesson') renderLesson(arg); window.scrollTo(0,0); }
+function go(view, a, b){
+ if(view==='classes'){ renderClasses(); }
+ else if(view==='hub'){ if(a) useCourse(a); renderHub(); }
+ else if(view==='lesson'){ renderLesson(a); }
+ window.scrollTo(0,0);
+}
+
+function renderClasses(){
+ stopTimer(); CUR.id=null;
+ var html='<div class="hero"><div class="eyebrow">📘 iCAN Academy · School Work · 2026–2027</div><h1>My Classes</h1>'
+   +'<p>Choose a class to open its weekly lessons. Each class follows its own Scope &amp; Sequence.</p></div><div class="classes">';
+ CORDER.forEach(function(cid){ var c=COURSES[cid]; if(!c) return;
+   var nLes=0; (c.weeks||[]).forEach(function(w){ nLes+=w.lessons.filter(function(id){return c.lessons[id];}).length; });
+   var nWk=(c.weeks||[]).length;
+   var meta = nLes ? (nWk+' week'+(nWk>1?'s':'')+' · '+nLes+' lesson'+(nLes>1?'s':'')+' ready') : 'Coming soon';
+   html+='<button class="classcard'+(nLes?'':' soon')+'" onclick="go(\'hub\',\''+cid+'\')">'
+     +'<div class="cc-name">'+esc(c.name)+'</div>'
+     +'<div class="cc-chapter">'+esc(c.chapter)+'</div>'
+     +'<div class="cc-blurb">'+esc(c.blurb)+'</div>'
+     +'<div class="cc-meta">'+esc(meta)+'</div></button>';
+ });
+ html+='</div>';
+ app.innerHTML=html;
+}
 
 function renderHub(){
  stopTimer();
- var html='<div class="hero"><div class="eyebrow">📘 School Work · 2026–2027</div><h1>11Adv-12Gen 2026-2027</h1>'
-   +'<p>Money… Talks! (Chapter 1), following the Term 1 Scope &amp; Sequence. <b>Week 1</b> Listening &amp; Speaking · <b>Week 2</b> Reading &amp; Writing · <b>Week 3</b> Listening &amp; Speaking. Pick a lesson and move through the ten steps (≈ 40–80 minutes).</p></div>';
+ var c=COURSES[CUR.cls]||{name:'',chapter:'',blurb:''};
+ var html='<div class="hero"><button class="back" onclick="go(\'classes\')">← All classes</button>'
+   +'<div class="eyebrow">📘 School Work · 2026–2027 · '+esc(c.name)+'</div><h1>'+esc(c.name)+'</h1>'
+   +'<p>'+esc(c.chapter)+'. '+esc(c.blurb)+' Pick a lesson and move through the ten steps (≈ 40–80 minutes).</p></div>';
  WEEKS.forEach(function(w){
    html+='<div class="week"><div class="week-head"><span class="wk-badge">Week '+w.n+'</span><span class="wk-skill '+w.cls+'">'+esc(w.skill)+'</span><span class="wk-dates">'+esc(w.dates)+'</span></div>';
    if(!w.lessons.length){ html+='<div class="lesson-card soon"><div class="lt">Lessons coming soon</div><div class="lb">This week’s lessons will appear here.</div></div>'; }
@@ -564,7 +785,7 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&BEE) close
 
 /* ---------------- state persistence (per session) ---------------- */
 function fields(){ return document.querySelectorAll('#body textarea, #body select, #body input, #body .rate'); }
-function keyOf(){ return CUR.id+'|'+CUR.stage; }
+function keyOf(){ return CUR.cls+'|'+CUR.id+'|'+CUR.stage; }
 function saveState(){ if(!CUR.id) return; var arr=[]; Array.prototype.forEach.call(fields(),function(el){ arr.push((el.className||'').indexOf('rate')>=0 ? (el.getAttribute('data-r')||'') : el.value); }); LSTATE[keyOf()]=arr; }
 function restoreState(){ var s=LSTATE[keyOf()]; if(!s) return; Array.prototype.forEach.call(fields(),function(el,i){ if(s[i]==null) return; if((el.className||'').indexOf('rate')>=0){ var r=parseInt(s[i],10)||0; paintStars(el,r); } else el.value=s[i]; }); }
 
@@ -577,7 +798,7 @@ function startTimer(){ if(TM.sec<=0)return; TM.run=true; if(TM.iv)clearInterval(
 function stopTimer(){ TM.run=false; if(TM.iv){clearInterval(TM.iv);TM.iv=null;} }
 function timerToggle(){ if(TM.run){ TM.run=false; if(TM.iv){clearInterval(TM.iv);TM.iv=null;} paint('PAUSED — TAP TO RESUME'); } else startTimer(); }
 
-renderHub();
+renderClasses();
 </script>
 </body>
 </html>
