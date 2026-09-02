@@ -148,28 +148,6 @@
   .bee-fb{margin-top:10px;font-weight:700;min-height:1.2em}
   .bee-note{background:#fff8ea;border:1px solid #f0d9a8;border-radius:12px;padding:12px 14px;color:#7a5a12;font-size:.86rem;margin-top:14px}
 
-  .passage-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
-  .passage-top h3{margin:0}
-  .rd-btn{background:var(--blue);color:#fff;border:none;border-radius:999px;padding:6px 14px;font-weight:700;font-size:.82rem;cursor:pointer;white-space:nowrap}
-  .rd-btn:hover{filter:brightness(1.08)}
-  .rd-hint{font-size:.78rem;color:var(--muted);margin-top:8px;font-style:italic}
-  .passage .wd{cursor:pointer;border-radius:3px}
-  .passage .wd:hover{background:#fde9c8}
-  .passage .wd.kv{font-weight:800;color:var(--ink)}
-  #dictOv{position:fixed;inset:0;background:rgba(20,24,40,.45);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}
-  #dictOv.open{display:flex}
-  .dict-card{background:#fff;border-radius:16px;max-width:440px;width:100%;box-shadow:var(--shadow);padding:20px 22px}
-  .dict-word{font-size:1.5rem;font-weight:800;color:var(--ink)}
-  .dict-pos{color:var(--purple);font-weight:700;font-style:italic;margin:2px 0 8px}
-  .dict-def{font-size:1rem;line-height:1.5;color:var(--ink)}
-  .dict-ex{margin-top:8px;color:var(--muted);font-style:italic}
-  .dict-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
-  .dict-add{background:var(--amber);color:#1a2238;border:none;border-radius:999px;padding:8px 16px;font-weight:800;cursor:pointer}
-  .dict-add:hover{filter:brightness(1.05)}
-  .dict-close{background:#eef1f6;color:var(--ink);border:none;border-radius:999px;padding:8px 16px;font-weight:700;cursor:pointer}
-  .dict-load{color:var(--muted)}
-  .dict-note{font-size:.85rem;margin-top:8px;min-height:1em}
-
   @media (max-width:800px){ .lp-grid{grid-template-columns:1fr} .lp-menu{position:static;flex-direction:row;overflow-x:auto} .lp-menu button{text-align:center;flex:0 0 auto} .lp-menu button small{display:none} #timer{position:fixed;top:12px;right:12px;z-index:40;padding:8px 14px;min-width:104px} #timer .tv{font-size:1.4rem} }
 </style>
 </head>
@@ -179,9 +157,6 @@
 <!-- Spelling Bee pop-up -->
 <div class="bee-ov" id="beeOv" onclick="if(event.target===this)closeBee()">
   <div class="bee" id="beeCard"></div>
-</div>
-<div id="dictOv" onclick="if(event.target===this)closeDict()">
-  <div class="dict-card" id="dictCard"></div>
 </div>
 
 <script>
@@ -667,71 +642,12 @@ var C3_LESSONS={
    enrich:[{t:"p",html:"<b>Describing routines.</b>"},{t:"mcq",intro:"Choose the best sentence to describe a regular habit:",qs:[{q:"You review notes most days. You say…",opts:["“I regularly go through my notes.”","“I went once.”","“I will go later.”"],ans:0},{q:"You study with friends every week. You say…",opts:["“I always study with my study group on Sundays.”","“I never study.”","“I study alone once a year.”"],ans:0}]},{t:"reflect",items:["Write two sentences about your study routine, using adverbs of frequency.","Write one study habit you want to start or stop."]}],
    exit:[{t:"reflect",items:["Write one study habit you talked about today.","Write one adverb of frequency you used (e.g., usually, always).","(KWL “L”) One thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel talking about your study habits and giving reasons?"}]
   }
- },
-
- "l56":{
-  num:"5-6", focus:"Reading & Viewing", title:"Ready to Move to College?", book:BOOK3,
-  grammar:"G.8.1 Modals (obligation & advice)", fl:"FL.20 Expressing necessity & obligation", charter:"Extended Family",
-  page:"Reading & Writing pp. 4–9 · Lesson 5-6 PPT",
-  stages:{
-   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Imagine living away from your family for the first time, sharing a home with other students. What do you already know about shared living?"},{t:"kwl"}],
-   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["What kinds of shared-living situations do students have?","What could be difficult about living with strangers?","What advice would you give someone moving into a shared home?"]}],
-   obj:[{t:"obj",items:["read an article and identify its overall meaning and main message","match each paragraph to its main idea","recognise supporting details (definitions, reasons, advice)","use modal verbs to express obligation and advice"]},{t:"note",html:"<b>Main SLO:</b> ENG.06.RV.CS.1.1 — read and identify the overall meaning.<br><b>Supporting SLO:</b> ENG.06.RV.S.3.3 — apply reading strategies (context, experience, text organisation) to interpret texts."}],
-   vocab:[{t:"p",html:"<b>Key vocabulary</b> — shared living. Then take the Spelling Bee below."},{t:"vocab",items:[
-     ["shared living","living in the same space with other people","noun phrase","…… teaches you to cooperate with others."],
-     ["dormitory","a student building with rooms and shared facilities","noun","She lives in a …… on campus."],
-     ["residence hall","another name for a student dormitory","noun phrase","First-year students often live in a ……."],
-     ["community","a group of people who live or work together","noun","A dorm is a small learning …… ."],
-     ["privacy","time and space to be alone","noun","Everyone needs some …… , even in a shared room."],
-     ["considerate","thinking about other people’s feelings","adjective","A …… roommate keeps the noise down at night."],
-     ["get along","to have a friendly relationship","phrasal verb","Try to …… with the people on your floor."],
-     ["stay out of trouble","to avoid problems and behave sensibly","phrase","Be honest about your needs and …… ."],
-     ["participate","to take part in an activity","verb","…… in house meetings and campus events."]
-   ]}],
-   a1:[{t:"p",html:"<b>Read the article</b> (paragraphs A–E). Match each paragraph to its main idea, then answer the questions."},{t:"passage",title:"Ready for a Shared-Living Experience?",paras:[
-     "For most young people, the first time they live away from their family is at college, often in a dormitory or residence hall. A dormitory — or ‘dorm’ — is a building with rooms for students, usually with shared bathrooms and common areas. Shared living can also mean an apartment, a co-op or a private house, and rooms may be single, double or triple.",
-     "The people in a residence hall can be very different from one another. In some halls the students are all first-years of a similar age; in ‘special-interest’ housing they may share the same subject or lifestyle. Even so, residents bring a wide variety of interests, habits and backgrounds. The greatest advantage of shared living is the ‘higher learning’ of getting along with others.",
-     "Living with others is not always easy. There may not be enough space, quiet, privacy or cleanliness, and roommates do not always agree. For a young person away from home for the first time, small differences can grow into big problems, and the change to community living with strangers can be difficult.",
-     "People with experience give three main pieces of advice. First, get along with the others on your floor and be considerate — you need not be close friends, but you should not be enemies. Second, stay out of trouble: be honest about your needs and values, and protect your health and study time. Third, participate — help make the house rules, follow them, attend events and get to know good people.",
-     "For many people, their first experience away from home is a shared-living situation, and later in life they may choose to live communally again. Because everyone is different, getting along, following the rules, staying out of trouble and taking part are the keys to a positive experience."
-   ]},{t:"match",intro:"Match each paragraph to its heading:",pairs:[["A","Introduction and definitions"],["B","The residents of campus housing"],["C","Some challenges of communal living"],["D","How to survive living with others"],["E","Conclusion and summary"]]},{t:"mcq",intro:"Read for the main idea — questions name the paragraph:",qs:[{q:"[A] What is a dormitory?",opts:["a building with student rooms and shared areas","a private family house","a sports stadium"],ans:0},{q:"[B] What is the greatest advantage of shared living?",opts:["learning to get along with others","having lots of money","living completely alone"],ans:0},{q:"[C] What can make shared living difficult?",opts:["problems with space, privacy and different habits","having too much quiet","having no neighbours"],ans:0},{q:"[D] What are the three tips for surviving shared living?",opts:["get along, stay out of trouble, and participate","argue, hide, and complain","sleep, eat, and leave"],ans:0},{q:"[E] What is the writer’s overall message?",opts:["with good advice, shared living can be a positive experience","shared living is always terrible","students should never share"],ans:0}]}],
-   a2:[{t:"p",html:"<b>Language focus.</b> The article gives advice and talks about what students <i>must</i> or <i>should</i> do."},{t:"note",html:"<b>Grammar — modals of obligation & advice (G.8.1):</b><br><b>must / have to / need to</b> = necessary: “You <b>must</b> follow the house rules.”<br><b>should / ought to</b> = advice: “You <b>should</b> be considerate.”<br><b>don’t have to</b> = not necessary: “You <b>don’t have to</b> be best friends.”"},{t:"note",html:"<b>Expressing necessity & obligation (FL.20):</b> “It’s important to…”, “You need to…”, “Everyone has to…”, “The rules say you must…”."},{t:"mcq",intro:"Choose the correct modal:",qs:[{q:"In a dorm, you ____ follow the house rules. (necessary)",opts:["must","don’t have to","might not"],ans:0},{q:"You ____ be considerate of your roommate. (advice)",opts:["should","must not","can’t"],ans:0},{q:"You ____ be best friends, but you should be friendly. (not necessary)",opts:["don’t have to","must","should"],ans:0},{q:"To stay healthy, students ____ manage their time. (necessary)",opts:["need to","don’t need to","refuse to"],ans:0}]},{t:"match",intro:"Vocabulary in context — choose the meaning:",pairs:[["Students live together in <b>shared living</b>.","living in the same space with others"],["Everyone needs some <b>privacy</b>.","time and space to be alone"],["Be <b>considerate</b> of your roommates.","thinking of other people’s feelings"],["Try to <b>get along</b> with others.","have a friendly relationship"],["<b>Participate</b> in shared living.","take part in activities"]]}],
-   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Living well with others is like being part of an extended family: you share space, help one another and show respect. These values — cooperation, kindness and responsibility — are central to family and community life in the UAE."},{t:"prompts",items:["How is a good shared-living community like an extended family?","Which piece of advice from the article would help you most, and why?"]}],
-   enrich:[{t:"p",html:"<b>Supporting details.</b> A paragraph gives more than the main idea — it adds definitions, reasons, examples and advice."},{t:"mcq",intro:"Choose the supporting detail that fits the main idea:",qs:[{q:"Main idea: shared living has challenges. A supporting detail is…",opts:["there may not be enough space or privacy","the sky is blue","dorms have doors"],ans:0},{q:"Main idea: you should get along with others. A supporting detail is…",opts:["be considerate and don’t become enemies","buy a new phone","study alone forever"],ans:0}]},{t:"reflect",items:["Write the overall message of the article in one sentence.","Write one rule you would make for a happy shared home."]}],
-   exit:[{t:"reflect",items:["Write one main idea from the article.","Write one new word or phrase you learned and its meaning.","(KWL “L”) Write one thing you learned in this lesson."]},{t:"rating",label:"How confident do you feel finding the overall meaning and main ideas of an article?"}]
-  }
- },
-
- "l78":{
-  num:"7-8", focus:"Writing & Representing", title:"Ready to Move to College?", book:BOOK3,
-  grammar:"", fl:"FL.20 Expressing necessity & obligation", charter:"Self-Regulation and Discipline",
-  page:"Reading & Writing pp. 4–9 · Lesson 7-8 PPT",
-  stages:{
-   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about what makes shared living <i>successful</i>. What rules or habits keep a shared home happy?"},{t:"kwl"}],
-   warm:[{t:"prompts",intro:"Warm-up — talk with a partner (5 min):",items:["What are the benefits of living with others?","What challenges can shared living bring?","What one rule would make shared living work well?"]}],
-   obj:[{t:"obj",items:["plan, draft and revise an organised informational paragraph","write a clear topic sentence with supporting details","use modal verbs to express rules and obligations","use a checklist to improve your writing"]},{t:"note",html:"<b>Main SLO:</b> ENG.06.WR.S.4.1 — apply pre- and post-writing strategies (graphic organisers, models, checklists) to produce and revise texts.<br><b>Supporting SLO:</b> ENG.06.WR.P.4.1 — write paragraphs with a topic sentence and supporting details."}],
-   vocab:[{t:"p",html:"<b>Key vocabulary</b> — successful shared living. Then take the Spelling Bee below."},{t:"vocab",items:[
-     ["roommate","a person you share a room with","noun","My …… and I agreed on quiet hours."],
-     ["privacy","time and space to be alone","noun","Respect your roommate’s …… ."],
-     ["community","a group of people who live together","noun","A dorm is a small learning …… ."],
-     ["rules","agreed instructions everyone follows","noun","We made house …… together."],
-     ["responsibility","a duty to do something","noun","Cleaning is a shared …… ."],
-     ["considerate","thinking about other people’s feelings","adjective","A …… roommate keeps noise down at night."],
-     ["challenges","difficult things that test you","noun","Shared living has some …… ."],
-     ["benefits","good things you gain","noun","The …… of shared living are greater than the problems."]
-   ]}],
-   a1:[{t:"p",html:"<b>Before you write.</b> A good informational paragraph has a <b>topic sentence</b> and several <b>supporting details</b>."},{t:"note",html:"<b>Topic sentence + details (WR.P.4.1):</b> the topic sentence states the main idea; the details explain it with reasons, examples and advice.<br><b>Use modals for rules (FL.20):</b> “Roommates <b>should</b> be considerate.” · “Everyone <b>must</b> follow the rules.” · “You <b>have to</b> share the cleaning.”"},{t:"mcq",intro:"Choose the best option:",qs:[{q:"Which is a good TOPIC sentence for a paragraph on shared living?",opts:["Living with others can be great if everyone follows a few rules.","I cleaned the kitchen on Tuesday.","My roommate is called Sam."],ans:0},{q:"Which sentence is a SUPPORTING detail?",opts:["Roommates should respect each other’s privacy.","Shared living is a topic.","The end."],ans:0},{q:"A good paragraph has…",opts:["one topic sentence and several supporting details","only questions","no main idea"],ans:0},{q:"To express a rule, you write…",opts:["“Everyone must follow the house rules.”","“Maybe someone could possibly…”","“I don’t know.”"],ans:0}]},{t:"match",intro:"Match each challenge to a sensible house rule:",pairs:[["not enough quiet","agree on quiet hours for studying"],["the shared kitchen gets messy","take turns cleaning and follow a rota"],["different sleep times","be considerate and keep noise down at night"],["disagreements","talk honestly and make house rules together"]]}],
-   a2:[{t:"writemodel",task:"Write one organised informational paragraph (5–7 sentences) about how to make shared living successful. Begin with a clear topic sentence, add two or three supporting details, and use modal verbs (should, must, have to) for the rules.",plan:["Topic sentence — your main idea about successful shared living","Supporting detail 1 — a rule about being considerate / privacy (use a modal)","Supporting detail 2 — a rule about responsibility / community (use a modal)","Closing sentence — the benefits of getting along"],model:{topic:"Living with others can be a great experience if everyone follows a few simple rules.",r1:"First, roommates should be considerate and respect each other’s privacy, because everyone needs some quiet time and personal space.",r2:"Second, students must share the responsibility for the community: they have to keep shared areas clean and follow the house rules they agree on together.",close:"There will always be challenges, but if people get along and take part, the benefits of shared living are far greater than the problems."}}],
-   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Successful shared living depends on self-regulation and discipline — managing your own behaviour, keeping to shared rules and taking responsibility for your part. These habits help you succeed at college and throughout life."},{t:"prompts",items:["Which house rule is the hardest to keep, and how could you manage it?","How does taking responsibility help the whole community?"]}],
-   enrich:[{t:"p",html:"<b>Revise your writing.</b> Good writers check and improve their work."},{t:"mcq",intro:"Choose the best way to improve a paragraph:",qs:[{q:"Your paragraph has no main point. You should…",opts:["add a clear topic sentence","delete everything","add more questions"],ans:0},{q:"Your details don’t explain the topic. You should…",opts:["add reasons and examples that support the topic","add random facts","leave it empty"],ans:0}]},{t:"reflect",items:["Write your topic sentence from today.","Write one rule for successful shared living, using a modal (should/must/have to)."]}],
-   exit:[{t:"reflect",items:["Write your topic sentence and one supporting detail.","Name one benefit and one challenge of shared living.","(KWL “L”) One thing you learned about writing a paragraph."]},{t:"rating",label:"How confident do you feel writing an organised paragraph with a topic sentence and details?"}]
-  }
  }
 
 };
 var C3_WEEKS=[
  {n:1, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 1", lessons:["l12","l34"]},
- {n:2, skill:"Reading & Writing",     cls:"rw", dates:"Term 1 · Week 2", lessons:["l56","l78"]},
+ {n:2, skill:"Reading & Writing",     cls:"rw", dates:"Term 1 · Week 2", lessons:[]},
  {n:3, skill:"Listening & Speaking", cls:"ls", dates:"Term 1 · Week 3", lessons:["l910","l1112"]}
 ];
 
@@ -739,7 +655,7 @@ var C3_WEEKS=[
 var COURSES={
  c1:{id:"c1", name:"11Advanced-12General", chapter:"Money… Talks! (Ch.1)", blurb:"Reading, Writing, Listening & Speaking across Weeks 1–3.", lessons:C1_LESSONS, weeks:C1_WEEKS},
  c2:{id:"c2", name:"11General-10Advanced", chapter:"A Picture of Health (Ch.1)", blurb:"Weeks 1–3 · Listening, Speaking, Reading & Writing.", lessons:C2_LESSONS, weeks:C2_WEEKS},
- c3:{id:"c3", name:"10General-9Advanced", chapter:"Meeting New People, Learning New Things (Ch.1)", blurb:"Weeks 1–3 · Listening, Speaking, Reading & Writing.", lessons:C3_LESSONS, weeks:C3_WEEKS}
+ c3:{id:"c3", name:"10General-9Advanced", chapter:"Meeting New People, Learning New Things (Ch.1)", blurb:"Weeks 1 & 3 ready · Listening & Speaking (Week 2 Reading & Writing coming soon).", lessons:C3_LESSONS, weeks:C3_WEEKS}
 };
 var CORDER=["c2","c1","c3"];
 var LESSONS={}, WEEKS=[];
@@ -815,7 +731,6 @@ var LSTATE={};
 function setStage(stage){
  CUR.stage=stage;
  if(window.WT&&WT.iv){clearInterval(WT.iv);WT.iv=null;}
- try{ window.speechSynthesis.cancel(); }catch(e){} RD_ON=false;
  var L=LESSONS[CUR.id]; if(!L) return;
  saveState();
  Array.prototype.forEach.call(document.querySelectorAll('#menu button'),function(b){ b.classList.toggle('on', b.getAttribute('data-tab')===stage); });
@@ -849,10 +764,7 @@ function block(b){
  if(b.t==="obj") return '<div class="objbox"><p style="font-weight:800;margin:0 0 6px;color:var(--blue)">In this lesson, I will learn how to…</p><ul style="margin:0">'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';
  if(b.t==="vocab") return '<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">'+b.items.map(function(v){return '<div class="vrow"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+'</span></div>';}).join('')+'</div><button class="btn pri beebtn" onclick="openBee()">🐝 Spelling Bee — test yourself</button><p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Hear each word, then type it. Two attempts each · 15s per word · score 60%+ for a certificate.</p>';
  if(b.t==="wordday") return '<div class="wordday"><div class="l">Word of Today</div><div class="w">'+esc(b.word)+'</div><div>'+esc(b.def)+'</div><div style="opacity:.85;font-style:italic;margin-top:4px">“'+esc(b.ex)+'”</div></div>';
- if(b.t==="passage"){ var terms=currentVocab().map(function(v){return v[0];});
-   return '<div class="passage"><div class="passage-top"><h3>'+esc(b.title)+'</h3><button class="rd-btn" onclick="readPassage(this)">🔊 Read to me</button></div>'
-     +'<div class="passage-body">'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+passageHTML(p,terms)+'</p>';}).join('')+'</div>'
-     +'<p class="rd-hint">💡 Tap any word in the text to see its meaning — and add it to the Spelling Bee.</p></div>'; }
+ if(b.t==="passage") return '<div class="passage"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+p+'</p>';}).join('')+'</div>';
  if(b.t==="kwl") return ["K — what I already KNOW about this topic","W — what I WANT to learn today","L — what I LEARNED (fill in at the end)"].map(function(l){return '<label class="q">'+esc(l)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="reflect") return b.items.map(function(x){return '<label class="q">'+esc(x)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="rating") return '<p style="font-weight:700;margin:12px 0 4px">'+esc(b.label)+'</p><div class="rate" data-r="0">'+[1,2,3,4,5].map(function(n){return '<span onclick="star(this,'+n+')">☆</span>';}).join('')+'</div>';
@@ -919,92 +831,10 @@ function wtStart(mins,phase,btn){
 function openModel(btn){ var wrap=btn.closest('.a2write'); if(!wrap)return; var d=wrap.querySelector('details.model-d'); if(d)d.open=true; }
 
 /* ---------------- Spelling Bee pop-up ---------------- */
-var BEE=null, EXTRA_BEE={}, DICT_CACHE={}, DICT_CUR=null, RD_ON=false;
-/* ---- Reading affordances: bold key vocab, clickable words, read-aloud, dictionary ---- */
-function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-function passageHTML(text, terms){
- var marked=text;
- if(terms&&terms.length){
-   var uniq=terms.filter(function(t){return t;}).sort(function(a,b){return b.length-a.length;}).map(escRe);
-   if(uniq.length){ try{ marked=text.replace(new RegExp('\\b('+uniq.join('|')+')\\b','gi'),'\u0001$1\u0001'); }catch(e){ marked=text; } }
- }
- var segs=marked.split('\u0001'), out='';
- for(var s=0;s<segs.length;s++){ out+=wrapWords(segs[s], s%2===1); }
- return out;
-}
-function wrapWords(seg,isKey){
- var parts=seg.split(/([A-Za-z\u2019'\-]+)/), html='';
- for(var i=0;i<parts.length;i++){
-   if(i%2===1){ html+='<span class="wd'+(isKey?' kv':'')+'" onclick="wLookup(this)">'+esc(parts[i])+'</span>'; }
-   else html+=esc(parts[i]);
- }
- return html;
-}
-function readPassage(btn){
- try{
-   if(RD_ON){ window.speechSynthesis.cancel(); RD_ON=false; btn.textContent='🔊 Read to me'; return; }
-   var box=btn.parentNode.parentNode; var body=box.querySelector('.passage-body'); var title=box.querySelector('h3');
-   var txt=(title?title.textContent+'. ':'')+(body?body.textContent:'');
-   window.speechSynthesis.cancel();
-   var u=new SpeechSynthesisUtterance(txt); u.lang='en-GB'; u.rate=.9;
-   u.onend=function(){ RD_ON=false; try{btn.textContent='🔊 Read to me';}catch(e){} };
-   RD_ON=true; btn.textContent='⏹ Stop reading'; window.speechSynthesis.speak(u);
- }catch(e){}
-}
-function wLookup(el){
- var word=(el.textContent||'').replace(/[^A-Za-z\u2019'\-]/g,'').replace(/^[\-\u2019']+|[\-\u2019']+$/g,'');
- if(word) openDict(word);
-}
-function findLocalDef(word){
- var w=word.toLowerCase();
- var all=beeWords();
- for(var i=0;i<all.length;i++){ var t=(all[i][0]||'').toLowerCase();
-   if(t===w || t.split(/\s+/).indexOf(w)>=0) return all[i]; }
- return null;
-}
-function openDict(word){
- var ov=document.getElementById('dictOv'); if(!ov) return; ov.classList.add('open');
- renderDictCard('<div class="dict-load">Looking up “'+esc(word)+'”…</div>');
- var loc=findLocalDef(word);
- if(loc){ DICT_CUR={word:word,pos:loc[2]||'',def:loc[1]||'',ex:(loc[3]||'').replace(/……/g,word)}; return showDict(); }
- var c=DICT_CACHE[word.toLowerCase()];
- if(c){ DICT_CUR={word:word,pos:c.pos,def:c.def,ex:c.ex}; return showDict(); }
- try{
-   fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(word.toLowerCase()))
-    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(d){ var m=d[0].meanings[0], df=m.definitions[0]||{};
-       var res={pos:m.partOfSpeech||'',def:df.definition||'',ex:df.example||''};
-       DICT_CACHE[word.toLowerCase()]=res; DICT_CUR={word:word,pos:res.pos,def:res.def,ex:res.ex}; showDict(); })
-    .catch(function(){ DICT_CUR={word:word,pos:'',def:'',ex:''}; showDict(true); });
- }catch(e){ DICT_CUR={word:word,pos:'',def:'',ex:''}; showDict(true); }
-}
-function showDict(noEntry){
- var d=DICT_CUR||{}, h='<div class="dict-word">'+esc(d.word||'')+'</div>';
- if(d.pos) h+='<div class="dict-pos">'+esc(d.pos)+'</div>';
- if(d.def) h+='<div class="dict-def">'+esc(d.def)+'</div>';
- else if(noEntry) h+='<div class="dict-def">No dictionary entry found. You can still add this word to the Spelling Bee.</div>';
- if(d.ex) h+='<div class="dict-ex">“'+esc(d.ex)+'”</div>';
- h+='<div class="dict-row"><button class="dict-add" onclick="beeAddWord()">➕ Add to Spelling Bee</button><button class="dict-close" onclick="closeDict()">Close</button></div>';
- h+='<div class="dict-note" id="dictNote"></div>';
- renderDictCard(h);
-}
-function renderDictCard(html){ var c=document.getElementById('dictCard'); if(c)c.innerHTML=html; }
-function closeDict(){ var ov=document.getElementById('dictOv'); if(ov)ov.classList.remove('open'); }
-function beeAddWord(){
- if(!DICT_CUR||!CUR.id) return;
- var w=DICT_CUR.word, k=CUR.cls+'|'+CUR.id;
- var note=document.getElementById('dictNote');
- if(beeWords().some(function(it){return (it[0]||'').toLowerCase()===w.toLowerCase();})){ if(note){note.style.color='var(--muted)';note.textContent='“'+w+'” is already in the Spelling Bee.';} return; }
- if(!EXTRA_BEE[k]) EXTRA_BEE[k]=[];
- var ex=DICT_CUR.ex||'', gap = ex ? ex.replace(new RegExp('\\b'+escRe(w)+'\\b','i'),'……') : 'Spell the word: ……';
- EXTRA_BEE[k].push([w, DICT_CUR.def||'(your added word)', DICT_CUR.pos||'', gap]);
- if(note){ note.style.color='var(--good)'; note.textContent='✓ Added “'+w+'” to the Spelling Bee for this lesson.'; }
-}
-
+var BEE=null;
 function currentVocab(){ var L=LESSONS[CUR.id]; if(!L)return[]; var st=(L.stages&&L.stages.vocab)||[]; for(var i=0;i<st.length;i++){ if(st[i].t==='vocab') return st[i].items||[]; } return []; }
-function beeWords(){ var base=currentVocab().slice(); var ex=EXTRA_BEE[CUR.cls+'|'+CUR.id]||[]; return base.concat(ex); }
 function openBee(){
- var items=beeWords().slice();
+ var items=currentVocab().slice();
  if(!items.length){ alert('No vocabulary list found for this lesson.'); return; }
  BEE={list:items,i:0,attempt:1,score:0,tleft:15,iv:null};
  document.getElementById('beeOv').classList.add('open');
