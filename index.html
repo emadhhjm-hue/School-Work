@@ -148,6 +148,28 @@
   .bee-fb{margin-top:10px;font-weight:700;min-height:1.2em}
   .bee-note{background:#fff8ea;border:1px solid #f0d9a8;border-radius:12px;padding:12px 14px;color:#7a5a12;font-size:.86rem;margin-top:14px}
 
+  .passage-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+  .passage-top h3{margin:0}
+  .rd-btn{background:var(--blue);color:#fff;border:none;border-radius:999px;padding:6px 14px;font-weight:700;font-size:.82rem;cursor:pointer;white-space:nowrap}
+  .rd-btn:hover{filter:brightness(1.08)}
+  .rd-hint{font-size:.78rem;color:var(--muted);margin-top:8px;font-style:italic}
+  .passage .wd{cursor:pointer;border-radius:3px}
+  .passage .wd:hover{background:#fde9c8}
+  .passage .wd.kv{font-weight:800;color:var(--ink)}
+  #dictOv{position:fixed;inset:0;background:rgba(20,24,40,.45);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}
+  #dictOv.open{display:flex}
+  .dict-card{background:#fff;border-radius:16px;max-width:440px;width:100%;box-shadow:var(--shadow);padding:20px 22px}
+  .dict-word{font-size:1.5rem;font-weight:800;color:var(--ink)}
+  .dict-pos{color:var(--purple);font-weight:700;font-style:italic;margin:2px 0 8px}
+  .dict-def{font-size:1rem;line-height:1.5;color:var(--ink)}
+  .dict-ex{margin-top:8px;color:var(--muted);font-style:italic}
+  .dict-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .dict-add{background:var(--amber);color:#1a2238;border:none;border-radius:999px;padding:8px 16px;font-weight:800;cursor:pointer}
+  .dict-add:hover{filter:brightness(1.05)}
+  .dict-close{background:#eef1f6;color:var(--ink);border:none;border-radius:999px;padding:8px 16px;font-weight:700;cursor:pointer}
+  .dict-load{color:var(--muted)}
+  .dict-note{font-size:.85rem;margin-top:8px;min-height:1em}
+
   @media (max-width:800px){ .lp-grid{grid-template-columns:1fr} .lp-menu{position:static;flex-direction:row;overflow-x:auto} .lp-menu button{text-align:center;flex:0 0 auto} .lp-menu button small{display:none} #timer{position:fixed;top:12px;right:12px;z-index:40;padding:8px 14px;min-width:104px} #timer .tv{font-size:1.4rem} }
 </style>
 </head>
@@ -157,6 +179,9 @@
 <!-- Spelling Bee pop-up -->
 <div class="bee-ov" id="beeOv" onclick="if(event.target===this)closeBee()">
   <div class="bee" id="beeCard"></div>
+</div>
+<div id="dictOv" onclick="if(event.target===this)closeDict()">
+  <div class="dict-card" id="dictCard"></div>
 </div>
 
 <script>
@@ -790,6 +815,7 @@ var LSTATE={};
 function setStage(stage){
  CUR.stage=stage;
  if(window.WT&&WT.iv){clearInterval(WT.iv);WT.iv=null;}
+ try{ window.speechSynthesis.cancel(); }catch(e){} RD_ON=false;
  var L=LESSONS[CUR.id]; if(!L) return;
  saveState();
  Array.prototype.forEach.call(document.querySelectorAll('#menu button'),function(b){ b.classList.toggle('on', b.getAttribute('data-tab')===stage); });
@@ -823,7 +849,10 @@ function block(b){
  if(b.t==="obj") return '<div class="objbox"><p style="font-weight:800;margin:0 0 6px;color:var(--blue)">In this lesson, I will learn how to…</p><ul style="margin:0">'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';
  if(b.t==="vocab") return '<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">'+b.items.map(function(v){return '<div class="vrow"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+'</span></div>';}).join('')+'</div><button class="btn pri beebtn" onclick="openBee()">🐝 Spelling Bee — test yourself</button><p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Hear each word, then type it. Two attempts each · 15s per word · score 60%+ for a certificate.</p>';
  if(b.t==="wordday") return '<div class="wordday"><div class="l">Word of Today</div><div class="w">'+esc(b.word)+'</div><div>'+esc(b.def)+'</div><div style="opacity:.85;font-style:italic;margin-top:4px">“'+esc(b.ex)+'”</div></div>';
- if(b.t==="passage") return '<div class="passage"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+p+'</p>';}).join('')+'</div>';
+ if(b.t==="passage"){ var terms=currentVocab().map(function(v){return v[0];});
+   return '<div class="passage"><div class="passage-top"><h3>'+esc(b.title)+'</h3><button class="rd-btn" onclick="readPassage(this)">🔊 Read to me</button></div>'
+     +'<div class="passage-body">'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+passageHTML(p,terms)+'</p>';}).join('')+'</div>'
+     +'<p class="rd-hint">💡 Tap any word in the text to see its meaning — and add it to the Spelling Bee.</p></div>'; }
  if(b.t==="kwl") return ["K — what I already KNOW about this topic","W — what I WANT to learn today","L — what I LEARNED (fill in at the end)"].map(function(l){return '<label class="q">'+esc(l)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="reflect") return b.items.map(function(x){return '<label class="q">'+esc(x)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="rating") return '<p style="font-weight:700;margin:12px 0 4px">'+esc(b.label)+'</p><div class="rate" data-r="0">'+[1,2,3,4,5].map(function(n){return '<span onclick="star(this,'+n+')">☆</span>';}).join('')+'</div>';
@@ -890,10 +919,92 @@ function wtStart(mins,phase,btn){
 function openModel(btn){ var wrap=btn.closest('.a2write'); if(!wrap)return; var d=wrap.querySelector('details.model-d'); if(d)d.open=true; }
 
 /* ---------------- Spelling Bee pop-up ---------------- */
-var BEE=null;
+var BEE=null, EXTRA_BEE={}, DICT_CACHE={}, DICT_CUR=null, RD_ON=false;
+/* ---- Reading affordances: bold key vocab, clickable words, read-aloud, dictionary ---- */
+function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function passageHTML(text, terms){
+ var marked=text;
+ if(terms&&terms.length){
+   var uniq=terms.filter(function(t){return t;}).sort(function(a,b){return b.length-a.length;}).map(escRe);
+   if(uniq.length){ try{ marked=text.replace(new RegExp('\\b('+uniq.join('|')+')\\b','gi'),'\u0001$1\u0001'); }catch(e){ marked=text; } }
+ }
+ var segs=marked.split('\u0001'), out='';
+ for(var s=0;s<segs.length;s++){ out+=wrapWords(segs[s], s%2===1); }
+ return out;
+}
+function wrapWords(seg,isKey){
+ var parts=seg.split(/([A-Za-z\u2019'\-]+)/), html='';
+ for(var i=0;i<parts.length;i++){
+   if(i%2===1){ html+='<span class="wd'+(isKey?' kv':'')+'" onclick="wLookup(this)">'+esc(parts[i])+'</span>'; }
+   else html+=esc(parts[i]);
+ }
+ return html;
+}
+function readPassage(btn){
+ try{
+   if(RD_ON){ window.speechSynthesis.cancel(); RD_ON=false; btn.textContent='🔊 Read to me'; return; }
+   var box=btn.parentNode.parentNode; var body=box.querySelector('.passage-body'); var title=box.querySelector('h3');
+   var txt=(title?title.textContent+'. ':'')+(body?body.textContent:'');
+   window.speechSynthesis.cancel();
+   var u=new SpeechSynthesisUtterance(txt); u.lang='en-GB'; u.rate=.9;
+   u.onend=function(){ RD_ON=false; try{btn.textContent='🔊 Read to me';}catch(e){} };
+   RD_ON=true; btn.textContent='⏹ Stop reading'; window.speechSynthesis.speak(u);
+ }catch(e){}
+}
+function wLookup(el){
+ var word=(el.textContent||'').replace(/[^A-Za-z\u2019'\-]/g,'').replace(/^[\-\u2019']+|[\-\u2019']+$/g,'');
+ if(word) openDict(word);
+}
+function findLocalDef(word){
+ var w=word.toLowerCase();
+ var all=beeWords();
+ for(var i=0;i<all.length;i++){ var t=(all[i][0]||'').toLowerCase();
+   if(t===w || t.split(/\s+/).indexOf(w)>=0) return all[i]; }
+ return null;
+}
+function openDict(word){
+ var ov=document.getElementById('dictOv'); if(!ov) return; ov.classList.add('open');
+ renderDictCard('<div class="dict-load">Looking up “'+esc(word)+'”…</div>');
+ var loc=findLocalDef(word);
+ if(loc){ DICT_CUR={word:word,pos:loc[2]||'',def:loc[1]||'',ex:(loc[3]||'').replace(/……/g,word)}; return showDict(); }
+ var c=DICT_CACHE[word.toLowerCase()];
+ if(c){ DICT_CUR={word:word,pos:c.pos,def:c.def,ex:c.ex}; return showDict(); }
+ try{
+   fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(word.toLowerCase()))
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){ var m=d[0].meanings[0], df=m.definitions[0]||{};
+       var res={pos:m.partOfSpeech||'',def:df.definition||'',ex:df.example||''};
+       DICT_CACHE[word.toLowerCase()]=res; DICT_CUR={word:word,pos:res.pos,def:res.def,ex:res.ex}; showDict(); })
+    .catch(function(){ DICT_CUR={word:word,pos:'',def:'',ex:''}; showDict(true); });
+ }catch(e){ DICT_CUR={word:word,pos:'',def:'',ex:''}; showDict(true); }
+}
+function showDict(noEntry){
+ var d=DICT_CUR||{}, h='<div class="dict-word">'+esc(d.word||'')+'</div>';
+ if(d.pos) h+='<div class="dict-pos">'+esc(d.pos)+'</div>';
+ if(d.def) h+='<div class="dict-def">'+esc(d.def)+'</div>';
+ else if(noEntry) h+='<div class="dict-def">No dictionary entry found. You can still add this word to the Spelling Bee.</div>';
+ if(d.ex) h+='<div class="dict-ex">“'+esc(d.ex)+'”</div>';
+ h+='<div class="dict-row"><button class="dict-add" onclick="beeAddWord()">➕ Add to Spelling Bee</button><button class="dict-close" onclick="closeDict()">Close</button></div>';
+ h+='<div class="dict-note" id="dictNote"></div>';
+ renderDictCard(h);
+}
+function renderDictCard(html){ var c=document.getElementById('dictCard'); if(c)c.innerHTML=html; }
+function closeDict(){ var ov=document.getElementById('dictOv'); if(ov)ov.classList.remove('open'); }
+function beeAddWord(){
+ if(!DICT_CUR||!CUR.id) return;
+ var w=DICT_CUR.word, k=CUR.cls+'|'+CUR.id;
+ var note=document.getElementById('dictNote');
+ if(beeWords().some(function(it){return (it[0]||'').toLowerCase()===w.toLowerCase();})){ if(note){note.style.color='var(--muted)';note.textContent='“'+w+'” is already in the Spelling Bee.';} return; }
+ if(!EXTRA_BEE[k]) EXTRA_BEE[k]=[];
+ var ex=DICT_CUR.ex||'', gap = ex ? ex.replace(new RegExp('\\b'+escRe(w)+'\\b','i'),'……') : 'Spell the word: ……';
+ EXTRA_BEE[k].push([w, DICT_CUR.def||'(your added word)', DICT_CUR.pos||'', gap]);
+ if(note){ note.style.color='var(--good)'; note.textContent='✓ Added “'+w+'” to the Spelling Bee for this lesson.'; }
+}
+
 function currentVocab(){ var L=LESSONS[CUR.id]; if(!L)return[]; var st=(L.stages&&L.stages.vocab)||[]; for(var i=0;i<st.length;i++){ if(st[i].t==='vocab') return st[i].items||[]; } return []; }
+function beeWords(){ var base=currentVocab().slice(); var ex=EXTRA_BEE[CUR.cls+'|'+CUR.id]||[]; return base.concat(ex); }
 function openBee(){
- var items=currentVocab().slice();
+ var items=beeWords().slice();
  if(!items.length){ alert('No vocabulary list found for this lesson.'); return; }
  BEE={list:items,i:0,attempt:1,score:0,tleft:15,iv:null};
  document.getElementById('beeOv').classList.add('open');
