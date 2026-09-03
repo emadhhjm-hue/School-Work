@@ -125,6 +125,69 @@
   .hl-close{background:#fff1cf;color:#8a5a12}
   .model-ans{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fcfcff;line-height:1.95}
   .model-ans span{padding:2px 4px;border-radius:4px}
+  .wbank{margin:8px 0 10px;padding:10px 12px;border:1px dashed var(--blue);border-radius:10px;background:#f4f7ff;line-height:2}
+  .wchip{display:inline-block;margin:3px 6px 3px 0;padding:3px 11px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:700;font-size:.9rem}
+  .cloze-art p{line-height:2.3;margin:10px 0}
+  .cloze-art .gap{min-width:90px}
+  .tmi-row{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:10px 0;background:#fcfcff}
+  .tmi-h{font-weight:800;color:var(--purple);margin-bottom:2px}
+  .tmi-in{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px}
+  /* sub-tabs inside an activity */
+  .subtab-row{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin:2px 0 14px}
+  .subtab{border:0;background:transparent;padding:8px 14px;font-weight:800;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;font-size:.92rem}
+  .subtab.on{color:var(--blue);border-bottom-color:var(--blue)}
+  .subtab:hover{color:var(--ink)}
+  /* reading toolbar + clickable words */
+  .rtoolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0 12px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:#fafbff}
+  .rt-zoom{display:inline-flex;gap:4px}
+  .rt-hint{font-size:.78rem;color:var(--muted)}
+  .wordable{cursor:default}
+  .wordable p{cursor:text}
+  /* dictionary + type popup */
+  .dict-ov{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}
+  .dict-ov.open{display:flex}
+  .dict{background:#fff;border-radius:18px;max-width:440px;width:100%;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .dict-hd{display:flex;align-items:center;justify-content:space-between}
+  .dict-hd h3{margin:0;color:var(--blue);font-size:1.4rem}
+  .dict-x{border:0;background:#eef1f6;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:1rem}
+  .dict-hear{margin:8px 0;border:0;background:var(--ink);color:#fff;border-radius:10px;padding:7px 12px;font-weight:700;cursor:pointer}
+  .dict-pos{display:inline-block;background:#eef4ff;color:#1c4e9c;border-radius:6px;padding:2px 8px;font-weight:700;font-size:.8rem;margin-left:8px}
+  .dict-def{margin:10px 0 4px;font-size:1.02rem}
+  .dict-ex{margin:4px 0;color:var(--muted);font-style:italic}
+  .dict-more{display:inline-block;margin-top:8px;color:var(--blue);font-weight:700;text-decoration:none}
+  .type-target{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fcfcff;line-height:1.9;max-height:150px;overflow:auto;font-size:.95rem}
+  .type-in{width:100%;margin-top:8px;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:inherit}
+  .type-stat{margin-top:6px;font-weight:700;color:var(--muted)}
+  .tc-ok{color:#0b6b43;background:#dff5e8}
+  .tc-bad{color:#b00020;background:#ffe1e4}
+  /* reading toolbar (reference style) */
+  .rtoolbar{border:1px solid var(--line);border-radius:14px;background:#f6f8fc;padding:8px 10px;margin:6px 0 14px}
+  .rt-line{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .rt-line+.rt-line{margin-top:8px}
+  .rt-btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 13px;font-weight:800;font-size:.86rem;cursor:pointer;font-family:inherit;color:#33405a;display:inline-flex;align-items:center;gap:6px;transition:.12s}
+  .rt-btn:hover{border-color:var(--blue)}
+  .rt-primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .rt-stop{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .rt-toggle.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .rt-hl.on{background:#fff1cf;border-color:var(--amber);color:#8a5a12}
+  .rt-bee{background:var(--amber);color:#5a3d00;border-color:var(--amber)}
+  .rt-grp{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-left:1px solid var(--line)}
+  .rt-lab{font-weight:800;font-size:.82rem;color:var(--muted)}
+  .rt-step{border:1px solid var(--line);background:#fff;border-radius:8px;width:26px;height:26px;cursor:pointer;font-weight:800;font-size:1rem;line-height:1}
+  .rt-range{accent-color:var(--teal);width:90px}
+  .rt-val{font-weight:800;font-size:.82rem;color:#33405a;min-width:38px;text-align:center}
+  .rt-size{padding:6px 10px}
+  /* highlighter mode */
+  .cloze-art.hl-on p{cursor:text}
+  .cloze-art.hl-on ::selection{background:#fff3a0}
+  .cloze-art .usermark{background:#fff3a0;border-radius:3px;padding:0 2px}
+  /* spelling list popup */
+  .sl-list{display:flex;flex-direction:column;gap:6px;max-height:230px;overflow:auto}
+  .sl-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:#fcfcff}
+  .sl-row b{min-width:92px}
+  .sl-row span{font-size:.85rem;color:var(--muted)}
+  .sl-hear{border:0;background:#eef1f6;border-radius:8px;width:30px;height:30px;cursor:pointer}
+  @media (max-width:640px){ .rt-range{width:64px} .rt-grp{border-left:0} }
 
   /* Spelling Bee pop-up */
   .beebtn{margin-top:14px}
@@ -157,6 +220,11 @@
 <!-- Spelling Bee pop-up -->
 <div class="bee-ov" id="beeOv" onclick="if(event.target===this)closeBee()">
   <div class="bee" id="beeCard"></div>
+</div>
+
+<!-- Click-a-word dictionary pop-up -->
+<div class="dict-ov" id="dictOv" onclick="if(event.target===this)closeDict()">
+  <div class="dict" id="dictCard"></div>
 </div>
 
 <script>
@@ -251,7 +319,7 @@ var C1_LESSONS={
  stages:{
   watch:[{t:"video",id:"6kzPwDXfN1I",caption:"Watch this short clip on consumerism and the brain, then note one technique it mentions."}],
   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> Think about the last thing you bought that you didn’t really need. <i>Why</i> did you buy it? Activate what you already know about advertising."},{t:"kwl"}],
-  warm:[{t:"prompts",intro:"Warm-up — discuss (5 min):",items:["What makes you want to buy something — the price, the brand, or the advert?","Which shops or apps are best at getting you to spend? How?","Are two identical products ever really “different” because of the brand?"]}],
+  warm:[{t:"prompts",intro:"Warm-up — discuss (5 min):",items:["What makes you want to buy something — the price, the brand, or the advert?","Which shops or apps are best at getting you to spend? How?","Are two identical products ever really “different” because of the brand?"]},{t:"prompts",intro:"Thinking and predicting — discuss these questions with a partner:",items:["What do we all do as consumers?","How does advertising influence your choice of products?","What messages do advertisements usually convey?","What sort of methods do companies use to advertise their products?","How can an advertisement change a person’s lifestyle?","Are you easily influenced by advertisements? Explain."]}],
   obj:[{t:"obj",items:["apply reading strategies: context clues, word choice, and your own experience","read and identify the main points of an article","interpret and analyse how a text influences the reader","notice the present simple passive (e.g., we are influenced)"]}],
   vocab:[{t:"p",html:"<b>Key vocabulary</b> — the language of buying & selling. Then take the Spelling Bee below."},{t:"vocab",items:[
     ["consumer","a person who buys and uses goods or services","noun","Every …… wants a good deal."],
@@ -263,7 +331,22 @@ var C1_LESSONS={
     ["items","separate things or products","noun","She added three …… to her cart."],
     ["access","the chance or right to use or get something","noun","Apps give instant …… to thousands of goods."]
   ]},{t:"wordday",word:"marketing",def:"everything a company does to make people notice, want and buy its products",ex:"Good marketing sells the feeling, not just the item."}],
-  a1:[{t:"p",html:"<b>Read the article</b> (paragraphs are lettered A–E). Use the reading strategies as you go, then answer the questions."},{t:"passage",title:"Why We Buy: Consumerism and the Human Brain",paras:["Every day we are surrounded by things to buy. Shops, screens and streets are filled with products, and consumers are encouraged to want more of them. This way of living — always buying and using — is called consumerism.","Companies know how the human brain works, and marketing is designed around it. Bright colours, happy faces and the word “new” all catch our attention. When we see something we like, a chemical called dopamine is released, and we feel a small burst of pleasure — even before we buy.","Scarcity is another trick. When a sign says “only two left”, we are pushed to decide quickly. The fear of missing out is stronger than the wish to save, so items are bought that were never really needed.","Brands matter too. Two products can be almost identical, yet one is chosen because its brand feels trustworthy or “cool”. We are not only buying an object; we are buying an image of ourselves.","None of this makes shoppers foolish. But when we understand how marketing works, better choices are made. The smartest consumer is not the one who never buys — it is the one who knows <i>why</i> they are buying."]},{t:"mcq",intro:"Read for the main points — questions name the paragraph:",qs:[{q:"[A] What does “consumerism” mean?",opts:["a way of living based on always buying and using","saving as much money as possible","a type of shop"],ans:0},{q:"[B] Why is dopamine mentioned?",opts:["it makes products cheaper","it gives us pleasure and pulls us toward buying","it is a kind of advert"],ans:1},{q:"[C] How does “scarcity” affect shoppers?",opts:["it makes them wait","it pushes them to decide quickly","it lowers the price"],ans:1},{q:"[E] What is the writer’s main point in paragraph E?",opts:["you should never buy anything","understanding marketing helps you choose better","brands are always dishonest"],ans:1}]},{t:"match",intro:"Vocabulary in context — choose the meaning:",pairs:[["A smart <b>consumer</b> asks questions before buying.","a person who buys and uses goods"],["The two phones were nearly <b>identical</b>.","exactly the same"],["Their <b>marketing</b> targets young people.","the ways a company promotes and sells"],["A trusted <b>brand</b> can charge more.","a product name customers recognise"]]}],
+  a1:[{t:"subtabs",tabs:[
+   {label:"Class reading",blocks:[{t:"p",html:"<b>Read the article</b> (paragraphs are lettered A–E). Use the reading strategies as you go, then answer the questions."},{t:"passage",title:"Why We Buy: Consumerism and the Human Brain",paras:["Every day we are surrounded by things to buy. Shops, screens and streets are filled with products, and consumers are encouraged to want more of them. This way of living — always buying and using — is called consumerism.","Companies know how the human brain works, and marketing is designed around it. Bright colours, happy faces and the word “new” all catch our attention. When we see something we like, a chemical called dopamine is released, and we feel a small burst of pleasure — even before we buy.","Scarcity is another trick. When a sign says “only two left”, we are pushed to decide quickly. The fear of missing out is stronger than the wish to save, so items are bought that were never really needed.","Brands matter too. Two products can be almost identical, yet one is chosen because its brand feels trustworthy or “cool”. We are not only buying an object; we are buying an image of ourselves.","None of this makes shoppers foolish. But when we understand how marketing works, better choices are made. The smartest consumer is not the one who never buys — it is the one who knows <i>why</i> they are buying."]},{t:"mcq",intro:"Read for the main points — questions name the paragraph:",qs:[{q:"[A] What does “consumerism” mean?",opts:["a way of living based on always buying and using","saving as much money as possible","a type of shop"],ans:0},{q:"[B] Why is dopamine mentioned?",opts:["it makes products cheaper","it gives us pleasure and pulls us toward buying","it is a kind of advert"],ans:1},{q:"[C] How does “scarcity” affect shoppers?",opts:["it makes them wait","it pushes them to decide quickly","it lowers the price"],ans:1},{q:"[E] What is the writer’s main point in paragraph E?",opts:["you should never buy anything","understanding marketing helps you choose better","brands are always dishonest"],ans:1}]},{t:"match",intro:"Vocabulary in context — choose the meaning:",pairs:[["A smart <b>consumer</b> asks questions before buying.","a person who buys and uses goods"],["The two phones were nearly <b>identical</b>.","exactly the same"],["Their <b>marketing</b> targets young people.","the ways a company promotes and sells"],["A trusted <b>brand</b> can charge more.","a product name customers recognise"]]}]},
+   {label:"📕 Textbook reading",blocks:[
+   {t:"note",html:"<b>From your coursebook.</b> Read the article <i>Consumerism and the Human Brain</i>, then complete the two textbook activities below: <b>Activity 4</b> (gap-fill of Paragraph A) and <b>Activity 5</b> (topic &amp; main idea of each paragraph)."},
+   {t:"p",html:"<b style=\"font-size:1.15rem\">Consumerism and the Human Brain</b>"},
+   {t:"cloze",intro:"Activity 4 — Complete Paragraph A with the words in the word bank (one word is used twice). Then read the whole article (A–F) and press Check.",bank:["access","consume (×2)","consumers","economy","identical","items"],paras:["We are all [[consumers]]. We all buy and use products and services; that is, we [[consume]]. The word comes from the Latin <i>consumere</i>, which means “to use up, to waste or destroy”. Most of us don’t think of ourselves as wasteful or destructive, but the world [[economy]] is based on consumerism. Today, people worldwide have greater [[access]] than ever before to a huge variety of products and, often, to dozens of brands of the same product. What makes us decide to buy Brand A instead of Brand B when the two [[items]] are really [[identical]]? Why do we buy things that we don’t actually need? The answer lies in marketing – the advertising and selling of products. Successful marketers use their knowledge of psychology and, increasingly, of recent studies of the human brain to persuade us to [[consume]] more and more.","A good understanding of human weakness is essential if a company wants to sell a product. One way that advertisers persuade us to buy a product is by targeting our dissatisfaction with ourselves, our fears. Consider for a moment a typical fear – fear of being offensive to other people. Advertisers persuade us, for example, that if we don’t buy their mouthwash, we’ll have bad breath and offend other people. Dentists tell us that mouthwash is actually unnecessary; they explain that we need only simple dental hygiene – regular, correct use of a soft toothbrush and of dental floss. But we continue to spend money on mouthwash, breath freshener, and breath mints. Our fear of offending people outweighs our dentists’ logic.","In a similar way, advertisers also take advantage of our need for a good self-image, our desire to appear attractive, successful, and even exciting. One example is the recent popularity of SUVs in the United States – sport utility vehicles. These vehicles are more expensive than most cars. They use more gas and create more pollution than most cars. They take up more space than most cars. But TV commercials show them climbing rocky mountain roads and crossing rivers, which seems exciting to many people. Most people who buy an SUV never get out of the city. They spend their morning commute in traffic, not driving up and down mountains. Although it may seem irrational, advertisers persuade them that SUV owners are people with an exciting life.","With so many different (but almost identical) brands of the same product, what causes us to choose one brand instead of another? According to Dr. Alan Hirsch, our sense of smell actually influences our opinion of a product and our decision to buy it. A scientist at the Smell and Taste Treatment and Research Foundation in Chicago, Hirsch ran a careful, well-organized study. There were two identical rooms with an identical pair of sneakers in each room. There was only one difference: he sprayed one of the rooms with a scent of flowers. Volunteers entered each room and answered questions about the sneakers. The result was that 84 percent of the people preferred the sneakers in the room with the floral smell even though they were exactly the same as the ones in the other room!","There is also the effect of self-fulfilling prophecies. A self-fulfilling prophecy is a situation in which people cause a prediction to come true. (For example, a teacher tells a class that they are especially intelligent, and that semester the class does especially well on exams.) In marketing, a successful advertisement persuades consumers that a product works well; their belief causes them to use the product in such a way that it does work well. For example, the ads for Brand X of a diet pill say, “Take this pill, and you will lose weight because you won’t be hungry.” So people buy Brand X. Because they believe it will cause weight loss, they begin to eat less. They establish a new habit of eating less. The result? They lose weight. Is this because of the pill or because they are eating less?","Most of us like to think that we are reasonable, independent thinkers. We like to believe that we have a good reason for our choices. We don’t want to buy products because of some strange compulsion – some irrational desire that we can’t control. The truth is, however, that with their increasing knowledge of what goes on in the human brain, marketers might have more power over us than we realize."]},
+   {t:"tmi",intro:"Activity 5 — Read the whole article again. Write the topic and the main idea of each paragraph, then compare with the suggested answers.",rows:[
+     {p:"Paragraph A",topic:"What consumerism is",idea:"We are all consumers, and marketing / brain science explains why we buy."},
+     {p:"Paragraph B",topic:"Fear (mouthwash)",idea:"Advertisers exploit our fears to sell things we don’t really need."},
+     {p:"Paragraph C",topic:"Self-image (SUVs)",idea:"Advertisers appeal to our desire to seem attractive and exciting."},
+     {p:"Paragraph D",topic:"Sense of smell (Hirsch’s study)",idea:"Smell influences our opinion of a product and our decision to buy."},
+     {p:"Paragraph E",topic:"Self-fulfilling prophecy (diet pill)",idea:"Believing a product works can make it actually work."},
+     {p:"Paragraph F",topic:"Conclusion",idea:"Marketers may have more power over us than we realize."}
+   ]}
+   ]}
+ ]}],
   a2:[{t:"p",html:"<b>Viewing & analysis.</b> Now “read” an advertisement the way you read the article — look for the technique behind it."},{t:"video",id:"0Dz3Psj3pV4",query:"how advertising manipulates the brain short",caption:"Watch this clip about advertising and the brain, then identify the techniques below."},{t:"mcq",intro:"Which persuasion technique is used?",qs:[{q:"“Only 3 left in stock — order now!”",opts:["scarcity / fear of missing out","celebrity image","low price"],ans:0},{q:"A famous athlete wears the shoes in the advert.",opts:["scarcity","brand image / role model","information only"],ans:1},{q:"“Join 2 million happy customers!”",opts:["everyone-is-doing-it (social proof)","scarcity","a discount"],ans:0}]},{t:"reflect",items:["Describe one advert you know and the technique it uses.","Rewrite this sentence in the present simple passive: “Companies design adverts for the brain.” → “Adverts ____.”"]}],
   culture:[{t:"p",html:"<b>UAE–World Connection.</b> The UAE is a global shopping hub, from giant malls to shopping festivals. Being a <i>critical</i> consumer — comparing, questioning and buying with purpose — is a life skill valued in the National Education Charter’s focus on critical thinking."},{t:"prompts",items:["Name one way you could shop more thoughtfully this month.","Do sales and festivals help shoppers, sellers, or both? Explain."]}],
   enrich:[{t:"p",html:"<b>Grammar — present simple passive (G.10.1).</b> We use it when the action matters more than who does it: <i>subject + is/are + past participle</i>."},{t:"mcq",intro:"Choose the correct passive form:",qs:[{q:"Millions of adverts ____ online every day.",opts:["are shown","show","is shown"],ans:0},{q:"This brand ____ by teenagers worldwide.",opts:["is trusted","trusts","are trusted"],ans:0},{q:"Products ____ to look better than they are.",opts:["are designed","design","designs"],ans:0}]}],
@@ -797,6 +880,25 @@ function block(b){
  if(b.t==="dialogue"){ var sc='<details style="margin-top:10px;border-top:1px dashed var(--line);padding-top:8px"><summary style="color:var(--red)">\ud83c\udfa7 Listening script \u2014 teacher reads this aloud (students: don\u2019t peek!)</summary><div style="margin-top:6px">'+b.lines.map(function(ln){ return '<p style="margin:4px 0"><b style="color:var(--blue)">'+esc(ln[0])+':</b> '+esc(ln[1]).replace(/\[\[(.+?)\]\]/g,function(m,w){return '<b style="background:#fff3cd;padding:0 3px;border-radius:3px">'+esc(w)+'</b>';})+'</p>'; }).join('')+'</div></details>';
    return '<div class="graded"><p style="font-weight:700">'+esc(b.intro)+'</p><div style="border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fcfcff">'+b.lines.map(function(ln){ var txt=esc(ln[1]).replace(/\[\[(.+?)\]\]/g,function(m,w){return '<input class="A gap" data-a="'+w.toLowerCase()+'" autocomplete="off" style="width:'+Math.max(70,w.length*13)+'px" />';}); return '<p style="margin:6px 0;line-height:1.9"><b style="color:var(--blue)">'+esc(ln[0])+':</b> '+txt+'</p>'; }).join('')+'</div><button class="btn sm pri" onclick="grade(this)" style="margin-top:8px">Check</button><div class="fb"></div>'+sc+'</div>'; }
  if(b.t==="video"){ var q=encodeURIComponent(b.query||''); var vid=(b.id||''); var embed = vid ? '<div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;margin:10px 0"><iframe src="https://www.youtube.com/embed/'+vid+'" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe></div>' : ''; return '<div>'+(b.caption?'<p>'+esc(b.caption)+'</p>':'')+embed+'<div id="vidHost"></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px"><a class="btn pri" href="https://www.youtube.com/results?search_query='+q+'" target="_blank" rel="noopener">\u25b6 Find a video on YouTube</a><input id="vidPaste" placeholder="\u2026or paste a YouTube link / ID to play it here" style="flex:1;min-width:220px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px" onkeydown="if(event.key===\'Enter\'){playVid();}"><button class="btn sm" onclick="playVid()">Play</button></div><p style="font-size:.8rem;color:var(--muted);margin-top:6px">Pick a short clip on the topic. Paste a chosen video to embed it right here for the class.</p></div>'; }
+ if(b.t==="cloze"){
+   var bank=b.bank?'<div class="wbank"><b>Word bank:</b> '+b.bank.map(function(w){return '<span class="wchip">'+esc(w)+'</span>';}).join('')+'</div>':'';
+   var body=b.paras.map(function(p,i){ var txt=p.replace(/\[\[(.+?)\]\]/g,function(m,w){ return '<input class="A gap" data-a="'+esc(w.toLowerCase())+'" autocomplete="off" style="width:'+Math.max(90,w.length*13)+'px" />'; }); return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+txt+'</p>'; }).join('');
+   var artId='art'+(Math.random().toString(36).slice(2,8));
+   var tools=(b.tools!==false)?readToolbar(artId):'';
+   return '<div class="graded">'+(b.intro?'<p style="font-weight:700">'+esc(b.intro)+'</p>':'')+tools+bank+'<div class="passage cloze-art wordable" id="'+artId+'" onclick="wordClick(event)">'+body+'</div><button class="btn sm pri" onclick="grade(this)" style="margin-top:8px">Check</button><div class="fb"></div></div>';
+ }
+ if(b.t==="tmi"){
+   var rows=b.rows.map(function(r){ return '<div class="tmi-row"><div class="tmi-h">'+esc(r.p)+'</div><label class="q">Topic</label><input class="tmi-in" autocomplete="off" /><label class="q">Main idea</label><textarea rows="2"></textarea></div>'; }).join('');
+   var key='<details class="model-d" style="margin-top:12px"><summary>▾ Show suggested answers</summary><div class="model-ans" style="display:block;line-height:1.7">'+b.rows.map(function(r){return '<p style="margin:6px 0"><b>'+esc(r.p)+'</b> — <i>Topic:</i> '+esc(r.topic)+' &nbsp;·&nbsp; <i>Main idea:</i> '+esc(r.idea)+'</p>';}).join('')+'</div></details>';
+   return '<div class="tmi">'+(b.intro?'<p style="font-weight:700">'+esc(b.intro)+'</p>':'')+rows+key+'</div>';
+ }
+ if(b.t==="subtabs"){
+   var uid='st'+(Math.random().toString(36).slice(2,8));
+   var heads=b.tabs.map(function(tb,ti){ return '<button class="subtab'+(ti===0?' on':'')+'" onclick="pickSub(this,\''+uid+'\','+ti+')">'+esc(tb.label)+'</button>'; }).join('');
+   var panes=b.tabs.map(function(tb,ti){ return '<div class="subpane" data-sp="'+uid+'" data-i="'+ti+'" style="display:'+(ti===0?'block':'none')+'">'+(tb.blocks||[]).map(block).join('')+'</div>'; }).join('');
+   return '<div class="subtabs"><div class="subtab-row" data-st="'+uid+'">'+heads+'</div>'+panes+'</div>';
+ }
+
  return '';
 }
 
@@ -831,6 +933,176 @@ function wtStart(mins,phase,btn){
 function openModel(btn){ var wrap=btn.closest('.a2write'); if(!wrap)return; var d=wrap.querySelector('details.model-d'); if(d)d.open=true; }
 
 /* ---------------- Spelling Bee pop-up ---------------- */
+/* ---- Reading affordances: dictionary, read-aloud, type-this, zoom, subtabs ---- */
+var RSET={rate:0.95, vol:1.0, dict:true};
+function readToolbar(id){
+  return ''
+  +'<div class="rtoolbar" data-art="'+id+'">'
+  +  '<div class="rt-line">'
+  +    '<button class="rt-btn rt-primary" onclick="readAloud(\''+id+'\',this)">🔊 Read to me</button>'
+  +    '<button class="rt-btn rt-stop" onclick="readStop(this)">⏹ Stop</button>'
+  +    '<span class="rt-grp"><span class="rt-lab">Speed</span><button class="rt-step" onclick="rSpeed(this,-1)">−</button>'
+  +      '<input type="range" class="rt-range rt-speed" min="0.5" max="1.5" step="0.05" value="'+RSET.rate+'" oninput="rSpeed(this,0)"><span class="rt-val rt-speedv">'+RSET.rate.toFixed(2)+'×</span>'
+  +      '<button class="rt-step" onclick="rSpeed(this,1)">+</button></span>'
+  +    '<span class="rt-grp"><span class="rt-lab">Volume</span><button class="rt-step" onclick="rVol(this,-1)">−</button>'
+  +      '<input type="range" class="rt-range rt-vol" min="0" max="1" step="0.05" value="'+RSET.vol+'" oninput="rVol(this,0)"><span class="rt-val rt-volv">'+Math.round(RSET.vol*100)+'%</span>'
+  +      '<button class="rt-step" onclick="rVol(this,1)">+</button></span>'
+  +    '<span class="rt-grp"><span class="rt-lab">Text size</span><button class="rt-btn rt-size" onclick="zoomArt(\''+id+'\',-1)">A−</button>'
+  +      '<span class="rt-val rt-zoomv" data-art="'+id+'">100%</span><button class="rt-btn rt-size" onclick="zoomArt(\''+id+'\',1)">A+</button></span>'
+  +  '</div>'
+  +  '<div class="rt-line">'
+  +    '<button class="rt-btn" onclick="openSpellList()">⭐ My spelling list</button>'
+  +    '<button class="rt-btn rt-toggle'+(RSET.dict?' on':'')+'" onclick="toggleDict(this)">📘 Dictionary: '+(RSET.dict?'on':'off')+'</button>'
+  +    '<button class="rt-btn rt-hl" onclick="toggleHL(this,\''+id+'\')">✏️ Highlighter</button>'
+  +    '<button class="rt-btn rt-bee" onclick="openBee()">🐝 Spelling Bee</button>'
+  +    '<button class="rt-btn" onclick="typeArticle(\''+id+'\')">⌨️ Type this</button>'
+  +    '<button class="rt-btn" onclick="worksheetPDF(\''+id+'\')">📄 Worksheet (PDF)</button>'
+  +  '</div>'
+  +'</div>';
+}
+function rSpeed(el,dir){
+  var wrap=el.closest('.rtoolbar'); var r=wrap.querySelector('.rt-speed');
+  var v=parseFloat(r.value); if(dir) v=Math.min(1.5,Math.max(0.5,v+dir*0.05));
+  v=Math.round(v*20)/20; r.value=v; RSET.rate=v; wrap.querySelector('.rt-speedv').textContent=v.toFixed(2)+'×';
+}
+function rVol(el,dir){
+  var wrap=el.closest('.rtoolbar'); var r=wrap.querySelector('.rt-vol');
+  var v=parseFloat(r.value); if(dir) v=Math.min(1,Math.max(0,v+dir*0.05));
+  v=Math.round(v*20)/20; r.value=v; RSET.vol=v; wrap.querySelector('.rt-volv').textContent=Math.round(v*100)+'%';
+}
+function readStop(el){ try{window.speechSynthesis.cancel();}catch(e){} var w=el.closest('.rtoolbar'); var b=w&&w.querySelector('.rt-primary'); if(b)b.textContent='🔊 Read to me'; }
+function toggleDict(btn){ RSET.dict=!RSET.dict; btn.classList.toggle('on',RSET.dict); btn.textContent='📘 Dictionary: '+(RSET.dict?'on':'off'); if(!RSET.dict) closeDict(); }
+function toggleHL(btn,id){ var art=document.getElementById(id); if(!art)return; var on=art.classList.toggle('hl-on'); btn.classList.toggle('on',on); }
+function openSpellList(){
+  var v=currentVocab();
+  document.getElementById('dictCard').innerHTML='<div class="dict-hd"><h3>⭐ My spelling list</h3><button class="dict-x" onclick="closeDict()">✕</button></div>'
+    +'<p style="font-size:.85rem;color:var(--muted);margin:0 0 8px">The key words for this lesson. Tap 🔊 to hear each one, then practise in the Spelling Bee.</p>'
+    +'<div class="sl-list">'+v.map(function(w){return '<div class="sl-row"><button class="sl-hear" onclick="sayWord(\''+esc(w[0])+'\')">🔊</button><b>'+esc(w[0])+'</b><span>'+esc(w[1]||'')+'</span></div>';}).join('')+'</div>'
+    +'<button class="dict-hear" style="margin-top:10px" onclick="closeDict();openBee()">🐝 Practise in the Spelling Bee</button>';
+  document.getElementById('dictOv').classList.add('open');
+}
+function worksheetPDF(id){
+  var art=document.getElementById(id); var text=art?art.textContent.replace(/\s+/g,' ').trim():'';
+  var L=LESSONS[CUR.id]||{}; var w=window.open('','_blank');
+  if(!w){ alert('Please allow pop-ups to print the worksheet.'); return; }
+  w.document.write('<html><head><title>Worksheet — '+esc(L.title||'Reading')+'</title>'
+   +'<style>body{font:15px/1.7 Georgia,serif;max-width:720px;margin:32px auto;padding:0 20px;color:#111}h1{font-size:20px}h2{font-size:15px;margin-top:22px}.p{margin:10px 0}ol{line-height:2}@media print{button{display:none}}</style></head><body>'
+   +'<button onclick="window.print()" style="font:14px sans-serif;padding:8px 14px;border:0;background:#0b3;color:#fff;border-radius:8px;cursor:pointer">🖨 Print / Save as PDF</button>'
+   +'<h1>'+esc(L.title||'Reading')+'</h1><div class="p">'+esc(text)+'</div>'
+   +'<h2>Activity 5 — Topic &amp; main idea</h2><ol>'+['A','B','C','D','E','F'].map(function(x){return '<li>Paragraph '+x+' — Topic: ____________________   Main idea: ____________________</li>';}).join('')+'</ol>'
+   +'</body></html>'); w.document.close();
+}
+
+function pickSub(btn,uid,ti){
+  var row=btn.parentNode; Array.prototype.forEach.call(row.querySelectorAll('.subtab'),function(b){b.classList.remove('on');}); btn.classList.add('on');
+  Array.prototype.forEach.call(document.querySelectorAll('.subpane[data-sp="'+uid+'"]'),function(p){ p.style.display=(p.getAttribute('data-i')==String(ti))?'block':'none'; });
+  try{window.speechSynthesis.cancel();}catch(e){}
+}
+/* mini glossary for this lesson's key words; falls back to a vocabulary.com link */
+var GLOSS={
+ "consumer":["a person who buys and uses goods or services","noun","Every consumer wants a good deal."],
+ "consumers":["people who buy and use goods or services","noun","Consumers are encouraged to want more."],
+ "consume":["to buy and use goods or services","verb","We consume more than we need."],
+ "consumerism":["a way of living based on always buying and using goods","noun","The world economy is based on consumerism."],
+ "marketing":["the ways a company promotes and sells its products","noun","Clever marketing makes us want more."],
+ "brand":["a product name that customers recognise and trust","noun","People pay more for a familiar brand."],
+ "economy":["the system of money, jobs and trade in a place","noun","Spending drives the economy."],
+ "identical":["exactly the same","adjective","The two items were identical inside."],
+ "items":["separate things or products","noun","She added three items to her cart."],
+ "access":["the chance or right to use or get something","noun","Apps give instant access to goods."],
+ "scarcity":["a situation where there is not enough of something","noun","Scarcity pushes us to decide quickly."],
+ "dopamine":["a brain chemical linked to pleasure and reward","noun","Dopamine gives a small burst of pleasure."],
+ "advertisers":["people or companies that promote products","noun","Advertisers target our fears."],
+ "hygiene":["keeping yourself and things clean to stay healthy","noun","Simple dental hygiene is usually enough."],
+ "irrational":["not based on clear thought or reason","adjective","It may seem irrational, but we still buy."],
+ "prophecy":["a statement about what will happen in the future","noun","A self-fulfilling prophecy comes true because we act on it."],
+ "compulsion":["a strong urge to do something you cannot easily control","noun","We buy from compulsion, not need."]
+};
+function cleanWord(w){ return (w||'').toLowerCase().replace(/[^a-z’'-]/g,'').replace(/^[’'-]+|[’'-]+$/g,''); }
+function wordClick(ev){
+  if(ev.target && ev.target.tagName==='INPUT') return;      /* don't hijack gap inputs */
+  var art=ev.currentTarget;
+  if(art && art.classList.contains('hl-on')){ return hlSelection(art); }  /* highlighter mode */
+  if(!RSET.dict) return;                                    /* dictionary toggle off */
+  var sel=(window.getSelection&&String(window.getSelection())) || '';
+  var raw = sel.trim() || wordAtPoint(ev);
+  var w=cleanWord(raw); if(!w) return;
+  openDict(w);
+}
+function wordAtPoint(ev){
+  var t=ev.target; if(!t) return '';
+  var txt=t.textContent||''; return txt.split(/\s+/).length===1 ? txt : '';
+}
+function hlSelection(art){
+  try{ var sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return;
+    var r=sel.getRangeAt(0); if(!art.contains(r.commonAncestorContainer)) return;
+    var span=document.createElement('span'); span.className='usermark';
+    try{ r.surroundContents(span); }catch(e){ /* spans multiple nodes: wrap extracted */ span.appendChild(r.extractContents()); r.insertNode(span); }
+    sel.removeAllRanges();
+  }catch(e){}
+}
+function openDict(w){
+  var g=GLOSS[w]||GLOSS[w.replace(/s$/,'')];
+  var def=g?g[0]:'', pos=g?g[1]:'', ex=g?g[2]:'';
+  var vlink='https://www.vocabulary.com/dictionary/'+encodeURIComponent(w);
+  document.getElementById('dictCard').innerHTML =
+     '<div class="dict-hd"><h3>“'+esc(w)+'”</h3><button class="dict-x" onclick="closeDict()">✕</button></div>'
+    +'<button class="dict-hear" onclick="sayWord(\''+esc(w)+'\')">🔊 Hear it</button>'
+    +(pos?'<div class="dict-pos">'+esc(pos)+'</div>':'')
+    +(def?'<p class="dict-def">'+esc(def)+'</p>':'<p class="dict-def">No local definition — open the full dictionary below.</p>')
+    +(ex?'<p class="dict-ex">“'+esc(ex)+'”</p>':'')
+    +'<a class="dict-more" href="'+vlink+'" target="_blank" rel="noopener">Open on Vocabulary.com →</a>';
+  document.getElementById('dictOv').classList.add('open');
+  sayWord(w);
+}
+function closeDict(){ try{window.speechSynthesis.cancel();}catch(e){} document.getElementById('dictOv').classList.remove('open'); }
+function sayWord(w){ try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(w); u.lang='en-GB'; u.rate=.85; window.speechSynthesis.speak(u);}catch(e){} }
+/* Read-to-me: reads the article text, skipping gaps */
+function readAloud(id,btn){
+  var art=document.getElementById(id); if(!art) return;
+  try{
+    if(window.speechSynthesis.speaking){ window.speechSynthesis.cancel(); if(btn)btn.textContent='🔊 Read to me'; return; }
+    var txt=art.textContent.replace(/\s+/g,' ').trim();
+    var u=new SpeechSynthesisUtterance(txt); u.lang='en-GB'; u.rate=RSET.rate; u.volume=RSET.vol;
+    if(btn){ btn.textContent='⏹ Stop'; u.onend=function(){ btn.textContent='🔊 Read to me'; }; }
+    window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+/* Zoom the article text in/out */
+function zoomArt(id,dir){
+  var art=document.getElementById(id); if(!art) return;
+  var cur=parseFloat(art.getAttribute('data-fs')||'1'); cur=Math.min(1.8,Math.max(.8,cur+dir*0.1));
+  art.setAttribute('data-fs',cur); art.style.fontSize=cur+'em';
+  var lab=document.querySelector('.rt-zoomv[data-art="'+id+'"]'); if(lab)lab.textContent=Math.round(cur*100)+'%';
+}
+/* Type-this-article: a focused copy-typing practice over the article text */
+function typeArticle(id){
+  var art=document.getElementById(id); if(!art) return;
+  var text=art.textContent.replace(/\s+/g,' ').trim();
+  TYPE={text:text,pos:0};
+  document.getElementById('dictCard').innerHTML =
+    '<div class="dict-hd"><h3>⌨️ Type this article</h3><button class="dict-x" onclick="closeDict()">✕</button></div>'
+   +'<p style="font-size:.85rem;color:var(--muted);margin:0 0 8px">Type the passage exactly. Correct letters turn green; mistakes turn red.</p>'
+   +'<div id="typeTarget" class="type-target"></div>'
+   +'<textarea id="typeIn" class="type-in" rows="4" placeholder="Start typing here…" oninput="typeProgress()" autocomplete="off" spellcheck="false"></textarea>'
+   +'<div id="typeStat" class="type-stat">0% · 0 errors</div>';
+  document.getElementById('dictOv').classList.add('open');
+  renderType(); var ta=document.getElementById('typeIn'); if(ta) ta.focus();
+}
+var TYPE=null;
+function renderType(){ if(!TYPE)return; var tgt=document.getElementById('typeTarget'); if(tgt) tgt.textContent=TYPE.text; }
+function typeProgress(){
+  if(!TYPE)return; var ta=document.getElementById('typeIn'); var v=ta.value; var t=TYPE.text;
+  var errs=0,ok=0,html='';
+  for(var i=0;i<t.length;i++){
+    if(i<v.length){ if(v[i]===t[i]){ok++; html+='<span class="tc-ok">'+esc(t[i])+'</span>'; } else { errs++; html+='<span class="tc-bad">'+esc(t[i])+'</span>'; } }
+    else html+='<span>'+esc(t[i])+'</span>';
+  }
+  document.getElementById('typeTarget').innerHTML=html;
+  var pct=Math.round((ok/t.length)*100);
+  document.getElementById('typeStat').textContent=pct+'% · '+errs+' error'+(errs===1?'':'s');
+}
+
 var BEE=null;
 function currentVocab(){ var L=LESSONS[CUR.id]; if(!L)return[]; var st=(L.stages&&L.stages.vocab)||[]; for(var i=0;i<st.length;i++){ if(st[i].t==='vocab') return st[i].items||[]; } return []; }
 function openBee(){
