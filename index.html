@@ -85,7 +85,12 @@
   ol,ul{line-height:1.75}
   .objbox{background:#f4f7fb;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
   .objbox b{color:var(--blue)}
-  .vrow{display:flex;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line)}
+  .vrow{display:flex;gap:12px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--line)}
+  .vrow>b.vw{flex:0 0 128px;color:#12324f;cursor:pointer}
+  .vrow>b.vw:hover{text-decoration:underline}
+  .vrow .vd{flex:1}
+  .vrow .vacts{flex:none;display:flex;gap:6px;align-items:center}
+  @media (max-width:640px){ .vrow{flex-wrap:wrap} .vrow>b.vw{flex-basis:100%} .vrow .vd{flex-basis:100%} }
   .vrow:last-child{border-bottom:0}
   .vrow b{min-width:170px;color:var(--ink)}
   .wordday{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px}
@@ -878,7 +883,7 @@ function block(b){
  if(b.t==="note") return '<div class="note">'+b.html+'</div>';
  if(b.t==="prompts") return (b.intro?'<p style="font-weight:700;margin-bottom:2px">'+esc(b.intro)+'</p>':'')+'<ol>'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
  if(b.t==="obj") return '<div class="objbox"><p style="font-weight:800;margin:0 0 6px;color:var(--blue)">In this lesson, I will learn how to…</p><ul style="margin:0">'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';
- if(b.t==="vocab") return '<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">'+b.items.map(function(v){return '<div class="vrow"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+'</span></div>';}).join('')+'</div><button class="btn pri beebtn" onclick="openBee()">🐝 Spelling Bee — test yourself</button><p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Hear each word, then type it. Two attempts each · 15s per word · score 60%+ for a certificate.</p>';
+ if(b.t==="vocab") return '<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">'+b.items.map(function(v){ var jw=esc(v[0]).replace(/\x27/g,"\\\x27"); return '<div class="vrow"><b class="vw" onclick="openDict(\x27'+jw+'\x27)">'+esc(v[0])+'</b><span class="vd">'+esc(v[1])+'</span><span class="vacts"><button class="gl-ico" title="Hear it" onclick="sayWord(\x27'+jw+'\x27)">🔊</button><button class="gl-bank" onclick="bankWord(\x27'+jw+'\x27,this)">＋ Bank</button></span></div>';}).join('')+'</div><button class="btn pri beebtn" onclick="openBee()">🐝 Spelling Bee — test yourself</button><p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Tap 🔊 to hear a word, or ＋ Bank to save it to your Vocabulary Log. Two attempts each · 15s per word · score 60%+ for a certificate.</p>';
  if(b.t==="wordday") return '<div class="wordday"><div class="l">Word of Today</div><div class="w">'+esc(b.word)+'</div><div>'+esc(b.def)+'</div><div style="opacity:.85;font-style:italic;margin-top:4px">“'+esc(b.ex)+'”</div></div>';
  if(b.t==="passage"){ var pid='art'+(Math.random().toString(36).slice(2,8)); var tb=(b.tools===false)?'':readToolbar(pid); var pK=keyEntries(), pRe=keyRegex(pK); return tb+'<div class="passage cloze-art wordable" id="'+pid+'" onclick="wordClick(event)"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+renderReadingPara(p,pRe,false)+'</p>';}).join('')+'</div>'+glossaryHTML(pK); }
  if(b.t==="kwl") return ["K — what I already KNOW about this topic","W — what I WANT to learn today","L — what I LEARNED (fill in at the end)"].map(function(l){return '<label class="q">'+esc(l)+'</label><textarea rows="2"></textarea>';}).join('');
