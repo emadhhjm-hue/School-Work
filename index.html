@@ -188,6 +188,37 @@
   .sl-row span{font-size:.85rem;color:var(--muted)}
   .sl-hear{border:0;background:#eef1f6;border-radius:8px;width:30px;height:30px;cursor:pointer}
   @media (max-width:640px){ .rt-range{width:64px} .rt-grp{border-left:0} }
+  /* bold key vocabulary in the reading */
+  .cloze-art .kw{font-weight:800;color:#12324f;background:#eef4ff;border-radius:4px;padding:0 3px;cursor:pointer;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  .cloze-art .kw:hover{background:#dbe7ff}
+  /* glossary / vocabulary study */
+  .glossary{margin:16px 0 4px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#fafbff}
+  .glossary h3{margin:0 0 2px;color:var(--blue);font-size:1.05rem}
+  .gl-hint{margin:0 0 10px;font-size:.8rem;color:var(--muted)}
+  .gl-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px dashed var(--line)}
+  .gl-row:first-of-type{border-top:0}
+  .gl-hear{border:0;background:#eef1f6;border-radius:8px;width:32px;height:32px;cursor:pointer;flex:none}
+  .gl-body{flex:1}
+  .gl-w{font-weight:800;color:#12324f;cursor:pointer;font-size:1.02rem;border-bottom:2px solid transparent}
+  .gl-w:hover{border-bottom-color:var(--blue)}
+  .gl-pos{display:inline-block;margin-left:8px;background:#eef4ff;color:#1c4e9c;border-radius:6px;padding:1px 7px;font-weight:700;font-size:.75rem}
+  .gl-def{margin:3px 0 0}
+  .gl-ex{margin:2px 0 0;color:var(--muted);font-style:italic;font-size:.92rem}
+  .gl-row{align-items:center}
+  .gl-actions{display:flex;gap:6px;flex:none;align-items:center}
+  .gl-ico{border:1px solid var(--line);background:#fff;border-radius:9px;width:38px;height:34px;cursor:pointer;font-size:1rem}
+  .gl-bank{border:1px solid var(--line);background:#fff;border-radius:9px;padding:0 12px;height:34px;cursor:pointer;font-weight:800;color:#33405a;font-size:.85rem}
+  .gl-bank:hover{border-color:var(--blue)}
+  .gl-bank.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+  /* OREO free-writing */
+  .oreo-box{border:1px solid var(--amber);background:#fffdf6;border-radius:16px;padding:16px 18px;margin-top:16px}
+  .oreo-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .oreo-badge{background:var(--ink);color:#fff;border-radius:999px;padding:3px 12px;font-weight:800;font-size:.85rem}
+  .oreo-task{margin:6px 0 10px}
+  .oreo-key{font-size:.86rem;color:#33405a;margin:0 0 12px;padding:8px 10px;border:1px dashed var(--amber);border-radius:10px;background:#fff}
+  .ok{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;font-weight:800;color:#fff;font-size:.8rem}
+  .ok-o{background:#2e7d55}.ok-r{background:#3f6fb5}.ok-e{background:#7a52a3}.ok-o2{background:#c98a1e}
+  .hl-ex{background:#efe6fb}
 
   /* Spelling Bee pop-up */
   .beebtn{margin-top:14px}
@@ -362,7 +393,7 @@ var C1_LESSONS={
  stages:{
   kwl:[{t:"note",html:"<b>Prior knowledge (KWL).</b> You have read how marketing works. Today you turn your research into a clear, written summary. What makes a summary <i>good</i>?"},{t:"kwl"}],
   warm:[{t:"prompts",intro:"Warm-up — discuss (5 min):",items:["In one sentence, what is the single biggest way marketing influences us?","Which is stronger evidence in writing: an opinion, or an example? Why?","What linking words help you connect ideas (for example, however, as a result…)?"]}],
-  obj:[{t:"obj",items:["summarise and synthesise your research findings in your own words","use cohesive devices to connect ideas so writing flows","use the present simple passive to sound formal and objective","build an evidence-based argument (claim + example)"]},{t:"note",html:"You are now <i>creating</i> — the top of Bloom’s ladder. You take ideas you read and represent them in your own writing."}],
+  obj:[{t:"obj",items:["summarise and synthesise your research findings in your own words","use cohesive devices to connect ideas so writing flows","use the present simple passive to sound formal and objective","build an evidence-based argument (claim + example)","build and support an opinion using the OREO plan: Opinion, Reasons, Example(s), and an Open question or call to action"]},{t:"note",html:"You are now <i>creating</i> — the top of Bloom’s ladder. You take ideas you read and represent them in your own writing."}],
   vocab:[{t:"p",html:"<b>Key vocabulary</b> (same set as Lessons 5–6). Warm up your spelling before you write."},{t:"vocab",items:[
     ["consumer","a person who buys and uses goods or services","noun","Every …… is a target for adverts."],
     ["consume","to buy and use goods or services","verb","We …… far more than we need."],
@@ -379,7 +410,9 @@ var C1_LESSONS={
     r1:"First, scarcity is used to create urgency; for example, a message such as “only two left” pushes shoppers to decide quickly before they can compare prices.",
     r2:"In addition, brand image is built around emotion, so a familiar or “cool” brand is often chosen even when two items are almost identical.",
     close:"Overall, when consumers understand these techniques, wiser choices are made and money is spent with real purpose."
-  }}],
+  }},
+   {t:"note",html:"<b>Extension — from summary to opinion.</b> Now argue your own view about consumer choice using the OREO plan."},
+   {t:"oreo",task:"Do consumers have real freedom of choice, or does marketing decide for them? Read Paragraph E again (self-fulfilling prophecy) and the whole article, then write one opinion paragraph using O-R-E-O.",model:{o1:"In my opinion, consumers are influenced far more than they realise, so real freedom of choice is limited.",r1:"First, advertisers deliberately target our emotions and fears, so decisions are often made for psychological reasons rather than real needs.",r2:"Second, even our senses are used against us, which means we are guided without noticing it.",ex:"For example, in Hirsch’s study, 84% of people preferred identical sneakers simply because the room smelled of flowers, and a self-fulfilling prophecy can make a diet pill seem to “work” only because buyers start eating less.",o2:"So, should we blame ourselves for buying things we don’t need, or should we learn to question the marketing behind every choice?"}}],
   culture:[{t:"p",html:"<b>UAE–World Connection.</b> Writing clearly and honestly about evidence is part of being a critical, informed citizen — a value at the heart of the UAE National Education Charter. Around the world, media-literate consumers question the messages they are sold."},{t:"prompts",items:["Which technique do you think is the most powerful — and the least fair? Why?","How could a company market a product honestly?"]}],
   enrich:[{t:"p",html:"<b>Sharpen your writing.</b> Passive voice and linkers make a summary sound formal and connected."},{t:"mcq",intro:"Choose the more formal / better-connected version:",qs:[{q:"Formal summary style:",opts:["They trick people with colours.","Bright colours are used to catch attention.","Colours are so nice."],ans:1},{q:"Best linker to show a result:",opts:["As a result,","Because of,","Also of,"],ans:0}]},{t:"reflect",items:["Rewrite one sentence of your paragraph in the passive voice.","Add one linking word to improve the flow of your writing."]}],
   exit:[{t:"reflect",items:["Write your topic sentence from today.","Name one cohesive device you used.","(KWL “L”) One thing you learned about summarising."]},{t:"rating",label:"How confident do you feel writing a clear, evidence-based summary?"}]
@@ -847,12 +880,40 @@ function block(b){
  if(b.t==="obj") return '<div class="objbox"><p style="font-weight:800;margin:0 0 6px;color:var(--blue)">In this lesson, I will learn how to…</p><ul style="margin:0">'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';
  if(b.t==="vocab") return '<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">'+b.items.map(function(v){return '<div class="vrow"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+'</span></div>';}).join('')+'</div><button class="btn pri beebtn" onclick="openBee()">🐝 Spelling Bee — test yourself</button><p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Hear each word, then type it. Two attempts each · 15s per word · score 60%+ for a certificate.</p>';
  if(b.t==="wordday") return '<div class="wordday"><div class="l">Word of Today</div><div class="w">'+esc(b.word)+'</div><div>'+esc(b.def)+'</div><div style="opacity:.85;font-style:italic;margin-top:4px">“'+esc(b.ex)+'”</div></div>';
- if(b.t==="passage"){ var pid='art'+(Math.random().toString(36).slice(2,8)); var tb=(b.tools===false)?'':readToolbar(pid); return tb+'<div class="passage cloze-art wordable" id="'+pid+'" onclick="wordClick(event)"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+p+'</p>';}).join('')+'</div>'; }
+ if(b.t==="passage"){ var pid='art'+(Math.random().toString(36).slice(2,8)); var tb=(b.tools===false)?'':readToolbar(pid); var pK=keyEntries(), pRe=keyRegex(pK); return tb+'<div class="passage cloze-art wordable" id="'+pid+'" onclick="wordClick(event)"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+renderReadingPara(p,pRe,false)+'</p>';}).join('')+'</div>'+glossaryHTML(pK); }
  if(b.t==="kwl") return ["K — what I already KNOW about this topic","W — what I WANT to learn today","L — what I LEARNED (fill in at the end)"].map(function(l){return '<label class="q">'+esc(l)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="reflect") return b.items.map(function(x){return '<label class="q">'+esc(x)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="rating") return '<p style="font-weight:700;margin:12px 0 4px">'+esc(b.label)+'</p><div class="rate" data-r="0">'+[1,2,3,4,5].map(function(n){return '<span onclick="star(this,'+n+')">☆</span>';}).join('')+'</div>';
  if(b.t==="roles") return '<div class="roles">'+b.cards.map(function(c){return '<div class="rolecard"><h4>'+esc(c[0])+'</h4><div>'+esc(c[1])+'</div></div>';}).join('')+'</div>';
- if(b.t==="writemodel"){
+if(b.t==="oreo"){
+   var m=b.model||{};
+   var plan='<label class="q">O — Opinion (your clear position):</label><textarea rows="2"></textarea>'
+     +'<label class="q">R1 — Reason 1:</label><textarea rows="2"></textarea>'
+     +'<label class="q">R2 — Reason 2:</label><textarea rows="2"></textarea>'
+     +'<label class="q">E — Example(s) that support your reasons:</label><textarea rows="2"></textarea>'
+     +'<label class="q">O — Open question / call to action (your ending):</label><textarea rows="2"></textarea>';
+   var model='<details class="model-d" style="margin-top:14px"><summary>▾ Show the model answer (compare yours with it)</summary>'
+     +'<div class="hlk"><span class="hl-topic">O · Opinion</span><span class="hl-r1">R1 · Reason 1</span><span class="hl-r2">R2 · Reason 2</span><span class="hl-ex">E · Example(s)</span><span class="hl-close">O · Open question / call to action</span></div>'
+     +'<div class="model-ans">'
+     +(m.o1?'<span class="hl-topic">'+esc(m.o1)+'</span> ':'')
+     +(m.r1?'<span class="hl-r1">'+esc(m.r1)+'</span> ':'')
+     +(m.r2?'<span class="hl-r2">'+esc(m.r2)+'</span> ':'')
+     +(m.ex?'<span class="hl-ex">'+esc(m.ex)+'</span> ':'')
+     +(m.o2?'<span class="hl-close">'+esc(m.o2)+'</span>':'')
+     +'</div></details>';
+   return '<div class="a2write oreo-box">'
+     +'<div class="oreo-head"><span class="oreo-badge">🍪 OREO</span><b>Free-writing — prepare your opinion paragraph</b></div>'
+     +(b.task?'<p class="oreo-task">'+esc(b.task)+'</p>':'')
+     +'<div class="oreo-key"><span class="ok ok-o">O</span> Opinion &nbsp; <span class="ok ok-r">R</span> Reasons (R1, R2) &nbsp; <span class="ok ok-e">E</span> Example(s) &nbsp; <span class="ok ok-o2">O</span> Open question / call to action</div>'
+     +plan
+     +'<label class="q">Now write your full paragraph:</label><textarea rows="9" placeholder="Write 6–8 sentences using O-R-E-O…"></textarea>'
+     +'<div class="wtimer"><div class="wt-clock">08:00</div><span class="wt-phase">Ready — press Start writing</span></div>'
+     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri sm" onclick="wtStart(8,\'Free-writing\',this)">▶ Start free-writing · 8 min</button>'
+     +'<button class="btn sm" onclick="wtStart(3,\'Comparing with the model\',this);openModel(this)">▶ Compare with model · 3 min</button></div>'
+     +'<p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Draft freely for 8 minutes following O-R-E-O. Then open the model and compare for 3 minutes.</p>'
+     +model+'</div>';
+ }
+  if(b.t==="writemodel"){
    var plan=(b.plan||[]).map(function(x){return '<label class="q">'+esc(x)+'</label><textarea rows="2"></textarea>';}).join('');
    var m=b.model||{};
    var model='<details class="model-d" style="margin-top:14px"><summary>▾ Show the model answer (compare yours with it)</summary>'
@@ -882,10 +943,11 @@ function block(b){
  if(b.t==="video"){ var q=encodeURIComponent(b.query||''); var vid=(b.id||''); var embed = vid ? '<div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;margin:10px 0"><iframe src="https://www.youtube.com/embed/'+vid+'" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe></div>' : ''; return '<div>'+(b.caption?'<p>'+esc(b.caption)+'</p>':'')+embed+'<div id="vidHost"></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px"><a class="btn pri" href="https://www.youtube.com/results?search_query='+q+'" target="_blank" rel="noopener">\u25b6 Find a video on YouTube</a><input id="vidPaste" placeholder="\u2026or paste a YouTube link / ID to play it here" style="flex:1;min-width:220px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px" onkeydown="if(event.key===\'Enter\'){playVid();}"><button class="btn sm" onclick="playVid()">Play</button></div><p style="font-size:.8rem;color:var(--muted);margin-top:6px">Pick a short clip on the topic. Paste a chosen video to embed it right here for the class.</p></div>'; }
  if(b.t==="cloze"){
    var bank=b.bank?'<div class="wbank"><b>Word bank:</b> '+b.bank.map(function(w){return '<span class="wchip">'+esc(w)+'</span>';}).join('')+'</div>':'';
-   var body=b.paras.map(function(p,i){ var txt=p.replace(/\[\[(.+?)\]\]/g,function(m,w){ return '<input class="A gap" data-a="'+esc(w.toLowerCase())+'" autocomplete="off" style="width:'+Math.max(90,w.length*13)+'px" />'; }); return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+txt+'</p>'; }).join('');
+   var kK=keyEntries(), kRe=keyRegex(kK);
+   var body=b.paras.map(function(p,i){ return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+renderReadingPara(p,kRe,true)+'</p>'; }).join('');
    var artId='art'+(Math.random().toString(36).slice(2,8));
    var tools=(b.tools!==false)?readToolbar(artId):'';
-   return '<div class="graded">'+(b.intro?'<p style="font-weight:700">'+esc(b.intro)+'</p>':'')+tools+bank+'<div class="passage cloze-art wordable" id="'+artId+'" onclick="wordClick(event)">'+body+'</div><button class="btn sm pri" onclick="grade(this)" style="margin-top:8px">Check</button><div class="fb"></div></div>';
+   return '<div class="graded">'+(b.intro?'<p style="font-weight:700">'+esc(b.intro)+'</p>':'')+tools+bank+'<div class="passage cloze-art wordable" id="'+artId+'" onclick="wordClick(event)">'+body+'</div><button class="btn sm pri" onclick="grade(this)" style="margin-top:8px">Check</button><div class="fb"></div>'+glossaryHTML(kK)+'</div>';
  }
  if(b.t==="tmi"){
    var rows=b.rows.map(function(r){ return '<div class="tmi-row"><div class="tmi-h">'+esc(r.p)+'</div><label class="q">Topic</label><input class="tmi-in" autocomplete="off" /><label class="q">Main idea</label><textarea rows="2"></textarea></div>'; }).join('');
@@ -935,6 +997,56 @@ function openModel(btn){ var wrap=btn.closest('.a2write'); if(!wrap)return; var 
 /* ---------------- Spelling Bee pop-up ---------------- */
 /* ---- Reading affordances: dictionary, read-aloud, type-this, zoom, subtabs ---- */
 var RSET={rate:0.95, vol:1.0, dict:true};
+function keyEntries(){
+  // key vocabulary for THIS lesson, from its vocab list: [word, def, pos, example]
+  var v=currentVocab(); return v.map(function(x){
+    var ex=(x[3]||'').replace(/\u2026+/g, x[0]);   // fill the "……" blank with the word
+    return {w:x[0], def:x[1]||'', pos:x[2]||'', ex:ex};
+  });
+}
+function reEsc(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function keyRegex(keys){
+  if(!keys||!keys.length) return null;
+  var alt=keys.map(function(k){return reEsc(k.w);}).sort(function(a,b){return b.length-a.length;}).join('|');
+  return new RegExp('\\b('+alt+')(s|es)?\\b','gi');
+}
+function boldKeys(text, re){ return re ? text.replace(re, function(m){ return '<b class="kw" data-kw="1">'+m+'</b>'; }) : text; }
+/* render a paragraph: [[gaps]] -> inputs, key words -> bold, tags preserved */
+function renderReadingPara(p, re, withGaps){
+  var out='', last=0, m, rx=/\[\[(.+?)\]\]|(<[^>]+>)/g;
+  while((m=rx.exec(p))){
+    out += boldKeys(p.slice(last,m.index), re);
+    if(m[1]!=null){ var w=m[1]; out += withGaps
+        ? '<input class="A gap" data-a="'+esc(w.toLowerCase())+'" autocomplete="off" style="width:'+Math.max(90,w.length*13)+'px" />'
+        : esc(w); }
+    else out += m[2];              // keep inline tag (<i>, <b>…)
+    last=rx.lastIndex;
+  }
+  out += boldKeys(p.slice(last), re);
+  return out;
+}
+function glossaryHTML(keys){
+  if(!keys||!keys.length) return '';
+  return '<div class="glossary"><h3>🔤 Word list — key vocabulary in this text</h3>'
+    +'<p class="gl-hint">Tap 🔊 to hear a word, or <b>＋ Bank</b> to save it to your Vocabulary Log. Then take the Spelling Bee in the reader bar above.</p>'
+    +keys.map(function(k){ var jw=esc(k.w).replace(/'/g,"\\'"); return '<div class="gl-row">'
+      +'<div class="gl-body"><span class="gl-w" onclick="openDict(\''+jw+'\')">'+esc(k.w)+'</span>'
+      +(k.pos?'<span class="gl-pos">'+esc(k.pos)+'</span>':'')
+      +'<div class="gl-def">'+esc(k.def)+'</div>'
+      +(k.ex?'<div class="gl-ex">\u201c'+esc(k.ex)+'\u201d</div>':'')
+      +'</div>'
+      +'<div class="gl-actions"><button class="gl-ico" title="Hear it" onclick="sayWord(\''+jw+'\')">🔊</button>'
+      +'<button class="gl-bank" onclick="bankWord(\''+jw+'\',this)">＋ Bank</button></div>'
+      +'</div>'; }).join('')
+    +'</div>';
+}
+/* ---- Vocabulary Log (saved words) ---- */
+function vocabLog(){ try{ return JSON.parse(localStorage.getItem('ican_vocab_log')||'[]'); }catch(e){ return []; } }
+function saveVocabLog(a){ try{ localStorage.setItem('ican_vocab_log', JSON.stringify(a)); }catch(e){} }
+function bankWord(w, btn){
+  var log=vocabLog(); if(log.indexOf(w)<0){ log.push(w); saveVocabLog(log); }
+  if(btn){ btn.textContent='✓ Banked'; btn.classList.add('on'); btn.disabled=true; }
+}
 function readToolbar(id){
   return ''
   +'<div class="rtoolbar" data-art="'+id+'">'
@@ -982,7 +1094,7 @@ function openSpellList(){
   document.getElementById('dictOv').classList.add('open');
 }
 function worksheetPDF(id){
-  var art=document.getElementById(id); var text=art?art.textContent.replace(/\s+/g,' ').trim():'';
+  var art=document.getElementById(id); var text=art?articleText(art):'';
   var L=LESSONS[CUR.id]||{}; var w=window.open('','_blank');
   if(!w){ alert('Please allow pop-ups to print the worksheet.'); return; }
   w.document.write('<html><head><title>Worksheet — '+esc(L.title||'Reading')+'</title>'
@@ -1107,20 +1219,31 @@ function openDict(w){
      '<div class="dict-hd"><h3>“'+esc(w)+'”</h3><button class="dict-x" onclick="closeDict()">✕</button></div>'
     +'<button class="dict-hear" onclick="sayWord(\''+esc(w)+'\')">🔊 Hear it</button>'
     +(pos?'<div class="dict-pos">'+esc(pos)+'</div>':'')
-    +(def?'<p class="dict-def">'+esc(def)+'</p>':'<p class="dict-def">No local definition — open the full dictionary below.</p>')
+    +(def?'<p class="dict-def">'+esc(def)+'</p>':'<p class="dict-def">No definition on file for this word yet.</p>')
     +(ex?'<p class="dict-ex">“'+esc(ex)+'”</p>':'')
-    +'<a class="dict-more" href="'+vlink+'" target="_blank" rel="noopener">Open on Vocabulary.com →</a>';
+    +(def?'':'<a class="dict-more" href="'+vlink+'" target="_blank" rel="noopener">Look it up on Vocabulary.com →</a>');
   document.getElementById('dictOv').classList.add('open');
   sayWord(w);
 }
 function closeDict(){ try{window.speechSynthesis.cancel();}catch(e){} document.getElementById('dictOv').classList.remove('open'); }
 function sayWord(w){ try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(w); u.lang='en-GB'; u.rate=.85; window.speechSynthesis.speak(u);}catch(e){} }
 /* Read-to-me: reads the article text, skipping gaps */
+function articleText(art){
+  /* read the reading text in order, speaking each gap's answer where a blank sits; skip the Glossary */
+  var clone=art.cloneNode(true);
+  var g=clone.querySelector('.glossary'); if(g) g.parentNode.removeChild(g);
+  clone.querySelectorAll('input.gap').forEach(function(inp){
+    var w=inp.value.trim()||inp.getAttribute('data-a')||'';
+    inp.parentNode.replaceChild(document.createTextNode(' '+w+' '), inp);
+  });
+  clone.querySelectorAll('.pl').forEach(function(pl){ pl.parentNode.removeChild(pl); }); /* drop paragraph letters */
+  return clone.textContent.replace(/\s+/g,' ').trim();
+}
 function readAloud(id,btn){
   var art=document.getElementById(id); if(!art) return;
   try{
     if(window.speechSynthesis.speaking){ window.speechSynthesis.cancel(); if(btn)btn.textContent='🔊 Read to me'; return; }
-    var txt=art.textContent.replace(/\s+/g,' ').trim();
+    var txt=articleText(art);
     var u=new SpeechSynthesisUtterance(txt); u.lang='en-GB'; u.rate=RSET.rate; u.volume=RSET.vol;
     if(btn){ btn.textContent='⏹ Stop'; u.onend=function(){ btn.textContent='🔊 Read to me'; }; }
     window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
@@ -1136,7 +1259,7 @@ function zoomArt(id,dir){
 /* Type-this-article: a focused copy-typing practice over the article text */
 function typeArticle(id){
   var art=document.getElementById(id); if(!art) return;
-  var text=art.textContent.replace(/\s+/g,' ').trim();
+  var text=articleText(art);
   TYPE={text:text,pos:0};
   document.getElementById('dictCard').innerHTML =
     '<div class="dict-hd"><h3>⌨️ Type this article</h3><button class="dict-x" onclick="closeDict()">✕</button></div>'
