@@ -847,7 +847,7 @@ function block(b){
  if(b.t==="obj") return '<div class="objbox"><p style="font-weight:800;margin:0 0 6px;color:var(--blue)">In this lesson, I will learn how to…</p><ul style="margin:0">'+b.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';
  if(b.t==="vocab") return '<div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">'+b.items.map(function(v){return '<div class="vrow"><b>'+esc(v[0])+'</b><span>'+esc(v[1])+'</span></div>';}).join('')+'</div><button class="btn pri beebtn" onclick="openBee()">🐝 Spelling Bee — test yourself</button><p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Hear each word, then type it. Two attempts each · 15s per word · score 60%+ for a certificate.</p>';
  if(b.t==="wordday") return '<div class="wordday"><div class="l">Word of Today</div><div class="w">'+esc(b.word)+'</div><div>'+esc(b.def)+'</div><div style="opacity:.85;font-style:italic;margin-top:4px">“'+esc(b.ex)+'”</div></div>';
- if(b.t==="passage") return '<div class="passage"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+p+'</p>';}).join('')+'</div>';
+ if(b.t==="passage"){ var pid='art'+(Math.random().toString(36).slice(2,8)); var tb=(b.tools===false)?'':readToolbar(pid); return tb+'<div class="passage cloze-art wordable" id="'+pid+'" onclick="wordClick(event)"><h3 style="margin:0 0 6px">'+esc(b.title)+'</h3>'+b.paras.map(function(p,i){return '<p><span class="pl">'+String.fromCharCode(65+i)+'</span>'+p+'</p>';}).join('')+'</div>'; }
  if(b.t==="kwl") return ["K — what I already KNOW about this topic","W — what I WANT to learn today","L — what I LEARNED (fill in at the end)"].map(function(l){return '<label class="q">'+esc(l)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="reflect") return b.items.map(function(x){return '<label class="q">'+esc(x)+'</label><textarea rows="2"></textarea>';}).join('');
  if(b.t==="rating") return '<p style="font-weight:700;margin:12px 0 4px">'+esc(b.label)+'</p><div class="rate" data-r="0">'+[1,2,3,4,5].map(function(n){return '<span onclick="star(this,'+n+')">☆</span>';}).join('')+'</div>';
@@ -1005,18 +1005,62 @@ var GLOSS={
  "consume":["to buy and use goods or services","verb","We consume more than we need."],
  "consumerism":["a way of living based on always buying and using goods","noun","The world economy is based on consumerism."],
  "marketing":["the ways a company promotes and sells its products","noun","Clever marketing makes us want more."],
+ "marketers":["people whose job is to promote and sell products","noun","Marketers study how the brain works."],
  "brand":["a product name that customers recognise and trust","noun","People pay more for a familiar brand."],
+ "brands":["product names that customers recognise","noun","Two brands can be almost identical."],
  "economy":["the system of money, jobs and trade in a place","noun","Spending drives the economy."],
  "identical":["exactly the same","adjective","The two items were identical inside."],
  "items":["separate things or products","noun","She added three items to her cart."],
  "access":["the chance or right to use or get something","noun","Apps give instant access to goods."],
+ "advertising":["the business of making products known to people","noun","Advertising is designed around the brain."],
+ "advertisement":["a notice or film that promotes a product","noun","The advertisement made the car look exciting."],
+ "advertisers":["people or companies that promote products","noun","Advertisers target our fears."],
+ "advert":["a short form of advertisement","noun","That advert uses a famous athlete."],
+ "advertise":["to promote a product to the public","verb","Companies advertise on every screen."],
  "scarcity":["a situation where there is not enough of something","noun","Scarcity pushes us to decide quickly."],
  "dopamine":["a brain chemical linked to pleasure and reward","noun","Dopamine gives a small burst of pleasure."],
- "advertisers":["people or companies that promote products","noun","Advertisers target our fears."],
+ "psychology":["the study of the mind and behaviour","noun","Marketers use psychology to persuade us."],
+ "persuade":["to make someone want to do or believe something","verb","Advertisers persuade us to buy more."],
+ "persuasion":["the act of persuading someone","noun","Scarcity is a common persuasion technique."],
+ "purchase":["to buy something; a thing bought","verb","We often purchase things we do not need."],
+ "weakness":["a fault or a lack of strength","noun","Advertisers understand human weakness."],
+ "dissatisfaction":["a feeling of not being pleased or satisfied","noun","Adverts target our dissatisfaction with ourselves."],
+ "offensive":["unpleasant and likely to upset people","adjective","We fear being offensive to others."],
  "hygiene":["keeping yourself and things clean to stay healthy","noun","Simple dental hygiene is usually enough."],
+ "logic":["careful, sensible reasoning","noun","Our fear outweighs the dentist's logic."],
+ "self-image":["the idea you have of yourself","noun","Adverts appeal to our self-image."],
+ "attractive":["pleasant to look at; appealing","adjective","We want to appear attractive and successful."],
+ "successful":["achieving what you wanted; doing well","adjective","People want to seem successful."],
+ "pollution":["harmful substances that damage air, water or land","noun","SUVs create more pollution than most cars."],
+ "commute":["the regular journey to and from work","noun","They spend the morning commute in traffic."],
  "irrational":["not based on clear thought or reason","adjective","It may seem irrational, but we still buy."],
+ "influence":["to affect how someone thinks or acts","verb","Smell can influence our decision to buy."],
+ "opinion":["what you think or believe about something","noun","Smell shapes our opinion of a product."],
+ "volunteers":["people who offer to do something without being paid","noun","Volunteers answered questions about the sneakers."],
  "prophecy":["a statement about what will happen in the future","noun","A self-fulfilling prophecy comes true because we act on it."],
- "compulsion":["a strong urge to do something you cannot easily control","noun","We buy from compulsion, not need."]
+ "prediction":["a statement about what you think will happen","noun","People can cause a prediction to come true."],
+ "semester":["half of a school or college year","noun","That semester the class did especially well."],
+ "compulsion":["a strong urge to do something you cannot easily control","noun","We buy from compulsion, not need."],
+ "reasonable":["fair and sensible","adjective","We like to think we are reasonable thinkers."],
+ "independent":["not controlled or influenced by others","adjective","We believe we are independent thinkers."],
+ "realize":["to become aware of something","verb","Marketers may have more power than we realize."],
+ "essential":["completely necessary; very important","adjective","Understanding the reader is essential in marketing."],
+ "technique":["a particular way of doing something","noun","Scarcity is a persuasion technique."],
+ "strategy":["a plan for achieving a goal","noun","Every advert follows a strategy."],
+ "evidence":["facts or signs that show something is true","noun","Give evidence to support your main idea."],
+ "analyse":["to examine something in detail","verb","We analyse how a text influences the reader."],
+ "interpret":["to explain the meaning of something","verb","Learn to interpret the message behind an advert."],
+ "summary":["a short account of the main points","noun","Write a summary of the article."],
+ "topic":["the subject of a text or paragraph","noun","Identify the topic of each paragraph."],
+ "passive":["a verb form where the subject receives the action","noun","'Adverts are shown' uses the passive."],
+ "cohesive":["holding together clearly and logically","adjective","Cohesive devices link your ideas."],
+ "compulsory":["required by a rule or law","adjective","The uniform is compulsory at school."],
+ "critical":["involving careful judgement; very important","adjective","Be a critical consumer who asks questions."],
+ "compare":["to look at how things are similar or different","verb","Compare Brand A with Brand B."],
+ "previous":["coming before in time or order","adjective","Read the previous paragraph again."],
+ "obvious":["easy to see or understand","adjective","The trick is not always obvious."],
+ "benefit":["a helpful or good effect","noun","A benefit of comparing is saving money."],
+ "purpose":["the reason something is done","noun","Buy with a clear purpose."]
 };
 function cleanWord(w){ return (w||'').toLowerCase().replace(/[^a-z’'-]/g,'').replace(/^[’'-]+|[’'-]+$/g,''); }
 function wordClick(ev){
@@ -1030,8 +1074,17 @@ function wordClick(ev){
   openDict(w);
 }
 function wordAtPoint(ev){
-  var t=ev.target; if(!t) return '';
-  var txt=t.textContent||''; return txt.split(/\s+/).length===1 ? txt : '';
+  try{
+    var range=null;
+    if(document.caretRangeFromPoint) range=document.caretRangeFromPoint(ev.clientX,ev.clientY);
+    else if(document.caretPositionFromPoint){ var pos=document.caretPositionFromPoint(ev.clientX,ev.clientY); if(pos){ range=document.createRange(); range.setStart(pos.offsetNode,pos.offset); range.collapse(true); } }
+    if(range && range.startContainer && range.startContainer.nodeType===3){
+      var text=range.startContainer.textContent, o=range.startOffset, l=o, r=o, re=/[A-Za-z\u2019'\-]/;
+      while(l>0 && re.test(text[l-1])) l--; while(r<text.length && re.test(text[r])) r++;
+      if(r>l) return text.slice(l,r);
+    }
+  }catch(e){}
+  var t=ev.target; if(!t) return ''; var txt=t.textContent||''; return txt.split(/\s+/).length===1 ? txt : '';
 }
 function hlSelection(art){
   try{ var sel=window.getSelection(); if(!sel||sel.isCollapsed||!sel.rangeCount) return;
@@ -1041,8 +1094,13 @@ function hlSelection(art){
     sel.removeAllRanges();
   }catch(e){}
 }
+function lessonWord(w){
+  var v=currentVocab(); for(var i=0;i<v.length;i++){ var t=(v[i][0]||'').toLowerCase();
+    if(t===w || t===w.replace(/s$/,'') || t.replace(/s$/,'')===w) return [v[i][1]||'', v[i][2]||'', v[i][3]||'']; }
+  return null;
+}
 function openDict(w){
-  var g=GLOSS[w]||GLOSS[w.replace(/s$/,'')];
+  var g=lessonWord(w)||GLOSS[w]||GLOSS[w.replace(/s$/,'')]||GLOSS[w.replace(/es$/,'')]||GLOSS[w.replace(/ed$/,'')]||GLOSS[w.replace(/ing$/,'')];
   var def=g?g[0]:'', pos=g?g[1]:'', ex=g?g[2]:'';
   var vlink='https://www.vocabulary.com/dictionary/'+encodeURIComponent(w);
   document.getElementById('dictCard').innerHTML =
