@@ -347,6 +347,7 @@
 
   @media (max-width:800px){ .lp-grid{grid-template-columns:1fr} .lp-menu{position:static;flex-direction:row;overflow-x:auto} .lp-menu button{text-align:center;flex:0 0 auto} .lp-menu button small{display:none} #timer{position:fixed;top:12px;right:12px;z-index:40;padding:8px 14px;min-width:104px} #timer .tv{font-size:1.4rem} }
 </style>
+<style>@media print{.lp-menu,#menu,#timer,.nav-row,.back,.beebtn,.gl-ico,.gl-bank,.wk-plan{display:none!important}.lp-grid{display:block!important}.lp-body{width:100%!important}body{background:#fff!important}a[href]:after{content:""}}</style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
@@ -2977,6 +2978,119 @@ var C1_WEEKS=[
  {n:4, skill:"Reading & Writing",     cls:"rw", dates:"Term 1 · Week 4", lessons:["l1314","l1516"]}
 ];
 
+/* ===== Downloadable PDF: Study Card · Worksheet · Weekly Checkpoint =====
+   Opened from buttons next to the lesson title (NOT inside the teaching flow).
+   Each builds a branded, print-ready sheet in a new tab and calls print()
+   so the browser's "Save as PDF" produces the file. Content is generated from
+   the lesson's own vocabulary, objectives and MCQs. */
+var _EMB='<svg width="36" height="40" viewBox="0 0 34 38"><path d="M17 1 32 9.5v19L17 37 2 28.5v-19Z" fill="#0E7C86"/><path d="M17 1 32 9.5v19L17 37 2 28.5v-19Z" fill="none" stroke="#0A5A62" stroke-width="1.4"/><path d="M9 14h6.6c.9 0 1.4.4 1.4 1.2V27c0-.7-.6-1.1-1.5-1.1H9Z" fill="#fff"/><path d="M25 14h-6.6c-.9 0-1.4.4-1.4 1.2V27c0-.7.6-1.1 1.5-1.1H25Z" fill="#e9fbfc"/><path d="M17 15.2V27" stroke="#0A5A62" stroke-width="1"/></svg>';
+var _PDFCSS=`:root{--ink:#10233B;--teal:#0E7C86;--teal-d:#0A5A62;--amber:#B44412;--line:#DCE4EC;--muted:#5B6B7C;--wash:#F3F9FA;--serif:Georgia,'Times New Roman',serif;--sans:'Segoe UI',system-ui,Arial,sans-serif}
+*{box-sizing:border-box}html,body{margin:0}body{background:#eef2f6;color:var(--ink);font-family:var(--sans);font-size:12.5px;line-height:1.5;padding:14px}
+.sheet{background:#fff;width:190mm;max-width:100%;margin:0 auto 8mm;padding:12mm 13mm;box-shadow:0 6px 22px rgba(16,35,59,.1)}
+.head{display:flex;align-items:flex-start;gap:12px;border-bottom:2.5px solid var(--ink);padding-bottom:10px}
+.wm{font-family:var(--serif);font-weight:700;font-size:17px;line-height:1}
+.wm small{display:block;font-family:var(--sans);font-weight:600;font-size:8px;letter-spacing:2px;color:var(--teal);margin-top:3px}
+.kind{margin-left:auto;font-weight:800;font-size:11px;color:#fff;background:var(--teal);padding:4px 12px;border-radius:999px;white-space:nowrap}
+.kind.amber{background:var(--amber)}
+.fields{display:grid;grid-template-columns:1.6fr .8fr .9fr;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin:11px 0 4px}
+.fields div{padding:6px 10px;border-right:1px solid var(--line)}.fields div:last-child{border-right:0}
+.fields b{display:block;font-size:8.5px;font-weight:800;letter-spacing:.6px;color:var(--teal-d);text-transform:uppercase;margin-bottom:9px}
+.fill{border-bottom:1.4px dotted #97a7b6;min-height:14px}
+.titlebar{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:9px 0 2px}
+.titlebar h1{font-family:var(--serif);font-size:19px;margin:0}
+.loc{color:var(--muted);font-size:11px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
+.chip{font-size:10px;font-weight:600;color:var(--teal-d);background:var(--wash);border:1px solid #cfe6e8;padding:2px 8px;border-radius:6px}
+.chip.charter{color:var(--amber);background:#fdf2ec;border-color:#f3d9cc}
+section{margin-top:12px;break-inside:avoid}
+.sh{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.sh .lt{font-family:var(--serif);font-weight:700;font-size:13px;color:#fff;background:var(--ink);min-width:22px;height:22px;padding:0 5px;border-radius:6px;display:grid;place-items:center}
+.sh h2{font-size:13px;margin:0;font-weight:800}
+.sh .slo{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--teal);background:var(--wash);border:1px solid #cfe6e8;padding:2px 7px;border-radius:5px}
+ol{margin:4px 0 0;padding-left:22px}li{margin:6px 0}
+.bank{background:var(--wash);border:1px dashed #bfe0e2;border-radius:8px;padding:7px 11px;margin:2px 0 8px}.bank b{color:var(--teal-d)}
+.gap{display:inline-block;min-width:90px;border-bottom:1.4px solid #6f8091;height:14px;margin:0 3px}
+label{display:block;margin:2px 0}
+.ci{display:inline-block;width:15px;height:15px;border:1.4px solid var(--muted);border-radius:50%;margin-right:7px;vertical-align:-2px}
+.words{display:grid;grid-template-columns:1fr 1fr;gap:2px 20px}.words b{color:var(--teal-d)}
+.tip{background:var(--wash);border:1px dashed #bfe0e2;border-radius:8px;padding:7px 10px}
+.writelines .l{border-bottom:1.4px dotted #97a7b6;height:20px;margin:9px 0}
+.prompt{background:#fdf2ec;border:1px solid #f3d9cc;border-radius:8px;padding:7px 11px}.prompt b{color:var(--amber)}
+.ribbon{display:flex;align-items:center;gap:9px;margin-top:11px;padding:8px 11px;border-radius:9px;background:var(--ink);color:#fff}
+.ribbon b{color:#8fe3e8}.sig{margin-left:auto;text-align:right;font-size:10px;color:#b9c6d3}.sig b{color:#fff}
+.foot{display:flex;align-items:center;margin-top:16px;padding-top:8px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}.foot b{color:var(--ink)}
+.sc{margin-left:auto;border:1px solid var(--line);border-radius:6px;padding:3px 10px}.sc b{color:var(--teal-d)}
+@media print{@page{size:A4 portrait;margin:12mm}body{background:#fff;padding:0}.sheet{box-shadow:none;width:auto;margin:0;padding:0}}`;
+var _GAP=/(?:\u2026+|_{2,}|\.{3,})/;
+function _mv(L){ var v=((L.stages&&L.stages.vocab)||[]).filter(function(b){return b.t==="vocab";})[0]; return (v&&v.items)||[]; }
+function _mm(L){ var out=[],st=L.stages||{}; Object.keys(st).forEach(function(k){ (st[k]||[]).forEach(function(b){ if(b.t==="mcq"&&b.qs){ b.qs.forEach(function(q){ if(q&&q.opts&&q.opts.length>=2) out.push(q); }); } }); }); return out; }
+function _on(L){ var n=((L.stages&&L.stages.obj)||[]).filter(function(b){return b.t==="note";})[0]; return n?n.html:""; }
+function _oi(L){ var o=((L.stages&&L.stages.obj)||[]).filter(function(b){return b.t==="obj";})[0]; return (o&&o.items)||[]; }
+function _sa(opts,seedStr){ var idx=opts.map(function(_,i){return i;}); var s=2166136261; for(var i=0;i<seedStr.length;i++){ s^=seedStr.charCodeAt(i); s=Math.imul(s,16777619);} s=s>>>0; for(var k=idx.length-1;k>0;k--){ s=(Math.imul(s,1664525)+1013904223)>>>0; var j=s%(k+1); var t=idx[k];idx[k]=idx[j];idx[j]=t; } return {opts:idx.map(function(i){return opts[i];}), ans:idx.indexOf(0)}; }
+function _optLI(opts){ return opts.map(function(o){ return '<label><span class="ci"></span>'+esc(o)+'</label>'; }).join(''); }
+function _gapLI(v){ return '<li>'+v[3].split(_GAP).map(function(x){return esc(x);}).join('<span class="gap"></span>')+'</li>'; }
+function _fields(){ return '<div class="fields"><div><b>Student name</b><div class="fill"></div></div><div><b>Class</b><div class="fill"></div></div><div><b>Date</b><div class="fill"></div></div></div>'; }
+function _foot(total){ return '<div class="foot"><div>iCAN Academy \u00b7 Grade 11 Advanced / 12 General \u00b7 Teacher: <b>Mr. Emad A. Mohamed</b></div>'+(total?'<div class="sc">Score <b>&nbsp;&nbsp;&nbsp;</b> / '+total+'</div>':'')+'</div>'; }
+
+function buildCardHTML(L){
+  var vs=_mv(L).slice(0,8);
+  var words=vs.map(function(v){return '<div><b>'+esc(v[0])+'</b> \u2014 '+esc(v[1])+'</div>';}).join('');
+  var oi=_oi(L); var objHTML=_on(L)||(oi.length?('<b>In this lesson I will\u2026</b><br>'+oi.slice(0,3).map(function(x){return '\u2022 '+esc(x);}).join('<br>')):'');
+  return '<div class="sheet"><div class="head">'+_EMB+'<div class="wm">iCAN Academy<small>READ \u00b7 WRITE \u00b7 DESIGN</small></div><span class="kind">STUDY CARD</span></div>'
+    +'<div class="titlebar"><h1>'+esc(L.title)+'</h1><span class="loc">Lesson '+esc(L.num)+' \u00b7 '+esc(L.focus)+'</span></div>'
+    +'<div class="chips"><span class="chip">'+esc(L.focus)+'</span>'+(L.grammar?'<span class="chip">'+esc(L.grammar)+'</span>':'')+(L.charter?'<span class="chip charter">Charter \u00b7 '+esc(L.charter)+'</span>':'')+'</div>'
+    +(objHTML?'<section><div class="sh"><span class="lt">\u25ce</span><h2>Objective</h2></div><div class="tip">'+objHTML+'</div></section>':'')
+    +(words?'<section><div class="sh"><span class="lt">A</span><h2>Key words \u2014 copy all</h2></div><div class="words">'+words+'</div></section>':'')
+    +(L.grammar?'<section><div class="sh"><span class="lt">G</span><h2>Grammar point</h2></div><div class="tip">'+esc(L.grammar)+' \u2014 practise it on the Worksheet.</div></section>':'')
+    +'<div class="ribbon"><span style="font-size:15px">\u270E</span><div><b>5-minute transfer:</b> copy the key words and the objective into your notebook.</div><div class="sig">iCAN Academy \u00b7 Grade 11A/12G<br><b>Mr. Emad A. Mohamed</b></div></div></div>';
+}
+
+function buildSheetHTML(L){
+  var vs=_mv(L);
+  var bank=vs.slice(0,6).map(function(v){return esc(v[0]);}).join(' &nbsp;\u00b7&nbsp; ');
+  var gaps=vs.filter(function(v){return v[3]&&_GAP.test(v[3]);}).slice(0,5);
+  var gapLI=gaps.map(_gapLI).join('');
+  var mwords=vs.slice(0,3);
+  var meanLI=mwords.map(function(v){ var opts=[v[1]]; vs.forEach(function(x){ if(x[0]!==v[0]&&opts.length<3) opts.push(x[1]); }); var sh=_sa(opts,v[0]+L.num); return '<li><b>'+esc(v[0])+'</b> means:'+_optLI(sh.opts)+'</li>'; }).join('');
+  var mc=_mm(L).slice(0,4);
+  var compLI=mc.map(function(q){ return '<li>'+esc(q.q)+_optLI(q.opts)+'</li>'; }).join('');
+  return '<div class="sheet"><div class="head">'+_EMB+'<div class="wm">iCAN Academy<small>READ \u00b7 WRITE \u00b7 DESIGN</small></div><span class="kind">LESSON WORKSHEET</span></div>'
+    +_fields()
+    +'<div class="titlebar"><h1>'+esc(L.title)+'</h1><span class="loc">Lesson '+esc(L.num)+' \u00b7 '+esc(L.focus)+(L.grammar?' \u00b7 '+esc(L.grammar):'')+'</span></div>'
+    +(gapLI?'<section><div class="sh"><span class="lt">A</span><h2>Vocabulary in context</h2></div><div class="bank">Word bank: <b>'+bank+'</b></div><ol>'+gapLI+'</ol></section>':'')
+    +(meanLI?'<section><div class="sh"><span class="lt">B</span><h2>Meaning</h2></div><ol>'+meanLI+'</ol></section>':'')
+    +(compLI?'<section><div class="sh"><span class="lt">C</span><h2>Language &amp; comprehension</h2>'+(L.grammar?'<span class="slo">'+esc(L.grammar)+'</span>':'')+'</div><ol>'+compLI+'</ol></section>':'')
+    +'<section><div class="sh"><span class="lt">D</span><h2>Short written response</h2></div><div class="prompt"><b>Write 3\u20134 sentences.</b> In your own words, write about \u201c'+esc(L.title)+'\u201d, using at least two key words'+(L.grammar?' and one example of '+esc(L.grammar):'')+'.</div><div class="writelines"><div class="l"></div><div class="l"></div><div class="l"></div><div class="l"></div></div></section>'
+    +_foot(gaps.length+mwords.length+mc.length)+'</div>';
+}
+
+function buildCheckpointHTML(w,lessons){
+  var vs=[],seen={}; lessons.forEach(function(L){ _mv(L).forEach(function(v){ if(!seen[v[0]]){seen[v[0]]=1; vs.push(v);} }); });
+  var bank=vs.slice(0,8).map(function(v){return esc(v[0]);}).join(' &nbsp;\u00b7&nbsp; ');
+  var gaps=vs.filter(function(v){return v[3]&&_GAP.test(v[3]);}).slice(0,6);
+  var gapLI=gaps.map(_gapLI).join('');
+  var mc=[]; lessons.forEach(function(L){ _mm(L).slice(0,3).forEach(function(q){ mc.push(q); }); }); mc=mc.slice(0,6);
+  var compLI=mc.map(function(q){ return '<li>'+esc(q.q)+_optLI(q.opts)+'</li>'; }).join('');
+  return '<div class="sheet"><div class="head">'+_EMB+'<div class="wm">iCAN Academy<small>READ \u00b7 WRITE \u00b7 DESIGN</small></div><span class="kind amber">WEEK '+w.n+' CHECKPOINT</span></div>'
+    +_fields()
+    +'<div class="titlebar"><h1>Week '+w.n+' Checkpoint</h1><span class="loc">'+esc(w.skill)+(w.dates?' \u00b7 '+esc(w.dates):'')+'</span></div>'
+    +(gapLI?'<section><div class="sh"><span class="lt">1</span><h2>Vocabulary in context</h2></div><div class="bank">Word bank: <b>'+bank+'</b></div><ol>'+gapLI+'</ol></section>':'')
+    +(compLI?'<section><div class="sh"><span class="lt">2</span><h2>Language &amp; comprehension</h2></div><ol>'+compLI+'</ol></section>':'')
+    +'<section><div class="sh"><span class="lt">3</span><h2>Short written response</h2></div><div class="prompt"><b>Write 3\u20134 sentences.</b> Summarise what you learned this week, using at least two key words.</div><div class="writelines"><div class="l"></div><div class="l"></div><div class="l"></div><div class="l"></div><div class="l"></div></div></section>'
+    +_foot(gaps.length+mc.length)+'</div>';
+}
+
+function _pdfDoc(title,body){ var wnd=window.open('','_blank'); if(!wnd){ alert('Please allow pop-ups so the printable PDF can open.'); return; } wnd.document.open(); wnd.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+title+'</title><style>'+_PDFCSS+'</style></head><body>'+body+'<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},350);};<'+'/scr'+'ipt></body></html>'); wnd.document.close(); }
+function openCardPDF(id){ var L=LESSONS[id]; if(L) _pdfDoc('Study Card \u2014 '+L.title, buildCardHTML(L)); }
+function openSheetPDF(id){ var L=LESSONS[id]; if(L) _pdfDoc('Worksheet \u2014 '+L.title, buildSheetHTML(L)); }
+function openChkPDF(id){ var w=(WEEKS.filter(function(x){return x.lessons.indexOf(id)>=0;})[0]); if(!w) return; var ls=w.lessons.map(function(x){return LESSONS[x];}).filter(Boolean); _pdfDoc('Week '+w.n+' Checkpoint', buildCheckpointHTML(w,ls)); }
+function _docTabs(id,wk){ var n=(wk&&wk.n)||''; var b='background:#eef7f8;border:1px solid #cfe6e8;color:#0A5A62;font-weight:800'; var a='background:#fdf2ec;border:1px solid #f3d9cc;color:#B44412;font-weight:800';
+  return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px">'
+    +'<button class="btn sm" style="'+b+'" onclick="openCardPDF(\''+id+'\')">\U0001F5C2\uFE0F Card (PDF)</button>'
+    +'<button class="btn sm" style="'+b+'" onclick="openSheetPDF(\''+id+'\')">\U0001F4DD Worksheet (PDF)</button>'
+    +'<button class="btn sm" style="'+a+'" onclick="openChkPDF(\''+id+'\')">\u2705 Week '+n+' Checkpoint (PDF)</button></div>'; }
+
+
 /* ---------------- COURSE 2 · 11General-10Advanced · A Picture of Health ---------------- */
 var BOOK2="New Interactions · A Picture of Health (Ch.1) · Grade 11 General / 10 Advanced";
 var C2_LESSONS={
@@ -3949,6 +4063,7 @@ function renderLesson(id){
    +'<div class="lp-eyebrow">Week '+(wk.n||'')+' · '+esc(L.focus)+' · Lesson '+esc(L.num)+'</div>'
    +'<h1>Lesson '+esc(L.num)+': '+esc(L.title)+'</h1><div class="lp-book">'+esc(L.book)+'</div>'
    +chips
+   +(CUR.cls==='c1'?_docTabs(id,wk):'')
    +(L.page?'<div class="lp-page">📖 <b>Your resources:</b> '+esc(L.page)+'</div>':'')+'</div>'
    +'<div id="timer" onclick="timerToggle()"><div class="tl" id="tl">TAP TO START</div><div class="tv" id="tv">05:00</div></div></div>'
    +'<div class="lp-grid"><div class="lp-body" id="body"></div><div class="lp-menu" id="menu">'+menu+'</div></div>';
