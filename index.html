@@ -3088,6 +3088,23 @@ function footer(d,course){var p=d.getNumberOfPages();for(var i=1;i<=p;i++){d.set
 function keyTitle(d,st,label){if(st.y>24)d.addPage();st.y=20;fc(d,INK);d.rect(L,st.y-6,PW,9,"F");d.setFont("helvetica","bold");d.setFontSize(11);tc(d,[255,255,255]);d.text(label,L+3,st.y);st.y+=9;d.setFont("helvetica","italic");d.setFontSize(8.5);tc(d,MUT);d.text("For the teacher \u2014 keep or detach the final page.",L,st.y);st.y+=6;}
 function letters(n){return "abcdefghijk".slice(0,n).split("");}
 
+/* Stretch items — deliberately BEYOND the week's wordlist/text (advanced grammar,
+   academic vocabulary, terminology). Two are drawn per checkpoint, seeded by week. */
+var CHALLENGE_BANK=[
+ {q:"Complete: \u201cHardly ___ we sat down when the bell rang.\u201d",opts:["had","did","have"]},
+ {q:"Which sentence is correct?",opts:["If I were you, I would revise more.","If I was you, I will revise more.","If I am you, I revised more."]},
+ {q:"Choose the best linker: \u201cThe idea was risky; ___, the team went ahead.\u201d",opts:["nevertheless","therefore","in addition"]},
+ {q:"Report it: \u201cI will help you,\u201d he said. \u2192 He said he ___ help me.",opts:["would","will","willing"]},
+ {q:"Make it passive: \u201cSomeone has taken my seat.\u201d \u2192 \u201cMy seat ___.\u201d",opts:["has been taken","is taking","was taking"]},
+ {q:"\u201cMitigate\u201d most nearly means:",opts:["make less severe","make worse","make public"]},
+ {q:"A word's \u201cconnotation\u201d is:",opts:["the feelings it suggests beyond its literal meaning","its number of syllables","its dictionary spelling"]},
+ {q:"\u201cUbiquitous\u201d means:",opts:["found almost everywhere","extremely rare","very old"]},
+ {q:"A \u201ctopic sentence\u201d usually:",opts:["states the main idea of a paragraph","gives the final example","lists the sources"]},
+ {q:"Choose the correct relative pronoun: \u201cThe scientist ___ work changed medicine won a prize.\u201d",opts:["whose","who","which"]}
+];
+function pickChallenge(seed){ var idx=CHALLENGE_BANK.map(function(_,i){return i;}); var order=seedShuffle(idx,"cb"+seed).opts.slice(0,2);
+  return order.map(function(i){ var it=CHALLENGE_BANK[i]; var s=seedShuffle(it.opts.slice(),"co"+seed+i); return {q:it.q,opts:s.opts,ans:s.ans}; }); }
+
 /* ---------- data helpers ---------- */
 function mv(L){var v=((L.stages&&L.stages.vocab)||[]).filter(function(b){return b.t==="vocab";})[0];return (v&&v.items)||[];}
 function mm(L){var out=[],st=L.stages||{};Object.keys(st).forEach(function(k){(st[k]||[]).forEach(function(b){if(b.t==="mcq"&&b.qs){b.qs.forEach(function(q){if(q&&q.opts&&q.opts.length>=2)out.push(q);});}});});return out;}
@@ -3099,8 +3116,26 @@ function skills(ls){var out=[];ls.forEach(function(L){var o=oi(L);out.push((L.fo
 /* ---------- auto content from lesson data ---------- */
 function autoContent(course,week,ls){
   var V=vocabPool(ls),M=mcqPool(ls);
+  var theme=course.chapter;
+  var titles=ls.map(function(L){return L.title;}).filter(Boolean);
+  var titleStr=titles.join(" and ")||theme;
+  var grammar=ls.map(function(L){return L.grammar;}).filter(function(g){return g && /[A-Za-z0-9]/.test(g);})[0]||"";
+  var fl=ls.map(function(L){return L.fl;}).filter(Boolean)[0]||"";
+  var skill=week.skill||"";
+  var exs=V.filter(function(v){return v[3]&&GAP.test(v[3]);}).map(fillEx);
+  var kwA=V.slice(0,3).map(function(v){return v[0];});
+  var kwB=V.slice(3,6).map(function(v){return v[0];}); if(kwB.length<2) kwB=V.slice(0,3).map(function(v){return v[0];});
+  var shortTheme=theme.replace(/\s*\((?:Ch\.?\s*\d+|Unit\s*\d+)\)\s*$/i,"").trim()||theme;
+  function _task(a){ var f=fl.toLowerCase();
+    if(f.indexOf("advice")>=0) return a?"give clear advice to someone in that situation":"give a friend two pieces of advice";
+    if(/speaking/i.test(skill)) return a?"explain what you would say aloud, and why":"explain how you would say it to a friend";
+    if(/writing|reading/i.test(skill)) return a?"give your own opinion with one clear reason":"explain one idea from the lessons and your opinion of it";
+    return a?"give one reason from real life":"give one real-life example"; }
+  function _sample(list){ var mid=(list&&list.length)?list.join(" "):"There are several useful ideas from this week to remember."; return "In my opinion, this is an important topic to understand well. "+mid+" From my own experience, thinking carefully and planning ahead makes a real difference, so I would encourage others to do the same."; }
+  var gramClause=grammar?(" Try to use "+grammar+" correctly."):"";
+  var gramCrit=grammar?("Language \u2014 correct use of "+grammar+" and this week's vocabulary"):"Language \u2014 correct grammar and use of this week's vocabulary";
   // card
-  var models=V.filter(function(v){return v[3]&&GAP.test(v[3]);}).slice(0,2).map(fillEx);
+  var models=exs.slice(0,2);
   var card={words:V.map(function(v){return v[0];}),models:models,skills:skills(ls)};
   // worksheet
   var wm=V.slice(0,6).map(function(v){return [v[0],v[1]];});
@@ -3108,28 +3143,38 @@ function autoContent(course,week,ls){
   var bank=gapV.map(function(v){return v[0];}).slice().sort(function(a,b){return a.localeCompare(b);});
   var gapItems=gapV.map(function(v){return {q:v[3].replace(GAP,"____________"),ans:v[0]};});
   var wsChallenge=M.slice(0,2);
-  var theme=course.chapter;
   var ws={matching:wm,gap:{bank:bank,items:gapItems},challenge:wsChallenge,
-    writing:{scenario:"Scenario: someone you know is facing a real situation connected to this week's topic ("+theme+").",
-      prompt:"Write a 70-word paragraph. (1) Give them two pieces of advice using this week's words, and (2) explain one useful idea from the lessons. Use at least two key words, and connect it to your own experience or the world around you.",
-      sample:"In my opinion, the most useful idea this week is to plan ahead and ask for advice before small problems grow. For example, one careful choice each week can make a real difference over time. I have seen this in my own life: when I set a clear goal and take one step at a time, things improve. That is the advice I would give, and I would remind them that steady effort matters far more than luck."}};
-  // checkpoint (different items)
+    writing:{
+      words:kwA,
+      prompt:"Sentence practice. Write ONE correct sentence of your own for each word below. Then write ONE more sentence giving your opinion about "+(titles[0]||shortTheme)+"."+gramClause,
+      lines:5,
+      sample:"Model sentences: "+(exs.slice(0,3).join("   ")||"(use each word in a clear sentence of your own).")}};
+  // checkpoint (different items + exam-mode reading + challenge)
   var vmcq=V.slice(0,6).map(function(v,i){var opts=[v[1]];V.forEach(function(o){if(o[0]!==v[0]&&opts.length<3)opts.push(o[1]);});var sh=seedShuffle(opts,v[0]+week.n);return {q:"\u201c"+v[0]+"\u201d means:",opts:sh.opts,ans:sh.ans};});
   var lang=M.slice(2,5);
-  var passage="This week's lessons look at "+theme+". "+V.filter(function(v){return v[3]&&GAP.test(v[3]);}).slice(0,4).map(fillEx).join(" ");
-  var rw=V.filter(function(v){return v[3]&&GAP.test(v[3]);})[0];
-  var rdist=V.filter(function(v){return !rw||v[0]!==rw[0];}).slice(0,2).map(function(v){return v[1];});
-  var ropts=[rw?rw[1]:"the correct meaning"].concat(rdist.length?rdist:["a related idea","an unrelated idea"]);
-  var rsh=seedShuffle(ropts,"rd"+week.n);
-  var m1=seedShuffle(["the week's topic and the choices people make","a personal holiday story","a science experiment"],"m"+week.n);
+  var objAll=[]; ls.forEach(function(L){oi(L).forEach(function(o){objAll.push(o);});});
+  var passage=(titles[0]?("The topic of "+titles[0]+" is part of everyday life, and this text explores it more closely. "):("This text explores "+shortTheme+" more closely. "))
+    +exs.join(" ")
+    +(objAll.length?(" In these lessons, learners also practise how to "+objAll.slice(0,2).map(function(o){return o.replace(/^to\s+/i,"");}).join(", and how to ")+".") : "")
+    +" Understanding these ideas helps people make better choices and explain their opinions clearly.";
+  (function(){var wc=passage.split(/\s+/).length,i=0;while(wc<170&&i<V.length){var v=V[i++];if(v&&v[1]){passage+=" The term \u201c"+v[0]+"\u201d means "+v[1]+".";wc=passage.split(/\s+/).length;}}
+    var FILL=["Practising a little every day makes new language easier to remember.","Good learners plan their time and check their own work carefully.","Reading widely helps people meet the same words in different situations.","Talking about a topic with a friend is a useful way to test your ideas.","When we connect a lesson to real life, it becomes much easier to understand.","Asking questions in class is a sign of a confident, active learner."];
+    var j=0;while(wc<165&&j<24){passage+=" "+FILL[j%FILL.length];j++;wc=passage.split(/\s+/).length;}})();
+  var wq2=V[1]||V[0], wq3=V[2]||V[1]||V[0];
+  var q2opts=[wq2?wq2[0]:"one of the words"]; V.forEach(function(o){if(wq2&&o[0]!==wq2[0]&&q2opts.length<3)q2opts.push(o[0]);}); var q2=seedShuffle(q2opts,"q2"+week.n);
+  var q3opts=[wq3?wq3[1]:"the correct meaning"]; V.forEach(function(o){if(wq3&&o[0]!==wq3[0]&&q3opts.length<3)q3opts.push(o[1]);}); var q3=seedShuffle(q3opts,"q3"+week.n);
+  var m1=seedShuffle(["the topic of "+(titles[0]||shortTheme),"a personal holiday story","a science experiment"],"m"+week.n);
   var reading={passage:passage,qs:[
     {q:"The passage is mainly about:",opts:m1.opts,ans:m1.ans},
-    {q:"In the passage, \u201c"+(rw?rw[0]:"the word")+"\u201d means:",opts:rsh.opts,ans:rsh.ans}]};
-  var chk={vocabMcq:vmcq,language:lang,reading:reading,
-    writing:{scenario:"Scenario: a different real-life situation linked to "+theme+", where someone must make a decision.",
-      prompt:"Write a 70-word paragraph. (1) Give clear advice about what they should do, and (2) give one reason from this week's lessons. Use at least two key words and one advice expression, and connect your answer to your own experience or the world.",
-      sample:"In my opinion, they should think carefully before deciding. First, they could make a simple plan and take one small step at a time. It also helps to ask someone with more experience for advice. I once faced a similar choice, and waiting a little before acting saved me from a mistake. With a clear plan and good advice, they can feel far more confident about the decision."},
-    rubric:[["Task & content \u2014 does (1) and (2), ~70 words, links to experience/world","3"],["Use of key words \u2014 at least two, used correctly","2"],["Advice & grammar \u2014 an advice expression + correct verb form","3"],["Organisation & accuracy \u2014 clear, linked, few errors","2"]]};
+    {q:"Which word from the passage means \u201c"+(wq2?wq2[1]:"the given idea")+"\u201d?",opts:q2.opts,ans:q2.ans},
+    {q:"In the passage, \u201c"+(wq3?wq3[0]:"the word")+"\u201d means:",opts:q3.opts,ans:q3.ans}]};
+  var chk={vocabMcq:vmcq,language:lang,reading:reading,challenge:pickChallenge(week.n+"|"+shortTheme),
+    writing:{
+      scenario:"Assessment task from this week's lessons ("+titleStr+"). Consider: "+(exs[1]||exs[0]||("a decision about "+shortTheme)),
+      prompt:"Write a 70-word paragraph. (1) Respond with a clear opinion or plan, and (2) "+_task(true)+". Use the words "+kwB.join(", ")+", and support it with a reason from your own experience or the world."+gramClause,
+      lines:5,
+      sample:_sample(exs.slice(1,4).length>=2?exs.slice(1,4):exs.slice(0,3))},
+    rubric:[["Task & content \u2014 does (1) and (2), ~70 words, links to experience/world","3"],["Use of key words \u2014 at least two, used correctly","2"],[gramCrit,"3"],["Organisation & accuracy \u2014 clear, linked, few errors","2"]]};
   return {card:card,worksheet:ws,checkpoint:chk};
 }
 
@@ -3163,13 +3208,16 @@ function renderWorksheet(d,course,week,ws){var st={y:16};
   ws.gap.items.forEach(function(it,i){numItem(d,st,i+1,it.q);});st.y+=1;
   section(d,st,"C","Language challenge","higher level");
   var n=ws.gap.items.length;ws.challenge.forEach(function(q,i){numItem(d,st,n+1+i,q.q);opts(d,st,q.opts);});
-  section(d,st,"D","Short written response","writing \u00b7 70 words");
-  note(d,st,ws.writing.scenario,"amber");para(d,st,ws.writing.prompt,{size:9.6,lh:4.8});writeLines(d,st,4);
+  section(d,st,"D",ws.writing.words?"Writing practice":"Short written response",ws.writing.words?"sentence practice":"writing \u00b7 70 words");
+  if(ws.writing.scenario)note(d,st,ws.writing.scenario,"amber");
+  para(d,st,ws.writing.prompt,{size:9.6,lh:4.8});
+  if(ws.writing.words)note(d,st,"Words to use:   "+ws.writing.words.join("   \u00b7   "));
+  writeLines(d,st,ws.writing.lines||4);
   keyTitle(d,st,"ANSWER KEY \u00b7 Worksheet \u00b7 Week "+week.n);
   para(d,st,"A \u00b7 Matching:  "+ws.matching.map(function(p,i){return (i+1)+"-"+LT[defOrder.indexOf(p[1])];}).join("  \u00b7  "),{bold:true,lh:5.4});
   para(d,st,"B \u00b7 In context:  "+ws.gap.items.map(function(it,i){return (i+1)+" "+it.ans;}).join("  \u00b7  "),{bold:true,lh:5.4});
   para(d,st,"C \u00b7 Challenge:  "+ws.challenge.map(function(q,i){return (n+1+i)+" "+q.opts[q.ans];}).join("  \u00b7  "),{bold:true,lh:5.4});st.y+=2;
-  para(d,st,"D \u00b7 Sample paragraph:",{bold:true,color:TEALD});note(d,st,ws.writing.sample);
+  para(d,st,ws.writing.words?"D \u00b7 Sample sentences:":"D \u00b7 Sample paragraph:",{bold:true,color:TEALD});note(d,st,ws.writing.sample);
   footer(d,course);return d;}
 
 function renderCheckpoint(d,course,week,ck){var st={y:16};
@@ -3182,18 +3230,23 @@ function renderCheckpoint(d,course,week,ck){var st={y:16};
   section(d,st,"P3","Reading","detail & inference");
   readBox(d,st,ck.reading.passage);
   ck.reading.qs.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);});
-  section(d,st,"P4","Short written response","writing \u00b7 70 words");
-  note(d,st,ck.writing.scenario,"amber");para(d,st,ck.writing.prompt,{size:9.6,lh:4.8});writeLines(d,st,5);
+  var hasCh=ck.challenge&&ck.challenge.length;
+  if(hasCh){ section(d,st,"P4","Challenge","beyond the wordlist"); ck.challenge.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);}); }
+  section(d,st,hasCh?"P5":"P4","Short written response","writing \u00b7 70 words");
+  note(d,st,ck.writing.scenario,"amber");para(d,st,ck.writing.prompt,{size:9.6,lh:4.8});writeLines(d,st,ck.writing.lines||5);
   keyTitle(d,st,"ANSWER KEY & RUBRIC \u00b7 Checkpoint \u00b7 Week "+week.n);
-  var i=0,p1=[],p2=[],p3=[];
+  var i=0,p1=[],p2=[],p3=[],p4=[];
   ck.vocabMcq.forEach(function(q){i++;p1.push(i+" "+String.fromCharCode(97+q.ans));});
   ck.language.forEach(function(q){i++;p2.push(i+" "+q.opts[q.ans]);});
   ck.reading.qs.forEach(function(q){i++;p3.push(i+" "+q.opts[q.ans]);});
+  if(hasCh)ck.challenge.forEach(function(q){i++;p4.push(i+" "+q.opts[q.ans]);});
   para(d,st,"Part 1 \u00b7 Vocabulary:  "+p1.join("  \u00b7  "),{bold:true,lh:5.4});
   para(d,st,"Part 2 \u00b7 Language:  "+p2.join("  \u00b7  "),{bold:true,lh:5.4});
-  para(d,st,"Part 3 \u00b7 Reading:  "+p3.join("  \u00b7  "),{bold:true,lh:5.4});st.y+=2;
-  para(d,st,"Part 4 \u00b7 Sample paragraph:",{bold:true,color:TEALD});note(d,st,ck.writing.sample);st.y+=1;
-  para(d,st,"Part 4 \u00b7 Writing marking rubric (10 marks):",{bold:true,color:TEALD});
+  para(d,st,"Part 3 \u00b7 Reading:  "+p3.join("  \u00b7  "),{bold:true,lh:5.4});
+  if(hasCh)para(d,st,"Part 4 \u00b7 Challenge:  "+p4.join("  \u00b7  "),{bold:true,lh:5.4});
+  st.y+=2;
+  para(d,st,(hasCh?"Part 5":"Part 4")+" \u00b7 Sample paragraph:",{bold:true,color:TEALD});note(d,st,ck.writing.sample);st.y+=1;
+  para(d,st,(hasCh?"Part 5":"Part 4")+" \u00b7 Writing marking rubric (10 marks):",{bold:true,color:TEALD});
   var cW=PW-16,ry=st.y;fc(d,INK);d.rect(L,ry-4.4,cW,6,"F");d.rect(L+cW,ry-4.4,16,6,"F");d.setFont("helvetica","bold");d.setFontSize(8.6);tc(d,[255,255,255]);d.text("Criterion",L+2,ry);d.text("Marks",L+cW+2,ry);var yy=ry+6;
   ck.rubric.forEach(function(r){d.setFont("helvetica","normal");d.setFontSize(8.8);var ls=d.splitTextToSize(r[0],cW-4),h=Math.max(6,ls.length*4.4+1.6);dc(d,LINE);d.setLineWidth(.3);d.rect(L,yy-4.4,cW,h,"S");d.rect(L+cW,yy-4.4,16,h,"S");tc(d,INK);ls.forEach(function(ln,k){d.text(ln,L+2,yy+k*4.4);});d.setFont("helvetica","bold");tc(d,TEALD);d.text(r[1],L+cW+6,yy);yy+=h;});
   footer(d,course);return d;}
@@ -3206,13 +3259,15 @@ var PACKS={ "c1|1":{
   worksheet:{matching:[["budget","a plan for how you spend and save money"],["income","the money you receive for work"],["broke","having no money at all"],["make ends meet","to have just enough money to live on"],["costs an arm and a leg","to be very expensive"],["scholarship","money given to a student to help pay for study"]],
     gap:{bank:["broke","budget","drop out","earn","put aside","tuition fees"],items:[{q:"University ____________ can be very high.",ans:"tuition fees"},{q:"Try not to spend more than you ____________ each month.",ans:"earn"},{q:"He lost his job and now he is completely ____________.",ans:"broke"},{q:"If money is tight, ____________ a little every week.",ans:"put aside"},{q:"On a tight ____________, every dirham counts.",ans:"budget"},{q:"If you cannot pay the fees, you may have to ____________ of the course.",ans:"drop out"}]},
     challenge:[{q:"Choose the correct verb form: \u201cMy teacher advised me ______ for a scholarship.\u201d",opts:["to apply","applying","apply"],ans:0},{q:"Which advice sounds the MOST polite?",opts:["\u201cYou must save more.\u201d","\u201cYou'd better save more.\u201d","\u201cYou might want to save a little more.\u201d"],ans:2}],
-    writing:{scenario:"Scenario: Your cousin has just started university. He spent his whole student loan in the first month and is now broke.",
-      prompt:"Write a 70-word paragraph giving him advice. In it: (1) suggest TWO things he could do to make ends meet, and (2) explain ONE money habit that helps. Use at least two key words and one advice expression, and connect it to your own experience or something you have read or seen.",
-      sample:"I think my cousin shouldn't panic. First, he could make a simple budget and put aside a little from his part-time wages each week. Why doesn't he cook at home instead of eating out, which costs an arm and a leg? When I began saving small amounts, I found it much easier to make ends meet by the end of the month. With a clear plan, he can stop being broke and feel in control again."}},
+    writing:{words:["budget","make ends meet","put aside"],
+      prompt:"Sentence practice. Write ONE correct sentence of your own for each word below. Then write ONE sentence of advice for someone who has spent all their money and is now broke.",
+      lines:5,
+      sample:"Model sentences: I made a budget to control my spending. It is hard to make ends meet on a small income. I try to put aside ten dirhams every week. (Advice: You could plan your spending before the month starts.)"}},
   checkpoint:{vocabMcq:[{q:"\u201cmake ends meet\u201d means:",opts:["to spend a lot of money","to have just enough money to live on","to lose your job"],ans:1},{q:"If something \u201ccosts an arm and a leg\u201d, it is:",opts:["very cheap","completely free","very expensive"],ans:2},{q:"\u201cwages\u201d are:",opts:["money paid for work","money you borrow for study","a fee you pay a school"],ans:0},{q:"A \u201cscholarship\u201d is:",opts:["a loan you must repay","money given to help a student study","a monthly budget"],ans:1},{q:"To \u201cput aside\u201d money means to:",opts:["waste it quickly","save it regularly","borrow it from a friend"],ans:1},{q:"Challenge \u2014 \u201cAfter losing his job, Sami was completely broke.\u201d Here \u201cbroke\u201d means:",opts:["injured","having no money","very busy"],ans:1}],
     language:[{q:"\u201cI'd suggest ______ some money aside each month.\u201d",opts:["to put","putting","put"],ans:1},{q:"\u201cShe recommends ______ a budget.\u201d",opts:["to make","making","make"],ans:1},{q:"Choose the softest way to give advice:",opts:["\u201cYou must apply for a scholarship.\u201d","\u201cYou have to apply.\u201d","\u201cYou could apply for a scholarship.\u201d"],ans:2}],
-    reading:{passage:"Managing money is one of the biggest worries for new students. Many of them live on a tight budget, where every dirham counts, and they try hard not to spend more than they earn. When an emergency happens, or a new phone that costs an arm and a leg tempts them, it is easy to become broke very quickly. The students who cope best are usually the ones who make a simple plan and put a little aside each week, even when their income is small.",
-      qs:[{q:"What is the passage mainly about?",opts:["how new students can manage their money","the best phones to buy at university","how to find a part-time job"],ans:0},{q:"According to the passage, students who cope best:",opts:["spend more than they earn","plan and save a little regularly","never use a budget"],ans:1}]},
+    challenge:[{q:"Which sentence is correct?",opts:["If I were you, I would save more.","If I was you, I will save more.","If I am you, I saved more."],ans:0},{q:"\u201cMitigate\u201d most nearly means:",opts:["make worse","make less severe","make public"],ans:1}],
+    reading:{passage:"Managing money is one of the biggest worries for new students. Many of them live on a tight budget, where every dirham counts, and they try hard not to spend more than they earn. When an emergency happens, or a new phone that costs an arm and a leg tempts them, it is easy to become broke very quickly. Some students take a part-time job to raise their income, while others apply for a scholarship or a student loan to help with their tuition fees. The most successful students, however, usually do the same simple things. They make a clear plan at the start of the month and put a little aside each week, even when their income is small. They avoid borrowing money for things they do not really need, and they ask for advice before making a big decision. With patience and a sensible plan, most students find that they can make ends meet and still enjoy their studies.",
+      qs:[{q:"What is the passage mainly about?",opts:["how new students can manage their money","the best phones to buy at university","how to choose a part-time job"],ans:0},{q:"According to the passage, the most successful students:",opts:["spend more than they earn","plan and save a little regularly","never make a budget"],ans:1},{q:"Which word in the passage means \u201cmoney given to a student to help pay for study\u201d?",opts:["scholarship","budget","income"],ans:0}]},
     writing:{scenario:"Scenario: A friend wants to buy a phone that costs an arm and a leg, but she is almost broke.",
       prompt:"Write a 70-word paragraph. (1) Give her advice about whether to buy it now, and (2) suggest ONE way she could save up for it. Use at least two key words and one advice expression, and connect your answer to your own experience or the world around you.",
       sample:"In my opinion, my friend shouldn't buy the phone right now because she is almost broke. She could put aside a small amount from her wages every week and buy it later, when she can really afford it. A phone that costs an arm and a leg isn't worth going into debt for. I once waited three months for something I wanted, and saving up made me value it far more."},
