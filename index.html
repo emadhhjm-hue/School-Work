@@ -3114,6 +3114,7 @@ function tc(d,c){d.setTextColor(c[0],c[1],c[2]);}function fc(d,c){d.setFillColor
 function nd(d,st){if(st.y>BOT){d.addPage();st.y=20;}}
 function seedShuffle(arr,seed){var idx=arr.map(function(_,i){return i;}),s=2166136261,i;for(i=0;i<seed.length;i++){s^=seed.charCodeAt(i);s=Math.imul(s,16777619);}s=s>>>0;for(var k=idx.length-1;k>0;k--){s=(Math.imul(s,1664525)+1013904223)>>>0;var j=s%(k+1),t=idx[k];idx[k]=idx[j];idx[j]=t;}return {opts:idx.map(function(i){return arr[i];}),ans:idx.indexOf(0)};}
 function fillEx(it){return (it[3]||"").replace(GAP, it[0]).replace(/\s+([.,!?;:])/g,"$1").replace(/\s{2,}/g," ").trim();}
+function sentWithWord(v){var ex=v[3]||"";if(ex&&GAP.test(ex)){return ex.replace(GAP,"\u2018"+v[0]+"\u2019").replace(/\s+([.,!?;:])/g,"$1").replace(/\s{2,}/g," ").trim();}return "We use the word \u2018"+v[0]+"\u2019 when we talk about this week's topic.";}
 
 function emblem(d,x,y){fc(d,TEAL);d.roundedRect(x,y,11,11,2.4,2.4,"F");fc(d,[255,255,255]);d.roundedRect(x+2.4,y+3,2.6,5.2,.5,.5,"F");d.roundedRect(x+6,y+3,2.6,5.2,.5,.5,"F");dc(d,TEALD);d.setLineWidth(.3);d.line(x+5.5,y+3.2,x+5.5,y+8);}
 function header(d,st,course,kind,kindColor,title,meta){emblem(d,L,st.y);
@@ -3168,6 +3169,253 @@ function mcqPool(ls){var out=[];ls.forEach(function(L){mm(L).forEach(function(q)
 function skills(ls){var out=[];ls.forEach(function(L){var o=oi(L);out.push((L.focus||"Skill")+" \u2014 "+((o[0]||"practise the week's language")+"."));if(L.grammar)out.push("Grammar ("+L.grammar+")");});return out.slice(0,3);}
 
 /* ---------- auto content from lesson data ---------- */
+/* ---- Hand-authored readings (5 paragraphs; trimmed by tier). qs[0] is the correct option; lvl = smallest version it works in. ---- */
+var READINGS={
+ "c2|1":{ title:"The Gym and the Mind", paras:[
+   "Many teenagers feel tired and nervous but are not sure why. Stress builds up slowly, and its symptoms — headaches, poor sleep and a racing heart — often appear before we notice the causes of stress. One simple way to fight back is exercise, which is why more young people now join a health club.",
+   "A health club is more than a room of machines. Members jog on a treadmill, take a cardio class or spend time lifting weights, then relax in the locker room with friends. Because membership can be expensive, many clubs offer students a discount, so the price does not stop them taking part.",
+   "Salim, a Grade 11 student, joined one last term. At first he felt nervous walking in, because everyone seemed stronger and more confident. Within a few weeks, however, that feeling disappeared. He now says the club is the one place where he can truly calm down after a long day.",
+   "Scientists are not surprised. When we move, the brain releases chemicals that reduce tension and lift our mood. Exercise does not remove every problem, but it clearly reduces the negative effect that stress has on body and mind. In other words, the gym trains the mind as well as the muscles.",
+   "Of course, a health club is not the only answer. Walking, sleeping well and talking about worries reduce stress too. The real secret, experts argue, is not the machine you choose but the habit you keep. A person who exercises a little every day copes better than one who trains hard once a month, then stops."
+  
+  ], qs:[
+   {q:"What is the main idea of the text?",opts:["Exercise, such as joining a health club, can help teenagers manage stress.","Health clubs are too expensive for students.","Stress has no clear symptoms.","Only athletes ever feel nervous."],lvl:"sen"},
+   {q:"According to paragraph 2, what do many clubs offer students?",opts:["a discount on membership","free weights forever","a private doctor","a guaranteed prize"],lvl:"sen"},
+   {q:"In paragraph 1, what does \u2018symptoms\u2019 mean?",opts:["signs that show something is wrong","types of exercise","membership fees","health clubs"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018that feeling\u2019 refers to \u2014",opts:["feeling nervous when he walked in","feeling strong and confident","feeling tired after class","feeling proud of his progress"],lvl:"core"},
+   {q:"Why did Salim feel nervous at first?",opts:["Others around him seemed stronger and more confident.","The club was too far from his home.","He could not afford the discount.","He disliked every cardio class."],lvl:"core"},
+   {q:"What can we infer from the whole text?",opts:["A small amount of exercise every day helps more than occasional hard training.","The machines are the most important part of a gym.","Stress can always be removed completely.","Only expensive clubs have any effect."],lvl:"full"}
+  ]},
+ "c2|2":{ title:"The Secret of a Long Life", paras:[
+   "Why do the inhabitants of some remote villages live far longer than people in busy cities? For years scientists have studied these long-lived communities, hoping to discover the secret of their longevity. The answers are surprisingly simple, and they have little to do with expensive medicine.",
+   "Most of these villages sit at a high altitude, where the air is clean and unpolluted. The people grow their own food, so their meals contain almost no preservatives or artificial chemicals. They walk everywhere, rest when tired, and stay close to their families. Such habits help prevent many diseases that shorten life elsewhere.",
+   "Their attitude also matters. Older villagers are respected, not ignored, and they keep helping others well into old age. This sense of purpose, doctors believe, is as powerful as any remedy sold in a pharmacy. It gives people a reason to stay active, and that activity keeps both body and mind strong.",
+   "Stories like these travel quickly across the internet, where anyone can share a ‘secret to long life’. Some advice is accurate, but a great deal is not. Dishonest websites take advantage of worried readers, selling fraudulent products whose validity has never been tested. A wise reader checks who wrote the information before trusting it.",
+   "So what is the real secret? There is no magic remedy and no single food that guarantees a long life. The healthiest inhabitants simply live in balance — good food, movement, rest and strong relationships. We already know what keeps us well; the challenge is choosing to do it every day."
+  
+  ], qs:[
+   {q:"What is the text mainly about?",opts:["the simple habits that help some communities live long lives","how to build a modern pharmacy","why cities are the best places to live","the history of the internet"],lvl:"sen"},
+   {q:"According to paragraph 2, why is the villagers\u2019 food healthy?",opts:["It contains almost no preservatives or chemicals.","It is bought from famous shops.","It is imported from big cities.","It is mostly sold online."],lvl:"sen"},
+   {q:"In the passage, what does \u2018longevity\u2019 mean?",opts:["living for a long time","living at a high altitude","eating fresh food","a kind of medicine"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018It gives people a reason to stay active\u2019 \u2014 \u2018It\u2019 refers to \u2014",opts:["having a sense of purpose","a remedy from a pharmacy","the high altitude","the internet"],lvl:"core"},
+   {q:"According to the text, dishonest websites \u2014",opts:["sell fraudulent products that have not been tested","share only accurate information","help villagers sell their food","lower the altitude of villages"],lvl:"core"},
+   {q:"What does the writer suggest about online health advice?",opts:["Readers should check the source before trusting it.","All of it is accurate and safe.","It is the best remedy available.","Villagers wrote most of it."],lvl:"full"}
+  ]},
+ "c2|3":{ title:"When Illness Strikes", paras:[
+   "It always happens at the worst time. The night before an important assignment is due, you wake with a pounding headache, a sore throat and a fever. Your forehead feels hot, your stomach is upset, and the deadline suddenly feels impossible. What should you do?",
+   "For most minor illnesses, the first step is rest, not panic. A painkiller such as aspirin can bring a fever down, and warm drinks ease a sore throat. If a tooth aches or a gland becomes swollen, though, these are signs you may need more than home care. A doctor can examine you and write a prescription for stronger medicine.",
+   "Friends love to give advice, and some of it is useful. They might recommend honey for a cough or extra sleep for a cold. Yet not every remedy that works for one person will work for another. What helps a friend could do nothing for you, because the same symptoms can have very different causes.",
+   "This is why doctors warn against guessing. A headache with a stiff neck, or a stomach pain that will not go away, may point to something far more serious than a cold — even, in rare cases, a dangerous syndrome. Ignoring such warning signs to finish an assignment is rarely worth it. The body is trying to send a message.",
+   "Treating an illness well means listening — to your body and to sensible advice. Rest when you are ill, ask for help when unsure, and do not let a deadline convince you that your health can wait. An assignment can be finished a day late; recovering your health is far harder to rush."
+  
+  ], qs:[
+   {q:"What is the best summary of the text?",opts:["Rest and sensible advice matter more than rushing to meet a deadline when you are ill.","Aspirin can cure every illness quickly.","Assignments are always more important than health.","A doctor is never really needed."],lvl:"sen"},
+   {q:"According to paragraph 2, what can aspirin do?",opts:["bring a fever down","heal a broken tooth","finish an assignment","cause a sore throat"],lvl:"sen"},
+   {q:"In the passage, a \u2018prescription\u2019 is \u2014",opts:["a doctor\u2019s written order for medicine","a type of fever","a school assignment","a warm drink"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018some of it is useful\u2019 \u2014 \u2018it\u2019 refers to \u2014",opts:["the advice friends give","the medicine","the fever","the deadline"],lvl:"core"},
+   {q:"Why might a remedy that helps a friend not help you?",opts:["The same symptoms can have different causes.","Friends never give good advice.","Aspirin only works once.","Deadlines change the body."],lvl:"core"},
+   {q:"What does the writer imply about warning signs like a stiff neck?",opts:["They should not be ignored just to finish work.","They always mean a simple cold.","They can be cured with honey.","They disappear on their own."],lvl:"full"}
+  ]},
+ "c2|4":{ title:"The Mind that Bounces Back", paras:[
+   "Everyone faces difficulty, but not everyone is defeated by it. Psychologists who study resilience — the ability to recover from hard circumstances — have made an interesting breakthrough. They now posit that how we think about a problem matters almost as much as the problem itself.",
+   "Consider two students who both fail an important test. The first decides he is simply not clever and gives up. The second treats the low mark as an obstacle to overcome, not a final judgement. Gradually, by changing his study habits, he improves. Same event, very different outcomes — the difference lies in perspective.",
+   "Researchers call the second student’s approach a healthy coping strategy. Such strategies do not remove pain; they change how we deal with it. When people learn to evaluate a setback calmly, they can see choices they had missed while panicking. This clear thinking lets them keep moving forward.",
+   "History is full of admirable examples. Many scientists, athletes and artists struggled for years with problems that once seemed impossible. What they shared was not luck but persistence: they kept adjusting their methods until an unidentified path finally became clear. Their success looks sudden, yet it was built slowly, one difficult day at a time.",
+   "None of this means hardship is enjoyable. It means that difficult circumstances, though painful, can teach us something. If we choose useful coping strategies and refuse to see ourselves only as victims, adversity can make us stronger. Many successful people say their hardest years taught them the most."
+  
+  ], qs:[
+   {q:"What is the main message of the text?",opts:["How we think about difficulty affects whether we overcome it.","Only lucky people ever succeed.","Tests are unfair to students.","Adversity should always be avoided."],lvl:"sen"},
+   {q:"How did the second student react to failing the test?",opts:["He treated it as an obstacle to overcome.","He gave up immediately.","He blamed the teacher.","He stopped studying for good."],lvl:"sen"},
+   {q:"In the passage, a \u2018coping strategy\u2019 is \u2014",opts:["a healthy way to deal with a difficulty","a type of test","a lucky event","a final judgement"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018they change how we deal with it\u2019 \u2014 \u2018it\u2019 refers to \u2014",opts:["pain or a setback","a coping strategy","a test score","a researcher"],lvl:"core"},
+   {q:"According to the text, calm evaluation of a setback helps people \u2014",opts:["see choices they had missed while panicking","forget the problem completely","avoid all future tests","remove every trace of pain"],lvl:"core"},
+   {q:"What can we infer about the successful people in paragraph 4?",opts:["Their success came from persistence, not sudden luck.","They never faced any real problems.","They succeeded on their very first try.","They avoided all difficulty in life."],lvl:"full"}
+  ]}
+,
+ "c1|2":{ title:"The Consumer Brain", paras:[
+   "Every day we make dozens of small choices about what to buy, yet we rarely ask why. Marketing experts, however, have studied the consumer brain for years, and what they have found is surprising. Much of what we consume is chosen for us before we even enter a shop.",
+   "Consider two identical items on a shelf. They may be exactly the same inside, but one carries a famous brand and the other does not. Most shoppers will reach for the branded product and happily pay more, even though the difference exists only in their minds. This is the quiet power of marketing.",
+   "Companies know this well. They design bright colours, clever slogans and easy access to their products so that buying feels natural and quick. When something feels effortless, we are far more likely to do it. That is why a well-placed advertisement can change our behaviour without our noticing.",
+   "None of this means that shoppers are foolish. It means that the modern economy is built to encourage us to consume more than we need. Every purchase, after all, keeps money moving and businesses growing. The system works — but it works best when we buy without stopping to think.",
+   "So how can a wise consumer respond? The answer is not to stop shopping, but to shop with awareness. Before buying, we can ask whether we truly need an item or simply want the feeling the brand promises. A thoughtful consumer is not controlled by marketing; instead, they use it to make better choices."
+  ], qs:[
+   {q:"What is the text mainly about?",opts:["how marketing quietly influences what people buy","how to open a small shop","why branded goods are always cheaper","the early history of money"],lvl:"sen"},
+   {q:"According to paragraph 2, why do shoppers pay more for a branded product?",opts:["because of the brand, even when the items are identical","because branded items last forever","because shops force them to","because branded items are larger"],lvl:"sen"},
+   {q:"In the passage, a \u2018consumer\u2019 is \u2014",opts:["a person who buys and uses goods","a type of shop","a famous brand","a marketing company"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018we are far more likely to do it\u2019 \u2014 \u2018it\u2019 refers to \u2014",opts:["buying the product","designing slogans","changing colours","reading advertisements"],lvl:"core"},
+   {q:"According to the text, the modern economy encourages people to \u2014",opts:["consume more than they need","save all their money","avoid every shop","make their own items"],lvl:"core"},
+   {q:"What does the writer suggest a wise consumer should do?",opts:["shop with awareness and question what they really need","stop shopping completely","always buy the cheapest item","trust every advertisement"],lvl:"full"}
+  ]},
+ "c1|3":{ title:"How Entrepreneurs Succeed", paras:[
+   "What do the people who found successful companies have in common? Researchers who study entrepreneurs have noticed something remarkable. It is rarely money or luck that sets them apart, but the way they think and the risks they are willing to take.",
+   "Most successful founders begin with a clear vision \u2014 a strong idea of the problem they want to solve. Before spending a single dirham, they identify exactly who their customers are and what those customers need. Many even test-market a small quantity of their product first, to see whether people will really buy it.",
+   "Only then do they write a detailed business plan and try to raise capital from investors. This careful preparation matters, because it shows others that the idea is serious. Without it, few investors will hand over their money, however exciting the product sounds.",
+   "Of course, every new business carries danger. Entrepreneurs must take risks that most people would avoid, and many of their first attempts fail. What separates the winners is not that they never fail, but that they learn quickly and try again with a better plan.",
+   "You do not need to be a genius to think like an entrepreneur. You need a purpose you believe in, the courage to act, and the patience to improve. The next remarkable company may begin not with expensive equipment, but simply with a good idea and someone brave enough to test it."
+  ], qs:[
+   {q:"What is the main idea of the text?",opts:["Successful entrepreneurs share a way of thinking and a willingness to take risks.","Entrepreneurs always start out rich.","New businesses almost never fail.","Only geniuses can start a company."],lvl:"sen"},
+   {q:"According to paragraph 2, what do successful founders do before spending money?",opts:["identify who their customers are and what they need","buy the most expensive equipment","hire hundreds of workers","borrow from a bank"],lvl:"sen"},
+   {q:"In the passage, \u2018remarkable\u2019 means \u2014",opts:["unusual and worth noticing","very cheap","dull and ordinary","extremely fast"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018it shows others that the idea is serious\u2019 \u2014 \u2018it\u2019 refers to \u2014",opts:["the careful preparation and business plan","the money","the customer","the risk"],lvl:"core"},
+   {q:"According to the text, what separates successful entrepreneurs from others?",opts:["They learn quickly from failure and try again.","They never make any mistakes.","They avoid all risk.","They keep their ideas secret."],lvl:"core"},
+   {q:"What can we infer from the last paragraph?",opts:["Anyone with a purpose and courage can think like an entrepreneur.","Only expensive equipment leads to success.","Entrepreneurs are born, not made.","A good idea is never enough."],lvl:"full"}
+  ]},
+ "c1|4":{ title:"Selling You a Better You", paras:[
+   "Advertising is everywhere. It fills our screens, our streets and even our conversations, and its goal is always the same: to persuade us to buy. Yet the best advertisements sell far more than a product. They sell an image of the person we could become.",
+   "Think about how a brand advertises a simple pair of shoes. The advertisement rarely talks about rubber or stitching. Instead, it shows adventurous, confident people living exciting lives. The quiet message is clear: buy these shoes, and you too will feel that way. This is how marketing influences our self-image.",
+   "Consumerism works because it links products to feelings. A watch becomes success; a drink becomes friendship. When we accept these links without questioning them, they begin to shape what we want and even how we see ourselves. Few of us notice it happening.",
+   "This does not make advertising evil. It can inform us about real opportunities and genuinely useful products. The challenge is to enjoy it without being controlled by it. A thoughtful consumer can admire a clever advertisement while still deciding, calmly, whether the product is worth the money.",
+   "In the end, the most powerful brand is your own judgement. Advertising will always try to persuade you, but the final choice remains yours. People who understand how marketing works are not fooled by it; they simply enjoy the show and then make up their own minds."
+  ], qs:[
+   {q:"What is the best summary of the text?",opts:["Advertising sells an image and feelings, so consumers should think for themselves.","Advertising is always dishonest.","Shoes are the best product to buy.","Nobody is ever influenced by advertising."],lvl:"sen"},
+   {q:"According to paragraph 2, what does a shoe advertisement usually show?",opts:["confident, adventurous people living exciting lives","how the shoes are made","the price of the rubber","a list of materials"],lvl:"sen"},
+   {q:"In the passage, \u2018persuade\u2019 means \u2014",opts:["to make someone want to do something","to build a factory","to lower a price","to hide the truth"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018they begin to shape what we want\u2019 \u2014 \u2018they\u2019 refers to \u2014",opts:["the links between products and feelings","the shoes","the advertisers","our friends"],lvl:"core"},
+   {q:"According to the text, why does consumerism work?",opts:["It links products to feelings like success or friendship.","It makes all products cheaper.","It removes advertising.","It forces people to buy."],lvl:"core"},
+   {q:"What does the writer suggest about a thoughtful consumer?",opts:["They can enjoy advertising while still deciding for themselves.","They never watch any advertisements.","They believe every advertisement.","They stop buying anything at all."],lvl:"full"}
+  ]},
+ "c3|1":{ title:"Nice to Meet You", paras:[
+   "Starting college means meeting more new people in a week than some of us meet in a year. There is your roommate, the students down the hall, your tutor, and a friendly assistant at the front desk. Learning how to introduce yourself well suddenly matters a great deal.",
+   "The tricky part is knowing how formal to be. With a professor or a new colleague, a polite \u2018Pleased to meet you\u2019 feels right. With another freshman you will share a suite with, that same greeting would sound stiff and strange. There, a simple \u2018Hey, want to grab something to eat?\u2019 works far better.",
+   "Reading the situation is a skill, and it improves with practice. When you match your language to the person in front of you, they feel comfortable, and a good relationship begins. Get it wrong, and even a friendly person may think you are cold or, worse, rude.",
+   "Technology has made this both easier and harder. We now meet people online, through class groups and a support group chat, long before we meet them in person. Yet a message is not the same as a face. Something important still happens when two people finally shake hands and talk in person.",
+   "So when you arrive on campus, do not just hide behind your phone. Say hello, introduce yourself, and hang out with people who are different from you. The friends you make in these first awkward weeks may, years later, be the ones you still call and say, \u2018Catch you later.\u2019"
+  ], qs:[
+   {q:"What is the text mainly about?",opts:["how to introduce yourself well when meeting new people at college","how to choose a new phone","why college is so expensive","how to cook meals in a suite"],lvl:"sen"},
+   {q:"According to paragraph 2, how should you greet another freshman?",opts:["in a relaxed, informal way","very formally, like a professor","by writing a long letter","by saying nothing at all"],lvl:"sen"},
+   {q:"In the passage, a \u2018freshman\u2019 is \u2014",opts:["a first-year student","a teacher","a front-desk assistant","a type of meal"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018they feel comfortable\u2019 \u2014 \u2018they\u2019 refers to \u2014",opts:["the person you are talking to","your tutors","the messages","your old friends"],lvl:"core"},
+   {q:"According to the text, why is meeting in person still important?",opts:["A message is not the same as talking face to face.","Online chat is always better.","Phones make friendship automatic.","People never meet online."],lvl:"core"},
+   {q:"What does the writer advise new students to do?",opts:["Say hello and spend time with people who are different from them.","Stay on their phones all week.","Only ever talk to their roommate.","Avoid meeting any new people."],lvl:"full"}
+  ]},
+ "c3|2":{ title:"Learning to Live Together", paras:[
+   "For many students, moving into a residence hall is the first time they have lived away from their family. Shared living in a dormitory brings real benefits, but it also brings challenges that no one warns you about until you arrive.",
+   "The greatest benefit is community. Suddenly you are surrounded by people your own age, and help with an assignment or a lift to campus is only a knock away. Students who participate in dormitory life \u2014 joining events and meeting neighbours \u2014 usually settle in far more quickly than those who stay in their rooms.",
+   "The greatest challenge, on the other hand, is privacy. When you share a small space with a roommate, you cannot always control the noise, the mess or the visitors. Learning to be considerate \u2014 to think about how your actions affect others \u2014 is what makes shared living possible.",
+   "This is why every residence hall has rules. They may seem strict at first: quiet hours, cleaning duties, limits on guests. Yet these rules are not there to spoil your fun. They exist so that dozens of different people can get along, stay out of trouble, and still feel at home.",
+   "In truth, dormitory life teaches something no lecture can. It teaches responsibility \u2014 for your own space, and for the people around you. Students who learn to balance their freedom with respect for others leave college with more than a degree; they leave knowing how to live well beside anyone."
+  ], qs:[
+   {q:"What is the main idea of the text?",opts:["Shared living has benefits and challenges, and teaches responsibility.","Dormitories are always quiet and empty.","Students should never share a room.","College is only about lectures."],lvl:"sen"},
+   {q:"According to paragraph 2, what is the greatest benefit of dormitory life?",opts:["the sense of community","having complete privacy","having no rules at all","living completely alone"],lvl:"sen"},
+   {q:"In the passage, \u2018considerate\u2019 means \u2014",opts:["thinking about how your actions affect others","being extremely tidy","staying completely silent","living on your own"],lvl:"sen"},
+   {q:"In paragraph 4, \u2018They exist so that dozens of people can get along\u2019 \u2014 \u2018They\u2019 refers to \u2014",opts:["the rules of the residence hall","the students","the visitors","the lectures"],lvl:"core"},
+   {q:"According to the text, students who participate in dormitory life \u2014",opts:["usually settle in more quickly","always fail their courses","lose all of their privacy","must leave college early"],lvl:"core"},
+   {q:"What does the writer suggest students learn from dormitory life?",opts:["how to balance their freedom with respect for others","that rules are completely pointless","that community does not matter","how to avoid all other people"],lvl:"full"}
+  ]},
+ "c3|3":{ title:"On Your Own", paras:[
+   "No teacher stands over you at college to check that your homework is done. For the first time, you are on your own, and that freedom is exciting \u2014 until three deadlines arrive in the same week. This is the moment when good study habits stop being advice and start being survival.",
+   "The students who cope best are not always the cleverest; they are the most organized. They keep a simple planner or to-do list, write down every deadline, and cross off each task as it is finished. Seeing the list grow shorter, they say, is one of the best feelings of the week.",
+   "The hardest habit to build is beating the urge to procrastinate. It is always easier to check your phone than to open a textbook. Successful students fight this by creating a routine \u2014 a fixed time and place to study \u2014 so that concentrating becomes automatic rather than a daily battle.",
+   "Different methods suit different people. Some highlight their notes; others make flashcards or join a study group to go through difficult ideas together. There is no single perfect system. The real tip is to try several methods honestly and then keep whichever one actually helps you learn.",
+   "In the end, managing your time is really about managing yourself. A student who plans a little each day, avoids last-minute panic and asks for help early will not only pass their courses. They will also gain a skill that matters long after the final exam is over."
+  ], qs:[
+   {q:"What is the main message of the text?",opts:["Good study habits and time management are essential when you study alone.","College has no real deadlines.","The cleverest students always win.","Phones help students study better."],lvl:"sen"},
+   {q:"According to paragraph 2, what do well-organized students do?",opts:["keep a planner and cross off tasks as they finish them","study only late at night","never write anything down","ignore all deadlines"],lvl:"sen"},
+   {q:"In the passage, to \u2018procrastinate\u2019 means \u2014",opts:["to delay doing something you should do","to finish your work early","to make flashcards","to join a study group"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018Successful students fight this\u2019 \u2014 \u2018this\u2019 refers to \u2014",opts:["the urge to procrastinate","the routine","the textbook","the deadline"],lvl:"core"},
+   {q:"According to the text, why is there no single perfect study method?",opts:["Different methods suit different people.","All study methods are useless.","Only flashcards ever work.","Teachers choose the method for you."],lvl:"core"},
+   {q:"What does the writer suggest about managing time?",opts:["It is really about learning to manage yourself.","It is impossible for most students.","It only matters during exams.","It requires expensive tools."],lvl:"full"}
+  ]},
+ "c3|4":{ title:"Sharing, Not Owning", paras:[
+   "How do students survive on so little money? Increasingly, the answer is not to own things, but to share them. From bikes to bedrooms, a new \u2018on-demand economy\u2019 is helping young people get through college without going broke.",
+   "The idea is simple. Instead of buying an expensive item you use only sometimes, you pay a small membership or subscription and borrow it when you need it. A dockless bike helps you get around town for a few dirhams; a rental service lets you use tools, clothes or furniture and return them later. It is a low-cost solution built on convenience.",
+   "These services save money and save time, but they depend on one fragile thing: trust. When you share a flat or use a shared bike, you must believe that the next person will keep it clean and treat it fairly. Where that trust breaks down, the whole system quickly falls apart.",
+   "Sharing also changes how we think about ownership. Older generations often measured success by what they owned. Many students today, however, would rather have access to many things than own a few. For them, a shelf full of unused possessions is not a sign of wealth but of waste.",
+   "Of course, sharing has its limits. Some things we still want for ourselves. But the popularity of these platforms shows a real shift in attitude. Perhaps the students of today are learning an old lesson in a modern form: that give and take, not simply buying, is often the smartest way to live."
+  ], qs:[
+   {q:"What is the text mainly about?",opts:["how sharing things helps students save money and live cheaply","how to buy a brand-new bike","why students should own more things","the early history of college"],lvl:"sen"},
+   {q:"According to paragraph 2, how does the sharing idea work?",opts:["You pay a small fee and borrow an item when you need it.","You buy every item brand new.","You keep borrowed items forever.","You sell everything you own."],lvl:"sen"},
+   {q:"In the passage, a \u2018low-cost solution\u2019 is \u2014",opts:["a cheap way to solve a problem","an expensive luxury product","a type of bike","a college subject"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018they depend on one fragile thing\u2019 \u2014 \u2018they\u2019 refers to \u2014",opts:["the sharing services","the students","the bikes","the older generations"],lvl:"core"},
+   {q:"According to the text, what do sharing services depend on most?",opts:["trust between the people who share","expensive equipment","very large houses","buying new items"],lvl:"core"},
+   {q:"What change in attitude does the writer describe?",opts:["Many students now value access to things more than owning them.","Students want to own as much as possible.","Nobody shares anything anymore.","Owning things is the only real success."],lvl:"full"}
+  ]},
+ "c4|1":{ title:"The House That Watches You", paras:[
+   "Imagine a house that turns on the lights as you arrive, warms the water before you wake, and locks itself when you leave. This is no longer science fiction. Millions of ordinary homes are quietly turning into \u2018smart homes\u2019, filled with appliances that can be controlled remotely from a phone.",
+   "The attraction is obvious. Smart devices are convenient and efficient: they can lower your utility bills by switching off heaters in empty rooms, and they let you check your front door from the other side of the world. For a busy family on a tight budget, saving both time and money is a powerful reason to install them.",
+   "Yet these clever machines raise a difficult question. To work well, they must watch us \u2014 learning when we wake, what we buy, and when the house is empty. That information is valuable, and not only to us. If it falls into the wrong hands, our convenience could quickly become a threat to our security and privacy.",
+   "This does not mean we should reject the technology. It means we should use it wisely. Before buying a smart device, a careful owner asks who controls the data it collects and how well it is protected. Convenience is worth a great deal, but it should never be bought at any price.",
+   "Eventually, most homes may become smart homes, and that could be a good thing. Used carefully, this technology can make our lives easier and more sustainable. In the meantime, the wisest owners are those who enjoy the benefits while keeping a clear, watchful eye on the costs."
+  ], qs:[
+   {q:"What is the text mainly about?",opts:["the benefits and risks of smart-home technology","how to build a house from bricks","why phones are so expensive","the history of electricity"],lvl:"sen"},
+   {q:"According to paragraph 2, how can smart devices lower utility bills?",opts:["by switching off heaters in empty rooms","by using far more electricity","by locking all the doors","by making phone calls"],lvl:"sen"},
+   {q:"In the passage, \u2018convenient\u2019 means \u2014",opts:["easy and useful","very expensive","old-fashioned","dangerous"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018they must watch us\u2019 \u2014 \u2018they\u2019 refers to \u2014",opts:["the smart machines","the utility bills","the owners","the doors"],lvl:"core"},
+   {q:"According to the text, why can smart devices be a risk?",opts:["They collect valuable information that could reach the wrong hands.","They can never save any money.","They cannot be controlled at all.","They break down every day."],lvl:"core"},
+   {q:"What does the writer advise smart-home owners to do?",opts:["enjoy the benefits while watching the costs carefully","reject all new technology","share all their data freely","always buy the cheapest device"],lvl:"full"}
+  ]},
+ "c4|2":{ title:"The Brain You Think You Know", paras:[
+   "For a long time, people believed they understood the human brain. We were told that some of us are \u2018left-brained\u2019 and logical, while others are \u2018right-brained\u2019 and creative. It is a neat idea. Unfortunately, neuroscientists now tell us it is almost completely wrong.",
+   "The truth is more interesting. The brain\u2019s two hemispheres are joined by a thick bridge called the corpus callosum, and they collaborate constantly. When you solve a problem, both logic and intuition work together, passing information back and forth. No healthy person uses only one half of their brain.",
+   "Memory, too, is stranger than it seems. We imagine it works like a camera, recording exactly what happened. In fact, the brain rebuilds each memory every time we use it, and small errors creep in. This is how a false memory forms \u2014 a scene we are certain we remember, yet which never truly took place.",
+   "Perhaps the most surprising discovery concerns maturation. Scientists once thought the brain was fully formed in childhood. We now know that it keeps changing into a person\u2019s twenties, and that the parts controlling careful, precise judgement are among the last to reach maturity. That helps explain why teenagers sometimes take risks that adults would not.",
+   "What should we learn from all this? Mainly, humility. The brain is not a simple machine with fixed settings, but a living organ that grows, rebuilds and occasionally fools us. The more neuroscientists discover, the clearer it becomes that we are only beginning to understand the organ we think with."
+  ], qs:[
+   {q:"What is the best summary of the text?",opts:["Many common beliefs about the brain are wrong; the truth is more complex.","The brain works exactly like a camera.","Only \u2018left-brained\u2019 people are clever.","The brain never changes after birth."],lvl:"sen"},
+   {q:"According to paragraph 2, what joins the brain\u2019s two hemispheres?",opts:["a bridge called the corpus callosum","the memory","a false memory","the eyes"],lvl:"sen"},
+   {q:"In the passage, \u2018collaborate\u2019 means \u2014",opts:["work together","stop working","grow larger","record images"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018the brain rebuilds each memory every time we use it\u2019 \u2014 \u2018it\u2019 refers to \u2014",opts:["a memory","the camera","the brain","the error"],lvl:"core"},
+   {q:"According to the text, what is a \u2018false memory\u2019?",opts:["a scene we are sure we remember but which never happened","a photograph of the past","a part of the brain","a kind of toxin"],lvl:"core"},
+   {q:"What does the writer suggest about teenagers taking risks?",opts:["Their judgement centres are among the last parts of the brain to mature.","They enjoy danger for no reason.","Their brains are already fully formed.","They cannot learn from any mistake."],lvl:"full"}
+  ]},
+ "c4|3":{ title:"Your Face Is the Password", paras:[
+   "Your face is becoming a password. Facial recognition software, powered by artificial intelligence, can now identify a single person in a crowd of thousands in less than a second. Airports, phones and even shops already use it, and its abilities grow more remarkable every year.",
+   "How does it work? The software measures the exact aspects of a face \u2014 the width of the nose, the distance between the eyes, the shape of the jaw \u2014 and turns them into a code. It then compares that code with millions of faces stored in a database until it finds a match. To the machine, every face is simply a set of numbers.",
+   "Supporters point to real benefits. This technology can catch criminals, prevent fraud, and help a phone unlock the moment its owner looks at it. When used carefully, they argue, it makes ordinary life both safer and more convenient. Few of us would give up such advantages easily.",
+   "Critics, however, warn of a hidden cost. A camera that can recognise you can also monitor you \u2014 tracking where you go, who you meet and what you do. In the wrong hands, that power could quietly erase our privacy and our freedom, all in the name of security.",
+   "So the real question is not whether the technology works, but who should be allowed to use it, and how. Facial recognition is neither good nor evil in itself; it is a tool. Like any powerful tool, it will shape our future according to the wisdom, or the carelessness, of the people who hold it."
+  ], qs:[
+   {q:"What is the text mainly about?",opts:["the benefits and dangers of facial recognition technology","how to design a mobile phone","how to draw a human face","the history of airports"],lvl:"sen"},
+   {q:"According to paragraph 2, how does the software identify a face?",opts:["It measures features and compares the code with a database.","It simply asks the person\u2019s name.","It reads a written password.","It guesses at random."],lvl:"sen"},
+   {q:"In the passage, to \u2018monitor\u2019 someone means \u2014",opts:["to watch or track them","to greet them politely","to pay them money","to teach them"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018it makes ordinary life safer\u2019 \u2014 \u2018it\u2019 refers to \u2014",opts:["the facial recognition technology","the criminal","the phone owner","the database"],lvl:"core"},
+   {q:"According to the critics in paragraph 4, what is the danger?",opts:["A camera that recognises you can also track you and reduce privacy.","The technology never actually works.","Faces cannot really be measured.","Phones are simply too slow."],lvl:"core"},
+   {q:"What does the writer conclude about facial recognition?",opts:["It is a tool whose value depends on who uses it and how.","It is always evil and should be banned.","It is always completely safe.","It will soon disappear entirely."],lvl:"full"}
+  ]},
+ "c4|4":{ title:"Nature, Nurture, and You", paras:[
+   "Why are you the way you are? For centuries people have argued over a single question: does our personality come from \u2018nature\u2019 \u2014 the qualities we inherit from our parents \u2014 or from \u2018nurture\u2019, the way we are raised? The honest answer, scientists now say, is both.",
+   "Studies of twins have been especially revealing. Identical twins share the same genes, yet twins raised in different families do not turn out exactly alike. This tells us that our inherited nature sets a kind of starting point, while our environment and experiences shape what we finally become.",
+   "Consider two brothers with the same shy nature. One grows up in a warm, encouraging home and slowly learns confidence; the other is often criticised and becomes more withdrawn. Their starting personality was similar, but the world around them pulled it in opposite directions. Nurture, in other words, can strengthen or soften what nature provides.",
+   "This matters, because it changes how we see ourselves and others. If personality were fixed at birth, there would be little point in trying to improve. But since experience clearly shapes us, a shy child can grow braver, and a careless student can learn to focus. We are not simply prisoners of our genes.",
+   "So the old debate has a modern answer: nature and nurture are not enemies but partners. Each of us begins with a set of tendencies, and then a lifetime of choices, relationships and effort slowly turns those tendencies into a person. In the end, who you become is written by both your birth and your life."
+  ], qs:[
+   {q:"What is the main idea of the text?",opts:["Personality comes from both nature and nurture working together.","Personality comes only from our genes.","Personality comes only from how we are taught.","Twins always have identical characters."],lvl:"sen"},
+   {q:"According to paragraph 2, what do studies of twins show?",opts:["Twins raised apart do not turn out exactly alike.","Twins are always completely identical.","Genes do not matter at all.","The environment has no effect."],lvl:"sen"},
+   {q:"In the passage, \u2018nurture\u2019 means \u2014",opts:["the way a person is raised","qualities inherited from parents","a type of twin","a fixed starting point"],lvl:"sen"},
+   {q:"In paragraph 3, \u2018the world around them pulled it in opposite directions\u2019 \u2014 \u2018it\u2019 refers to \u2014",opts:["their personality","the home","the criticism","the brothers"],lvl:"core"},
+   {q:"According to the text, why does the nature-or-nurture question matter?",opts:["It affects whether we believe people can change and improve.","It decides how tall we will grow.","It has no real effect on anything.","It proves that genes are useless."],lvl:"core"},
+   {q:"What does the writer conclude?",opts:["Who we become is shaped by both birth and life experience.","Only our genes decide who we are.","Only our upbringing matters.","Personality can never change at all."],lvl:"full"}
+  ]}
+};
+function makeRQ(q,k,seed){var sh=_optSet(q.opts[0], q.opts.slice(1), k, seed); return {q:q.q, opts:sh.opts, ans:sh.ans};}
+function _fallbackReading(ctx){
+  var topic=(ctx.titles&&ctx.titles[0])||ctx.shortTheme||"this week's topic";
+  var exs=(ctx.exs||[]).slice(0,6), V=ctx.V||[];
+  var p1="This week's topic is "+topic+", something we meet often in everyday life. The short text below explores it more closely and shows how the new words are used.";
+  var p2=exs.slice(0,3).join(" ")||("We have learned several useful words about "+topic+".");
+  var p3=exs.slice(3,6).join(" ")||("Each of these ideas connects to real situations that students already know.");
+  var p4="When we understand these ideas, we can make better choices and explain our opinions more clearly. That is why reading carefully about "+topic+" is worth the effort.";
+  var p5="In the end, the most important thing is to use what we learn. A student who practises a little every day will understand "+topic+" far better than one who reads about it only once.";
+  var w0=V[0], w1=V[1]||V[0];
+  return {paras:[p1,p2,p3,p4,p5], qs:[
+    {q:"What is the text mainly about?",opts:["the topic of "+topic,"a family holiday","a science experiment","a football match"],lvl:"sen"},
+    {q:"In the text, what does \u2018"+(w0?w0[0]:"the key word")+"\u2019 mean?",opts:[(w0?w0[1]:"the correct meaning"),(w1?w1[1]:"a different meaning"),"a place far away","a kind of food"],lvl:"sen"},
+    {q:"According to the text, understanding these ideas helps people to \u2014",opts:["make better choices and explain their opinions","forget the topic quickly","avoid all reading","travel abroad"],lvl:"core"},
+    {q:"What does the writer suggest at the end of the text?",opts:["Practising a little every day helps most.","Reading something once is always enough.","The topic is not useful in real life.","Only tests really matter."],lvl:"full"}
+  ]};
+}
+function weekReading(courseId, ls, week, ctx){
+  var key=courseId+"|"+week.n;
+  var R=(typeof READINGS!=="undefined"&&READINGS&&READINGS[key])?READINGS[key]:_fallbackReading(ctx);
+  var P=R.paras||[], qs=R.qs||[];
+  return {
+    full:{passage:P.join(" "), qs:qs},
+    core:{passage:P.slice(0,3).join(" "), qs:qs.filter(function(q){return q.lvl!=="full";})},
+    sen:{passage:P.slice(0,2).join(" "), qs:qs.filter(function(q){return q.lvl==="sen";})},
+    authored:!!(typeof READINGS!=="undefined"&&READINGS&&READINGS[key])
+  };
+}
+
 function wPrompt(ls, week, words){
   var wr = ls.filter(function(L){return /writ/i.test(L.focus||"");})[0] || ls[ls.length-1] || {};
   var rv = ls.filter(function(L){return /read|view/i.test(L.focus||"");})[0]
@@ -3224,7 +3472,7 @@ function weekWriting(ls){
   }
   return null;
 }
-function autoContent(course,week,ls){
+function autoContent(course,week,ls,courseId){
   var V=vocabPool(ls),M=mcqPool(ls);
   var theme=course.chapter;
   var titles=ls.map(function(L){return L.title;}).filter(Boolean);
@@ -3263,24 +3511,11 @@ function autoContent(course,week,ls){
       lines:5,
       sample:wSample}};
   // checkpoint (different items + exam-mode reading + challenge)
-  var vmcq=V.slice(0,6).map(function(v,i){var opts=[v[1]];V.forEach(function(o){if(o[0]!==v[0]&&opts.length<3)opts.push(o[1]);});var sh=seedShuffle(opts,v[0]+week.n);return {q:"\u201c"+v[0]+"\u201d means:",opts:sh.opts,ans:sh.ans};});
+  var vmcq=V.slice(0,6).map(function(v,i){var opts=[v[1]];V.forEach(function(o){if(o[0]!==v[0]&&opts.length<3)opts.push(o[1]);});var sh=seedShuffle(opts,v[0]+week.n);return {q:"Read: \u201c"+sentWithWord(v)+"\u201d  \u2014 what does \u2018"+v[0]+"\u2019 mean here?",opts:sh.opts,ans:sh.ans};});
   var lang=M.slice(2,5);
   var objAll=[]; ls.forEach(function(L){oi(L).forEach(function(o){objAll.push(o);});});
-  var passage=(titles[0]?("The topic of "+titles[0]+" is part of everyday life, and this text explores it more closely. "):("This text explores "+shortTheme+" more closely. "))
-    +exs.join(" ")
-    +(objAll.length?(" In these lessons, learners also practise how to "+objAll.slice(0,2).map(function(o){return o.replace(/^to\s+/i,"");}).join(", and how to ")+".") : "")
-    +" Understanding these ideas helps people make better choices and explain their opinions clearly.";
-  (function(){var wc=passage.split(/\s+/).length,i=0;while(wc<170&&i<V.length){var v=V[i++];if(v&&v[1]){passage+=" The term \u201c"+v[0]+"\u201d means "+v[1]+".";wc=passage.split(/\s+/).length;}}
-    var FILL=["Practising a little every day makes new language easier to remember.","Good learners plan their time and check their own work carefully.","Reading widely helps people meet the same words in different situations.","Talking about a topic with a friend is a useful way to test your ideas.","When we connect a lesson to real life, it becomes much easier to understand.","Asking questions in class is a sign of a confident, active learner."];
-    var j=0;while(wc<165&&j<24){passage+=" "+FILL[j%FILL.length];j++;wc=passage.split(/\s+/).length;}})();
-  var wq2=V[1]||V[0], wq3=V[2]||V[1]||V[0];
-  var q2opts=[wq2?wq2[0]:"one of the words"]; V.forEach(function(o){if(wq2&&o[0]!==wq2[0]&&q2opts.length<3)q2opts.push(o[0]);}); var q2=seedShuffle(q2opts,"q2"+week.n);
-  var q3opts=[wq3?wq3[1]:"the correct meaning"]; V.forEach(function(o){if(wq3&&o[0]!==wq3[0]&&q3opts.length<3)q3opts.push(o[1]);}); var q3=seedShuffle(q3opts,"q3"+week.n);
-  var m1=seedShuffle(["the topic of "+(titles[0]||shortTheme),"a personal holiday story","a science experiment"],"m"+week.n);
-  var reading={passage:passage,qs:[
-    {q:"The passage is mainly about:",opts:m1.opts,ans:m1.ans},
-    {q:"Which word from the passage means \u201c"+(wq2?wq2[1]:"the given idea")+"\u201d?",opts:q2.opts,ans:q2.ans},
-    {q:"In the passage, \u201c"+(wq3?wq3[0]:"the word")+"\u201d means:",opts:q3.opts,ans:q3.ans}]};
+  var RD=weekReading(courseId, ls, week, {V:V,exs:exs,titles:titles,shortTheme:shortTheme});
+  var reading={passage:RD.core.passage, qs:RD.core.qs.slice(0,3).map(function(q,i){return makeRQ(q,3,"ckr"+i+week.n);}), _rd:RD};
   var chk={vocabMcq:vmcq,language:lang,reading:reading,challenge:pickChallenge(week.n+"|"+shortTheme),
     writing:{
       scenario:WW?"This is the writing task you practised in class this week (Activity 2). Plan first, then write your paragraph.":("Writing task based on this week's lessons ("+titleStr+"). Plan first, then write your paragraph."),
@@ -3408,7 +3643,7 @@ var PACKS={ "c1|1":{
     rubric:[["Task & content \u2014 does (1) and (2), ~70 words, links to experience/world","3"],["Use of key words \u2014 at least two, used correctly","2"],["Advice & grammar \u2014 an advice expression + correct verb form","3"],["Organisation & accuracy \u2014 clear, linked, few errors","2"]]}
 }};
 
-function contentFor(courseId,course,week,ls){var p=PACKS[courseId+"|"+week.n];return p?p:autoContent(course,week,ls);}
+function contentFor(courseId,course,week,ls){var p=PACKS[courseId+"|"+week.n];return p?p:autoContent(course,week,ls,courseId);}
 
 /* ---------- Differentiated tier tasks (SEN / Tier 1 / Tier 2 / Tier 3) ---------- */
 var TASKMETA={
@@ -3498,18 +3733,21 @@ function leveledContent(C, ls, week, level){
     var grammar=(ck.language||[]).slice(0,3).map(function(q,i){var s=_optSet(q.opts[q.ans], q.opts.filter(function(o){return o!==q.opts[q.ans];}).concat(langOpts), 4, "ag"+i+week.n); return {q:q.q,opts:s.opts,ans:s.ans};});
     var chG=(ck.challenge||[]).filter(function(q){return !/mean|nearly/i.test(q.q);})[0];
     if(chG){var s2=_optSet(chG.opts[chG.ans], chG.opts.filter(function(o){return o!==chG.opts[chG.ans];}).concat(langOpts), 4, "agc"+week.n); grammar.push({q:chG.q,opts:s2.opts,ans:s2.ans});}
-    var rqs=(ck.reading.qs||[]).slice(0,2).map(function(q,i){var s=_optSet(q.opts[q.ans], q.opts.filter(function(o){return o!==q.opts[q.ans];}).concat(vdefs), 4, "ar"+i+week.n); return {q:q.q,opts:s.opts,ans:s.ans};});
+    var RD=(ck.reading&&ck.reading._rd)||{full:{passage:ck.reading.passage,qs:ck.reading.qs}};
+    var _ord={full:0,core:1,sen:2};
+    var rqs=(RD.full.qs||[]).slice().sort(function(a,b){return (_ord[a.lvl]||1)-(_ord[b.lvl]||1);}).slice(0,3).map(function(q,i){return makeRQ(q,4,"ar"+i+week.n);});
     var writingA={prompt:ck.writing.prompt+"  Extension (Tier 1): then argue the OPPOSITE view in two sentences, using one above-level linker (however, therefore, nevertheless).", lines:6, sample:ck.writing.sample};
-    return {badge:"TIER 1", isA:true, vocab:vocab, grammar:grammar, reading:{passage:ck.reading.passage, qs:rqs}, writing:writingA};
+    return {badge:"TIER 1", isA:true, vocab:vocab, grammar:grammar, reading:{passage:RD.full.passage, qs:rqs}, writing:writingA};
   }
   /* level B: core 3-option items + SEN 2-option items */
   var v3=(ck.vocabMcq||[]).slice(0,3).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
-  var sv=V[0]; if(sv){var s=_optSet(sv[1], vdefs.filter(function(d){return d!==sv[1];}), 2, "bsv"+week.n); v3.push({q:"\u201c"+sv[0]+"\u201d means:",opts:s.opts,ans:s.ans,sen:true});}
+  var sv=V[0]; if(sv){var s=_optSet(sv[1], vdefs.filter(function(d){return d!==sv[1];}), 2, "bsv"+week.n); v3.push({q:"Read: \u201c"+sentWithWord(sv)+"\u201d \u2014 what does \u2018"+sv[0]+"\u2019 mean?",opts:s.opts,ans:s.ans,sen:true});}
   var g3=(ck.language||[]).slice(0,3).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
   var sg=(ck.language||[])[1]||(ck.language||[])[0]; if(sg){var correct=sg.opts[sg.ans]; var s2b=_optSet(correct, sg.opts.filter(function(o){return o!==correct;}), 2, "bsg"+week.n); g3.push({q:sg.q,opts:s2b.opts,ans:s2b.ans,sen:true});}
-  var passB=_trimWords(ck.reading.passage, 90);
-  var rq=(ck.reading.qs||[]).slice(0,2).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
-  var sr=(ck.reading.qs||[])[0]; if(sr){var cr=sr.opts[sr.ans]; var s3=_optSet(cr, sr.opts.filter(function(o){return o!==cr;}), 2, "bsr"+week.n); rq.push({q:sr.q,opts:s3.opts,ans:s3.ans,sen:true});}
+  var RDb=(ck.reading&&ck.reading._rd)||{core:{passage:ck.reading.passage,qs:ck.reading.qs},sen:{qs:ck.reading.qs}};
+  var passB=RDb.core.passage;
+  var rq=(RDb.core.qs||[]).slice(0,2).map(function(q,i){return makeRQ(q,3,"br"+i+week.n);});
+  var sr=(RDb.sen.qs||[])[1]||(RDb.sen.qs||[])[0]; if(sr){var sq=makeRQ(sr,2,"bsr"+week.n); sq.sen=true; rq.push(sq);}
   var wpromptB=(ws.writing&&ws.writing.prompt)?ws.writing.prompt:ck.writing.prompt;
   var writingB={prompt:wpromptB, sen:"SEN: complete the frame \u2014 \u201cIn my opinion, ______ because ______.\u201d", lines:5, sample:(ws.writing&&ws.writing.sample)||ck.writing.sample};
   return {badge:"TIER 2 \u00b7 TIER 3 \u00b7 SEN", isA:false, vocab:v3, grammar:g3, reading:{passage:passB, qs:rq}, writing:writingB};
@@ -3871,7 +4109,7 @@ function _docTabs(id,wk){ if(typeof ICANPDF==="undefined") return ""; if(!(WEEKS
     +'<button class="btn sm" style="'+a+'" onclick="openWSPDF(\'B\',\''+id+'\')">\u2b07 W'+n+' Worksheet B \u00b7 Core + SEN</button>'
     +'<button class="btn sm" style="'+a+'" onclick="openChkPDF(\''+id+'\')">\u2b07 W'+n+' Checkpoint</button></div>'
     +'<p style="margin:2px 2px 0;font-size:.78rem;color:#667">Worksheet A = higher/above-level (full a\u2013d options). Worksheet B = at/below-level, with SEN items marked. Student names stay in the lesson plan only.</p>'
-    +_rosterPanel(CUR.cls); }
+    +_rosterPanel(CUR.cls)+_seatingPanel(CUR.cls); }
 function openWSPDF(level,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
   ICANPDF.downloadWS(level,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
@@ -4839,6 +5077,68 @@ function rosterTab(uid,idx){
   Array.prototype.forEach.call(document.querySelectorAll('.rtabpane[data-uid="'+uid+'"]'),function(p){ p.style.display=(p.getAttribute('data-i')==String(idx))?'block':'none'; });
   var i=0; while(true){ var b=document.getElementById(uid+'_tab'+i); if(!b) break; var on=(i===idx); b.style.background=on?'#0A5A62':'#eef7f8'; b.style.color=on?'#fff':'#0A5A62'; i++; }
 }
+
+/* ---- Seating Plan: heterogeneous groups (drag to re-group) ---- */
+var __SEATING={};
+var __dragName=null;
+var LVLCOLOR={T1:"#0A5A62",T2:"#2b3a67",T3:"#8a5a00",SEN:"#B44412"};
+function _lvlMap(gp){ var m={}; (gp.t1||[]).forEach(function(n){m[n]="T1";}); (gp.t2||[]).forEach(function(n){m[n]="T2";}); (gp.t3||[]).forEach(function(n){m[n]="T3";}); (gp.sen||[]).forEach(function(n){m[n]="SEN";}); return m; }
+function _autoSeating(gp){
+  /* ranked pool: high -> low, so round-robin spreads levels across groups (heterogeneous) */
+  var pool=[]; (gp.t1||[]).forEach(function(n){pool.push(n);}); (gp.t2||[]).forEach(function(n){pool.push(n);}); (gp.t3||[]).forEach(function(n){pool.push(n);}); (gp.sen||[]).forEach(function(n){pool.push(n);});
+  var N=pool.length; if(!N) return [];
+  var G=Math.min(4, Math.max(1, Math.floor(N/3)));   /* 3-4 per group, max 4 groups, >=3 each */
+  var groups=[]; for(var i=0;i<G;i++) groups.push([]);
+  pool.forEach(function(name,idx){ var cyc=Math.floor(idx/G), pos=idx%G; var g=(cyc%2===0)?pos:(G-1-pos); groups[g].push(name); });
+  return groups;
+}
+function _seatingArrange(cls, gi){
+  __SEATING[cls]=__SEATING[cls]||{};
+  if(!__SEATING[cls][gi]){ var groups=_rosterGroups(cls); __SEATING[cls][gi]=_autoSeating(groups[gi]||{}); }
+  return __SEATING[cls][gi];
+}
+function _seatingGroupsHTML(cls, gi){
+  var groups=_seatingArrange(cls,gi); var gp=(_rosterGroups(cls)[gi])||{}; var lvl=_lvlMap(gp);
+  if(!groups.length) return '<p class="muted" style="margin-top:8px">No students to seat for this class yet.</p>';
+  return '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">'
+    + groups.map(function(grp,idx){
+        return '<div ondragover="event.preventDefault()" ondrop="seatDrop(event,\''+cls+'\','+gi+','+idx+')" style="flex:1 1 160px;min-width:150px;border:2px dashed #bcdfe2;border-radius:16px;padding:9px 8px;background:#f7fbfb">'
+          +'<div style="font-weight:800;color:#0A5A62;text-align:center;margin-bottom:7px">Group '+(idx+1)+' <span style="color:#889;font-weight:600">('+grp.length+')</span></div>'
+          + grp.map(function(name){ var c=LVLCOLOR[lvl[name]]||"#556";
+              return '<div draggable="true" data-name="'+esc(name)+'" ondragstart="seatDrag(event,this)" title="Drag to another group" style="cursor:grab;margin:5px auto;background:#fff;border:1px solid '+c+'55;border-left:6px solid '+c+';border-radius:22px;padding:6px 11px;font-size:.82rem;color:#233;box-shadow:0 1px 2px rgba(0,0,0,.06)">'+esc(name)+' <span style="color:#8899a6;font-size:.7rem;font-weight:700">'+(lvl[name]||"")+'</span></div>';
+            }).join('')
+          +'</div>';
+      }).join('')
+    +'</div>';
+}
+function renderSeatingPane(cls, gi){ var el=document.getElementById("seat_"+cls+"_"+gi); if(el) el.innerHTML=_seatingGroupsHTML(cls,gi); }
+function seatDrag(ev, el){ __dragName=el.getAttribute("data-name"); try{ ev.dataTransfer.setData("text/plain",__dragName); ev.dataTransfer.effectAllowed="move"; }catch(e){} }
+function seatDrop(ev, cls, gi, targetIdx){
+  ev.preventDefault();
+  var name=__dragName || (ev.dataTransfer && ev.dataTransfer.getData("text/plain")); if(!name) return;
+  var groups=__SEATING[cls] && __SEATING[cls][gi]; if(!groups) return;
+  for(var i=0;i<groups.length;i++){ var k=groups[i].indexOf(name); if(k>=0){ groups[i].splice(k,1); break; } }
+  groups[targetIdx].push(name); __dragName=null; renderSeatingPane(cls,gi);
+}
+function seatingTab(uid,idx){
+  Array.prototype.forEach.call(document.querySelectorAll('.stabpane[data-uid="'+uid+'"]'),function(p){ p.style.display=(p.getAttribute('data-i')==String(idx))?'block':'none'; });
+  var i=0; while(true){ var b=document.getElementById(uid+'_tab'+i); if(!b) break; var on=(i===idx); b.style.background=on?'#0A5A62':'#eef7f8'; b.style.color=on?'#fff':'#0A5A62'; i++; }
+}
+function seatingReset(cls){ if(__SEATING[cls]) delete __SEATING[cls]; var groups=_rosterGroups(cls); for(var i=0;i<groups.length;i++){ renderSeatingPane(cls,i); } }
+function _seatingPanel(cls){ var groups=_rosterGroups(cls); if(!groups.length) return "";
+  var uid="seat_"+cls, body;
+  if(groups.length>1){
+    var tabs='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'
+      + groups.map(function(gp,i){ var on=(i===0); return '<button type="button" id="'+uid+'_tab'+i+'" onclick="seatingTab(\''+uid+'\','+i+')" style="border:1px solid #cfe6e8;background:'+(on?'#0A5A62':'#eef7f8')+';color:'+(on?'#fff':'#0A5A62')+';font-weight:800;border-radius:8px;padding:5px 14px;cursor:pointer">'+esc(gp.grade)+'</button>'; }).join('')+'</div>';
+    var panes=groups.map(function(gp,i){ return '<div class="stabpane" data-uid="'+uid+'" data-i="'+i+'" style="display:'+(i===0?'block':'none')+'"><div id="seat_'+cls+'_'+i+'">'+_seatingGroupsHTML(cls,i)+'</div></div>'; }).join('');
+    body=tabs+panes;
+  } else { body='<div id="seat_'+cls+'_0">'+_seatingGroupsHTML(cls,0)+'</div>'; }
+  return '<details style="margin:6px 0 2px;border:1px solid #cfe6e8;border-radius:10px;padding:8px 12px;background:#f7fbfb"><summary style="cursor:pointer;font-weight:800;color:#0A5A62">\uD83E\uDE91 Seating Plan \u2014 heterogeneous groups (drag names to re-group)</summary>'
+    +'<p class="muted" style="margin:6px 0 0;font-size:.78rem">Each group mixes levels \u2014 a higher-level student sits with lower-level peers. Drag any name into another group to adjust for classroom management.</p>'
+    +body
+    +'<div style="margin-top:8px"><button class="btn sm" onclick="seatingReset(\''+cls+'\')">\u21ba Reset to suggested groups</button></div></details>';
+}
+
 
 var CORDER=["c2","c1","c3","c4"];
 /* ---- CCG Scope (Comprehensive Curriculum Guide) per class ----
