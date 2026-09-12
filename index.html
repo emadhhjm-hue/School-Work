@@ -3233,6 +3233,25 @@ function autoContent(course,week,ls){
 }
 
 /* ---------- renderers from normalized content ---------- */
+function rosterBlock(d,st,groups){ if(!groups||!groups.length) return;
+  groups.forEach(function(gp){
+    if(st.y>250){d.addPage();st.y=20;}
+    d.setFont("helvetica","bold");d.setFontSize(9);tc(d,TEALD);
+    d.text("Differentiation groups \u2014 "+gp.grade,L,st.y);st.y+=4;
+    var cats=[["SEN",gp.sen],["Tier 1 \u00b7 High",gp.t1],["Tier 2 \u00b7 Medium",gp.t2],["Tier 3 \u00b7 Low",gp.t3]];
+    var colW=PW/4, top=st.y, bottoms=[];
+    cats.forEach(function(c,ci){
+      var x=L+ci*colW, y=top;
+      d.setFont("helvetica","bold");d.setFontSize(7.6);tc(d,TEAL);d.text(c[0]+" ("+c[1].length+")",x,y);y+=3.4;
+      d.setFont("helvetica","normal");d.setFontSize(7.2);tc(d,INK);
+      if(!c[1].length){d.text("\u2014",x,y);y+=3.2;}
+      c[1].forEach(function(nm){var ls=d.splitTextToSize(nm,colW-3);ls.forEach(function(ln){d.text(ln,x,y);y+=3.1;});});
+      bottoms.push(y);
+    });
+    st.y=Math.max.apply(null,bottoms)+2.5;
+    dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=3;
+  });
+}
 function renderCard(d,course,week,c){var st={y:16};
   header(d,st,course,"STUDY CARD",TEAL,"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 "+week.skill+" \u00b7 copy this into your notebook in 5 minutes.");
   section(d,st,"1","Vocabulary study","copy the words");
@@ -3246,9 +3265,10 @@ function renderCard(d,course,week,c){var st={y:16};
   note(d,st,"5-minute transfer:  copy the word list and the skills into your notebook, then write one sentence using any two words.","amber");
   footer(d,course);return d;}
 
-function renderWorksheet(d,course,week,ws){var st={y:16};
+function renderWorksheet(d,course,week,ws,groups){var st={y:16};
   header(d,st,course,"WORKSHEET \u00b7 IN-CLASS",TEAL,"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 "+week.skill+" \u00b7 practise the week's vocabulary and language.");
   fields(d,st);
+  rosterBlock(d,st,groups);
   section(d,st,"A","Vocabulary \u2014 matching","vocab");
   para(d,st,"Write the letter of the correct meaning next to each word.",{color:MUT,size:9,lh:4.6});
   var y0=st.y,LT=letters(ws.matching.length),defs=ws.matching.map(function(p){return p[1];});
@@ -3274,9 +3294,10 @@ function renderWorksheet(d,course,week,ws){var st={y:16};
   para(d,st,ws.writing.words?"D \u00b7 Sample sentences:":"D \u00b7 Sample paragraph:",{bold:true,color:TEALD});note(d,st,ws.writing.sample);
   footer(d,course);return d;}
 
-function renderCheckpoint(d,course,week,ck){var st={y:16};
+function renderCheckpoint(d,course,week,ck,groups){var st={y:16};
   header(d,st,course,"WEEK "+week.n+" CHECKPOINT",AMBER,"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 assessment of learning \u00b7 circle one answer for each question.");
   fields(d,st);
+  rosterBlock(d,st,groups);
   section(d,st,"P1","Vocabulary","meaning");var no=0;
   ck.vocabMcq.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);});
   section(d,st,"P2","Language & function","grammar \u00b7 function");
@@ -3330,14 +3351,85 @@ var PACKS={ "c1|1":{
 
 function contentFor(courseId,course,week,ls){var p=PACKS[courseId+"|"+week.n];return p?p:autoContent(course,week,ls);}
 
+/* ---------- Differentiated tier tasks (SEN / Tier 1 / Tier 2 / Tier 3) ---------- */
+var TASKMETA={
+  sen:{cat:"SEN", label:"SEN \u2014 Special Needs (supported)", words:50, opts:2},
+  t1:{cat:"Tier 1", label:"Tier 1 \u2014 High / Above-level", words:150, opts:4},
+  t2:{cat:"Tier 2", label:"Tier 2 \u2014 Medium / At-level", words:100, opts:3},
+  t3:{cat:"Tier 3", label:"Tier 3 \u2014 Low / Sub-level", words:80, opts:3}
+};
+function _trimWords(txt,n){var w=txt.replace(/\s+/g," ").trim().split(" ");if(w.length<=n)return w.join(" ");var cut=w.slice(0,n).join(" ");var dot=cut.lastIndexOf(". ");if(dot>Math.floor(n*0.55))return cut.slice(0,dot+1);return cut.replace(/[,;:\-]?\s*$/,"")+".";}
+function _optSet(correct,pool,k,seed){var arr=[correct],i=0;
+  while(arr.length<k && i<pool.length){var c=pool[i++];if(c && arr.indexOf(c)<0)arr.push(c);}
+  var filler=["None of these","Not given in the text","A different meaning"],fi=0;
+  while(arr.length<k){var f=filler[fi++]||("Option "+arr.length);if(arr.indexOf(f)<0)arr.push(f);}
+  return seedShuffle(arr.slice(0,k),seed);}
+function taskContent(course,week,ls,tier){
+  var T=TASKMETA[tier]||TASKMETA.t2, K=T.opts;
+  var V=vocabPool(ls), M=mcqPool(ls);
+  var defs=V.map(function(v){return v[1];});
+  var wordList=V.map(function(v){return v[0];});
+  /* A. Vocabulary MCQs (3) */
+  var vocab=V.slice(0,3).map(function(v,i){
+    var others=defs.filter(function(d){return d!==v[1];});
+    var sh=_optSet(v[1],others,K,"tv"+i+tier+week.n);
+    return {q:"\u201c"+v[0]+"\u201d means:",opts:sh.opts,ans:sh.ans};});
+  /* B. Grammar & language MCQs (3) */
+  var seen={},gsrc=M.filter(function(q){if(seen[q.q])return false;seen[q.q]=1;return true;});
+  var allOpts=[];M.forEach(function(q){q.opts.forEach(function(o){if(allOpts.indexOf(o)<0)allOpts.push(o);});});
+  var grammar=gsrc.slice(0,3).map(function(q,i){
+    var correct=q.opts[q.ans];
+    var others=q.opts.filter(function(o){return o!==correct;}).concat(allOpts.filter(function(o){return o!==correct;}));
+    var sh=_optSet(correct,others,K,"tg"+i+tier+week.n);
+    return {q:q.q,opts:sh.opts,ans:sh.ans};});
+  /* C. Reading comprehension (passage sized to tier + main idea & detail) */
+  var exs=V.filter(function(v){return v[3]&&GAP.test(v[3]);}).map(fillEx);
+  var topic=(ls.map(function(L){return L.title;}).filter(Boolean)[0])||course.chapter.replace(/\s*\((?:Ch\.?\s*\d+|Unit\s*\d+)\)\s*$/i,"").trim();
+  var pass="This short text is about "+topic+". "+exs.join(" ");
+  var fi=0;while(pass.split(/\s+/).length<T.words && fi<V.length){var vv=V[fi++];if(vv&&vv[1])pass+=" "+vv[0].charAt(0).toUpperCase()+vv[0].slice(1)+" means "+vv[1]+".";}
+  var FILL=["Learning a little every day makes new words easier to remember.","Good learners plan their time and check their own work.","Talking about a topic with a friend helps you understand it."];
+  var fj=0;while(pass.split(/\s+/).length<T.words && fj<12){pass+=" "+FILL[fj%FILL.length];fj++;}
+  pass=_trimWords(pass,T.words);
+  var mi=_optSet("the topic of "+topic,["a family holiday story","a science experiment","a football match","a shopping list"],K,"trm"+tier+week.n);
+  var dv=V[1]||V[0];
+  var de=_optSet(dv?dv[0]:wordList[0],wordList.filter(function(w){return !dv||w!==dv[0];}),K,"trd"+tier+week.n);
+  var reading={passage:pass,qs:[
+    {q:"What is the text mainly about?",opts:mi.opts,ans:mi.ans},
+    {q:"Which word means \u201c"+(dv?dv[1]:"the given idea")+"\u201d?",opts:de.opts,ans:de.ans}]};
+  return {meta:T,vocab:vocab,grammar:grammar,reading:reading};
+}
+/* compact, single-page renderers used only by the differentiated tasks */
+function _tSec(d,st,tag,heading,slo){st.y+=1.4;d.setFont("helvetica","bold");d.setFontSize(10.2);tc(d,TEAL);d.text(tag+" \u00b7 "+heading,L,st.y);d.setFont("helvetica","italic");d.setFontSize(7.8);tc(d,MUT);d.text(slo,W-R,st.y,{align:"right"});st.y+=2.4;dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=4;}
+function _tQ(d,st,n,q){d.setFont("helvetica","bold");d.setFontSize(9.6);tc(d,TEALD);var head=n+". ";var lead=d.getTextWidth(head);d.text(head,L,st.y);d.setFont("helvetica","normal");tc(d,INK);var ls=d.splitTextToSize(q.q,PW-lead-2);d.text(ls[0]||"",L+lead,st.y);for(var i=1;i<ls.length;i++){st.y+=4.4;d.text(ls[i],L+lead,st.y);}st.y+=4.6;
+  var lt="abcdefgh",line=q.opts.map(function(o,i){return "("+lt[i]+")  "+o;}).join("     ");d.setFont("helvetica","normal");d.setFontSize(9.2);tc(d,[40,55,72]);var ol=d.splitTextToSize(line,PW-8);ol.forEach(function(ln){d.text(ln,L+6,st.y);st.y+=4.4;});st.y+=2;}
+function _tPassage(d,st,txt){d.setFont("helvetica","normal");d.setFontSize(9);var ls=d.splitTextToSize(txt,PW-10),h=ls.length*4.4+5;fc(d,WASH);dc(d,[207,230,232]);d.setLineWidth(.3);d.roundedRect(L,st.y-3,PW,h,2.4,2.4,"FD");tc(d,INK);var yy=st.y+1.2;ls.forEach(function(ln){d.text(ln,L+5,yy);yy+=4.4;});st.y+=h+2;}
+function renderTask(d,course,week,ls,tier,rosterLine){
+  var C=taskContent(course,week,ls,tier),T=C.meta,st={y:16},no=0,key=[];
+  header(d,st,course,"DIFFERENTIATED TASK \u00b7 "+T.cat,(tier==="sen"?AMBER:TEAL),"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 "+T.label+" \u00b7 one-page, skill-based check.");
+  fields(d,st);
+  if(rosterLine){d.setFont("helvetica","italic");d.setFontSize(8.2);tc(d,MUT);var rl=d.splitTextToSize(T.cat+" group:  "+rosterLine,PW);rl.slice(0,2).forEach(function(ln){d.text(ln,L,st.y);st.y+=4;});st.y+=1;}
+  _tSec(d,st,"A","Vocabulary","3 questions \u00b7 circle one");
+  C.vocab.forEach(function(q){no++;_tQ(d,st,no,q);key.push(no+"-"+String.fromCharCode(97+q.ans));});
+  _tSec(d,st,"B","Grammar & language","3 questions \u00b7 circle one");
+  C.grammar.forEach(function(q){no++;_tQ(d,st,no,q);key.push(no+"-"+String.fromCharCode(97+q.ans));});
+  _tSec(d,st,"C","Reading comprehension","read, then circle one");
+  _tPassage(d,st,C.reading.passage);
+  C.reading.qs.forEach(function(q){no++;_tQ(d,st,no,q);key.push(no+"-"+String.fromCharCode(97+q.ans));});
+  st.y+=1;dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=4;
+  d.setFont("helvetica","bold");d.setFontSize(8.4);tc(d,MUT);d.text("Answer key (teacher):  "+key.join("   "),L,st.y);
+  footer(d,course);return d;
+}
+
+
 var API={
-  _build:function(kind,courseId,course,week,ls){var C=contentFor(courseId,course,week,ls);var d=new (JSPDF())({unit:"mm",format:"a4"});
+  _build:function(kind,courseId,course,week,ls,groups){var C=contentFor(courseId,course,week,ls);var d=new (JSPDF())({unit:"mm",format:"a4"});
     if(kind==="card")return renderCard(d,course,week,C.card);
-    if(kind==="worksheet")return renderWorksheet(d,course,week,C.worksheet);
-    return renderCheckpoint(d,course,week,C.checkpoint);},
-  download:function(kind,courseId,course,week,ls){var d=this._build(kind,courseId,course,week,ls);
+    if(kind==="worksheet")return renderWorksheet(d,course,week,C.worksheet,groups);
+    return renderCheckpoint(d,course,week,C.checkpoint,groups);},
+  download:function(kind,courseId,course,week,ls,groups){var d=this._build(kind,courseId,course,week,ls,groups);
     var nm={card:"Study Card",worksheet:"Worksheet",checkpoint:"Checkpoint"}[kind];
     d.save("Week "+week.n+" "+nm+".pdf");},
+  downloadTask:function(tier,courseId,course,week,ls,rosterLine){var d=new (JSPDF())({unit:"mm",format:"a4"});renderTask(d,course,week,ls,tier,rosterLine);var nm={sen:"SEN",t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Task";d.save("W"+week.n+" "+nm+" Task.pdf");},
   autoContent:autoContent, PACKS:PACKS
 };
 if(typeof module!=="undefined"&&module.exports)module.exports=API;
@@ -3650,16 +3742,24 @@ function _icanCtx(id){ var w=(WEEKS.filter(function(x){return x.lessons.indexOf(
   return {courseId:CUR.cls, course:course, week:week, lessons:ls}; }
 function _icanGo(kind,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
-  ICANPDF.download(kind,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the PDF: "+(e&&e.message?e.message:e)); } }
+  ICANPDF.download(kind,c.courseId,c.course,c.week,c.lessons,_rosterGroups(CUR.cls)); }catch(e){ alert("Could not build the PDF: "+(e&&e.message?e.message:e)); } }
 function openCardPDF(id){ _icanGo("card",id); }
 function openSheetPDF(id){ _icanGo("worksheet",id); }
 function openChkPDF(id){ _icanGo("checkpoint",id); }
 function _docTabs(id,wk){ if(typeof ICANPDF==="undefined") return ""; if(!(WEEKS.filter(function(x){return x.lessons.indexOf(id)>=0;})[0])) return "";
-  var n=(wk&&wk.n)||""; var b="background:#eef7f8;border:1px solid #cfe6e8;color:#0A5A62;font-weight:800"; var a="background:#fdf2ec;border:1px solid #f3d9cc;color:#B44412;font-weight:800";
+  var n=(wk&&wk.n)||""; var b="background:#eef7f8;border:1px solid #cfe6e8;color:#0A5A62;font-weight:800"; var a="background:#fdf2ec;border:1px solid #f3d9cc;color:#B44412;font-weight:800"; var g="background:#eef2fb;border:1px solid #d5deef;color:#2b3a67;font-weight:800";
   return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px">'
-    +'<button class="btn sm" style="'+b+'" onclick="openCardPDF(\''+id+'\')">\u2b07 Week '+n+' Study Card (PDF)</button>'
     +'<button class="btn sm" style="'+b+'" onclick="openSheetPDF(\''+id+'\')">\u2b07 Week '+n+' Worksheet (PDF)</button>'
-    +'<button class="btn sm" style="'+a+'" onclick="openChkPDF(\''+id+'\')">\u2b07 Week '+n+' Checkpoint (PDF)</button></div>'; }
+    +'<button class="btn sm" style="'+a+'" onclick="openChkPDF(\''+id+'\')">\u2b07 Week '+n+' Checkpoint (PDF)</button></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 2px">'
+    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'sen\',\''+id+'\')">\u2b07 W'+n+' SEN Task</button>'
+    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'t1\',\''+id+'\')">\u2b07 W'+n+' Tier 1 Task</button>'
+    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'t2\',\''+id+'\')">\u2b07 W'+n+' Tier 2 Task</button>'
+    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'t3\',\''+id+'\')">\u2b07 W'+n+' Tier 3 Task</button></div>'
+    +_rosterPanel(CUR.cls); }
+function openTaskPDF(tier,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
+  var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
+  ICANPDF.downloadTask(tier,c.courseId,c.course,c.week,c.lessons,_rosterLine(CUR.cls,tier)); }catch(e){ alert("Could not build the task: "+(e&&e.message?e.message:e)); } }
 
 
 /* ---------------- COURSE 2 · 11General-10Advanced · A Picture of Health ---------------- */
@@ -4568,6 +4668,63 @@ var COURSES={
  c3:{id:"c3", name:"10General-9Advanced", chapter:"Meeting New People, Learning New Things (Ch.1)", blurb:"Term 1, Chapter 1 · Wk1 & Wk3 Listening & Speaking · Wk2 & Wk4 Reading & Writing.", lessons:C3_LESSONS, weeks:C3_WEEKS},
  c4:{id:"c4", name:"12Advanced", chapter:"Pushing Boundaries (Unit 1)", blurb:"Wk1 L&S (Smart Homes) · Wk2 R&W (The Human Brain) · Wk3 L&S (Facial Recognition) · Wk4 R&W (Personality & Multitasking).", lessons:C4_LESSONS, weeks:C4_WEEKS}
 };
+/* ---- Class rosters: differentiation groups (SEN / Tier 1 / Tier 2 / Tier 3) ----
+   Keyed by grade label; each class maps to one or more grade rosters below. */
+var ROSTERS={
+ "11 Advanced":{
+   sen:[],
+   t1:["Mohammad Zakaria Hasan","Hamza Ali Mohammed","Ayham Belal Mahmoud Almoghair","Ahmed Naser Yehia Abbas"],
+   t2:["Marwan Moamen Mohamed","Mohammed Mukhtar Mubarak","Mohamed Ahmed Khaled Hindawi","Mazen Mohamed Abdelfattah","Ammar Atheer Adnan Abuslaih","Abdel Rahman Tareq Bani Yaseen"],
+   t3:["Adam Bahaaeldin Abdelmeguid","Tayemalla Mohamed Ali Taghyan","Qais Ahmad Moosa Salamih Shatnawi","Hashem Mustafa Salah","Abdulmalek Alaa Akkad"]
+ },
+ "12 General":{
+   sen:["Nasser Mohamed Rashid Al Sinaidi"],
+   t1:["Abdulrahman Asim Osman Abdalla","Mutaz Muwafaq Mohammad Rawasdeh"],
+   t2:["Abdalla Omar Khalil Ahmed Alhosani"],
+   t3:["Hazza Saeed Alameri"]
+ },
+ "11 General":{
+   sen:["Nayef Saeed Almansoori","Naser Salem Khamees Mubarak"],
+   t1:["Aser Mohamed Anwar Mohamed","Naser Salem Khamees Mubarak"],
+   t2:["Laith Faraj Thaber Abuthaher","Zaed Mohammad Ahmad Tahat","Ahmad Raed Salah Shatnawi"],
+   t3:["Hemam Ibrahim Ismail Musameh","Mohammed Hatem Ghaleb","Mohamed Jasim Mohamed Awadh"]
+ },
+ "10 General":{
+   sen:["Hammam Nasser Zainallah Hamdhan"],
+   t1:["Omar Assad Mohd Said Alrajabi"],
+   t2:["Hussein Abdulrahman Hussein Al Baihani"],
+   t3:["Mohsen Abdulsalam Mohsin","Saeed Khalid Sultan Hamad","Zayed Mohamed Ghanem","Khaled Saddam Abdo Mohammed"]
+ }
+};
+var CLASS_ROSTERS={ c1:["11 Advanced","12 General"], c2:["11 General"], c3:["10 General"], c4:[] };
+function _rosterNames(cls,tier){var labs=(CLASS_ROSTERS[cls]||[]),multi=labs.length>1,out=[];labs.forEach(function(lab){var r=ROSTERS[lab]||{};(r[tier]||[]).forEach(function(nm){out.push(multi?(nm+" ("+lab+")"):nm);});});return out;}
+function _rosterLine(cls,tier){var a=_rosterNames(cls,tier);return a.length?a.join(", "):"\u2014 (none listed)";}
+function _rosterGroups(cls){ return (CLASS_ROSTERS[cls]||[]).map(function(lab){var r=ROSTERS[lab]||{};return {grade:lab,sen:(r.sen||[]),t1:(r.t1||[]),t2:(r.t2||[]),t3:(r.t3||[])};}); }
+function _rosterCols(gp){
+  var cats=[["SEN \u2014 Special Needs","#B44412","#fdf2ec",gp.sen],["Tier 1 \u2014 High","#0A5A62","#eef7f8",gp.t1],["Tier 2 \u2014 Medium","#0A5A62","#eef7f8",gp.t2],["Tier 3 \u2014 Low","#2b3a67","#eef2fb",gp.t3]];
+  return '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px">'
+    + cats.map(function(c){ return '<div style="border:1px solid '+c[1]+'44;border-radius:8px;background:'+c[2]+';padding:6px 8px">'
+        +'<div style="font-weight:800;color:'+c[1]+';font-size:.8rem;border-bottom:1px solid '+c[1]+'33;padding-bottom:3px;margin-bottom:4px">'+c[0]+' <span style="color:#889">('+c[3].length+')</span></div>'
+        +(c[3].length?'<ol style="margin:0;padding-left:16px;font-size:.82rem;color:#233;line-height:1.55">'+c[3].map(function(n){return '<li>'+esc(n)+'</li>';}).join('')+'</ol>':'<div style="font-size:.82rem;color:#889">\u2014 none</div>')
+        +'</div>'; }).join('')
+    +'</div>';
+}
+function _rosterPanel(cls){ var groups=_rosterGroups(cls); if(!groups.length) return "";
+  var uid="rost_"+cls, body;
+  if(groups.length>1){
+    var tabs='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'
+      + groups.map(function(gp,i){ var on=(i===0); return '<button type="button" id="'+uid+'_tab'+i+'" onclick="rosterTab(\''+uid+'\','+i+')" style="border:1px solid #cfe6e8;background:'+(on?'#0A5A62':'#eef7f8')+';color:'+(on?'#fff':'#0A5A62')+';font-weight:800;border-radius:8px;padding:5px 14px;cursor:pointer">'+esc(gp.grade)+'</button>'; }).join('')
+      +'</div>';
+    var panes=groups.map(function(gp,i){ return '<div class="rtabpane" data-uid="'+uid+'" data-i="'+i+'" style="display:'+(i===0?'block':'none')+'">'+_rosterCols(gp)+'</div>'; }).join('');
+    body=tabs+panes;
+  } else { body=_rosterCols(groups[0]); }
+  return '<details open style="margin:8px 0 2px;border:1px solid #cfe6e8;border-radius:10px;padding:8px 12px;background:#f7fbfb"><summary style="cursor:pointer;font-weight:800;color:#0A5A62">\uD83D\uDC65 Class roster \u2014 differentiation groups'+(groups.length>1?' (one tab per class)':'')+'</summary>'+body+'</details>';
+}
+function rosterTab(uid,idx){
+  Array.prototype.forEach.call(document.querySelectorAll('.rtabpane[data-uid="'+uid+'"]'),function(p){ p.style.display=(p.getAttribute('data-i')==String(idx))?'block':'none'; });
+  var i=0; while(true){ var b=document.getElementById(uid+'_tab'+i); if(!b) break; var on=(i===idx); b.style.background=on?'#0A5A62':'#eef7f8'; b.style.color=on?'#fff':'#0A5A62'; i++; }
+}
+
 var CORDER=["c2","c1","c3","c4"];
 /* ---- CCG Scope (Comprehensive Curriculum Guide) per class ----
    Each class links to its own MoE CCG PDF. Files live beside index.html
