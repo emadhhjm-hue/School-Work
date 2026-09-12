@@ -3168,6 +3168,62 @@ function mcqPool(ls){var out=[];ls.forEach(function(L){mm(L).forEach(function(q)
 function skills(ls){var out=[];ls.forEach(function(L){var o=oi(L);out.push((L.focus||"Skill")+" \u2014 "+((o[0]||"practise the week's language")+"."));if(L.grammar)out.push("Grammar ("+L.grammar+")");});return out.slice(0,3);}
 
 /* ---------- auto content from lesson data ---------- */
+function wPrompt(ls, week, words){
+  var wr = ls.filter(function(L){return /writ/i.test(L.focus||"");})[0] || ls[ls.length-1] || {};
+  var rv = ls.filter(function(L){return /read|view/i.test(L.focus||"");})[0]
+        || ls.filter(function(L){return /listen/i.test(L.focus||"");})[0]
+        || ls[0] || {};
+  var topic = (wr.title || rv.title || "this week's topic");
+  var readingTitle = (rv.title || topic);
+  var V = vocabPool(ls), vocab = V.slice(0,3).map(function(v){return v[0];});
+  var grammar = ls.map(function(L){return L.grammar;}).filter(function(g){return g && /[A-Za-z]/.test(g);})[0] || "";
+  var blob = [wr.title, wr.fl, (wr.grammar||"")].join(" ");
+  (oi(wr)||[]).forEach(function(o){ blob += " " + o; });
+  blob = blob.toLowerCase();
+  var pts;
+  if(/compar|\bvs\b|versus|difference between/.test(blob)){
+    pts=["Introduce the two things you are comparing about \u201c"+topic+"\u201d.",
+         "Give TWO clear similarities or differences, using details from the reading \u201c"+readingTitle+"\u201d.",
+         "Say which one you prefer and give ONE reason from your own experience or the world."];
+  } else if(/cause|effect|consequence|how .*(affect|impact)/.test(blob)){
+    pts=["Describe ONE cause connected to \u201c"+topic+"\u201d.",
+         "Explain TWO effects or consequences, using ideas from the reading \u201c"+readingTitle+"\u201d.",
+         "Suggest what people could do about it, giving ONE reason from your experience or the world."];
+  } else if(/recount|narrat|tell a story|\bstory of\b|personal experience|camping|nature|season|holiday|\btrip\b/.test(blob)){
+    pts=["Set the scene: say when and where your experience of \u201c"+topic+"\u201d happened.",
+         "Describe TWO things that happened, in the correct order.",
+         "Explain how you felt and why, linking your ideas to the reading \u201c"+readingTitle+"\u201d."];
+  } else if(/\badvice\b|advis|do'?s and don|dangers of/.test(blob)){
+    pts=["Describe the problem or situation about \u201c"+topic+"\u201d.",
+         "Give TWO pieces of advice, using ideas from the reading \u201c"+readingTitle+"\u201d.",
+         "Say which piece of advice is best and give ONE reason from your experience or the world."];
+  } else if(/opinion essay|\bargue\b|persuasi|for and against|advantages? and disadvantages|benefits and dangers|benefits and drawbacks/.test(blob)){
+    pts=["State your opinion clearly about \u201c"+topic+"\u201d.",
+         "Give TWO reasons for your opinion, using ideas from the reading \u201c"+readingTitle+"\u201d.",
+         "End with a recommendation, supported by ONE reason from your own experience or the world."];
+  } else {
+    pts=["Introduce \u201c"+topic+"\u201d and say why it is important.",
+         "Give TWO key points you learned from this week's reading \u201c"+readingTitle+"\u201d.",
+         "End with your own opinion and ONE clear reason from your experience or the world."];
+  }
+  return "Write one organised paragraph (70\u201390 words) about \u201c"+topic+"\u201d:  "
+    + "Q1: "+pts[0]+"   Q2: "+pts[1]+"   Q3: "+pts[2]
+    + (grammar? "   Grammar focus: use "+grammar+" correctly." : "")
+    + (vocab.length? "   Use at least TWO of this week's words: "+vocab.join(", ")+"." : "");
+}
+
+function weekWriting(ls){
+  var wr=(ls||[]).filter(function(L){return /writ/i.test(L.focus||"");})[0];
+  if(wr&&wr.stages&&wr.stages.a2){
+    var wm=wr.stages.a2.filter(function(b){return b.t==="writemodel";})[0];
+    if(wm&&wm.task){
+      var qs=(wm.plan||[]).join("   ");
+      var g=wm.grammar?("   Grammar focus: "+wm.grammar):"";
+      return {prompt:wm.task+(qs?"   "+qs:"")+g, model:wm.model};
+    }
+  }
+  return null;
+}
 function autoContent(course,week,ls){
   var V=vocabPool(ls),M=mcqPool(ls);
   var theme=course.chapter;
@@ -3188,6 +3244,9 @@ function autoContent(course,week,ls){
   function _sample(list){ var mid=(list&&list.length)?list.join(" "):"There are several useful ideas from this week to remember."; return "In my opinion, this is an important topic to understand well. "+mid+" From my own experience, thinking carefully and planning ahead makes a real difference, so I would encourage others to do the same."; }
   var gramClause=grammar?(" Try to use "+grammar+" correctly."):"";
   var gramCrit=grammar?("Language \u2014 correct use of "+grammar+" and this week's vocabulary"):"Language \u2014 correct grammar and use of this week's vocabulary";
+  var WW=weekWriting(ls);
+  var wProm=WW?WW.prompt:wPrompt(ls,week);
+  var wSample=(WW&&WW.model)?[WW.model.topic,WW.model.r1,WW.model.r2,WW.model.close].filter(Boolean).join(" "):_sample(exs.slice(1,4).length>=2?exs.slice(1,4):exs.slice(0,3));
   // card
   var models=exs.slice(0,2);
   var card={words:V.map(function(v){return v[0];}),models:models,skills:skills(ls)};
@@ -3200,9 +3259,9 @@ function autoContent(course,week,ls){
   var ws={matching:wm,gap:{bank:bank,items:gapItems},challenge:wsChallenge,
     writing:{
       words:kwA,
-      prompt:"Sentence practice. Write ONE correct sentence of your own for each word below. Then write ONE more sentence giving your opinion about "+(titles[0]||shortTheme)+"."+gramClause,
+      prompt:wProm,
       lines:5,
-      sample:"Model sentences: "+(exs.slice(0,3).join("   ")||"(use each word in a clear sentence of your own).")}};
+      sample:wSample}};
   // checkpoint (different items + exam-mode reading + challenge)
   var vmcq=V.slice(0,6).map(function(v,i){var opts=[v[1]];V.forEach(function(o){if(o[0]!==v[0]&&opts.length<3)opts.push(o[1]);});var sh=seedShuffle(opts,v[0]+week.n);return {q:"\u201c"+v[0]+"\u201d means:",opts:sh.opts,ans:sh.ans};});
   var lang=M.slice(2,5);
@@ -3224,10 +3283,10 @@ function autoContent(course,week,ls){
     {q:"In the passage, \u201c"+(wq3?wq3[0]:"the word")+"\u201d means:",opts:q3.opts,ans:q3.ans}]};
   var chk={vocabMcq:vmcq,language:lang,reading:reading,challenge:pickChallenge(week.n+"|"+shortTheme),
     writing:{
-      scenario:"Assessment task from this week's lessons ("+titleStr+"). Consider: "+(exs[1]||exs[0]||("a decision about "+shortTheme)),
-      prompt:"Write a 70-word paragraph. (1) Respond with a clear opinion or plan, and (2) "+_task(true)+". Use the words "+kwB.join(", ")+", and support it with a reason from your own experience or the world."+gramClause,
+      scenario:WW?"This is the writing task you practised in class this week (Activity 2). Plan first, then write your paragraph.":("Writing task based on this week's lessons ("+titleStr+"). Plan first, then write your paragraph."),
+      prompt:wProm,
       lines:5,
-      sample:_sample(exs.slice(1,4).length>=2?exs.slice(1,4):exs.slice(0,3))},
+      sample:wSample},
     rubric:[["Task & content \u2014 does (1) and (2), ~70 words, links to experience/world","3"],["Use of key words \u2014 at least two, used correctly","2"],[gramCrit,"3"],["Organisation & accuracy \u2014 clear, linked, few errors","2"]]};
   return {card:card,worksheet:ws,checkpoint:chk};
 }
@@ -3646,7 +3705,7 @@ var C1_LESSONS={
     ["access","the chance or right to use or get something","noun","One-click …… makes buying easy."]
   ]},{t:"wordday",word:"synthesise",def:"to combine ideas from several sources into one clear whole",ex:"A good summary synthesises many facts into a few sentences."}],
   a1:[{t:"p",html:"<b>Deconstruct a model & plan.</b> A strong summary paragraph has: (1) a <b>topic sentence</b> (the main idea), (2) two or three <b>techniques + examples</b> as evidence, connected with <b>linkers</b>, and (3) a <b>closing sentence</b>."},{t:"note",html:"<b>Cohesive devices (G.10.1 support):</b> <i>First… , In addition… , For example… , As a result… , However… , Overall…</i>"},{t:"mcq",intro:"Plan your paragraph — choose the best option:",qs:[{q:"Which is the best topic sentence for a summary of marketing techniques?",opts:["I like shopping a lot.","Marketing uses several techniques to influence how consumers buy.","Adverts are everywhere."],ans:1},{q:"Which sentence gives evidence (a technique + example)?",opts:["Marketing is clever.","Scarcity is used; for example, “only 2 left” pushes quick decisions.","Shopping is fun."],ans:1},{q:"Which linker best introduces a second point?",opts:["Because","In addition","Finally, first"],ans:1}]},{t:"reflect",items:["Plan — Topic sentence (the main idea of your summary):","Technique + example 1:","Technique + example 2:","One linking word you will use between your points:"]}],
-  a2:[{t:"p",html:"<b>Writing prompt:</b> How do businesses influence consumers’ purchasing behavior?"},{t:"writemodel",task:"How do businesses influence consumers’ purchasing behavior? Write a short paragraph (5–7 sentences) answering this question. Use your plan and two techniques with examples — you can draw on the diagram from Lessons 5–6 (emotions, social proof, scarcity & urgency, brand consistency) — with cohesive devices and at least one present simple passive.",plan:["Topic sentence (answer the question):","Technique + example 1:","Technique + example 2:"],model:{
+  a2:[{t:"p",html:"<b>Writing prompt:</b> How do businesses influence consumers’ purchasing behavior?"},{t:"writemodel",task:"Write one organised paragraph (70–90 words) explaining to a new shopper how businesses influence what people buy:",plan:["Q1: Explain why businesses work so hard to influence consumers.","Q2: Describe two techniques they use, with an example of each (e.g., social proof, scarcity & urgency).","Q3: State your opinion on which technique is the most powerful, and why."],grammar:"Use at least one present simple passive (e.g., customers are persuaded) and cohesive devices.",model:{
     topic:"Businesses influence consumers’ purchasing behavior in several carefully designed ways.",
     r1:"First, our emotions are targeted, because people buy on feeling and then justify the choice with logic; for example, a warm, happy advert makes a product feel like the right decision.",
     r2:"In addition, scarcity is used to create urgency, so a message such as “only two left” pushes shoppers to decide quickly, and a trusted brand is often chosen even when two items are almost identical.",
@@ -3926,7 +3985,7 @@ var C2_LESSONS={
      ["fraudulent","dishonest and illegal; intended to deceive","adjective","The …… advert promised a miracle cure."]
    ]}],
    a1:[{t:"p",html:"<b>Before you write.</b> Today’s reading, <i>“Can you Trust the Internet for Medical Advice?”</i>, asks whether online health information is reliable. Study the grammar and vocabulary, then summarise its ideas in your own words."},{t:"note",html:"<b>Grammar — present simple passive (G.10.1):</b> use <i>am / is / are + past participle</i> when the action matters more than who does it.<br>“Information <b>is shared</b> on many websites.” · “Patients <b>are helped</b> to understand their symptoms.”"},{t:"mcq",intro:"Choose the correct passive form:",qs:[{q:"Health advice ____ on thousands of websites.",opts:["is shared","shares","sharing"],ans:0},{q:"Worried people ____ by dishonest sellers.",opts:["are taken advantage of","take advantage","takes advantage"],ans:0},{q:"A good remedy ____ by real doctors.",opts:["is recommended","recommends","recommend"],ans:0},{q:"The validity of a website ____ before you trust it.",opts:["should be checked","checks","checking"],ans:0}]},{t:"match",intro:"Vocabulary — match each word with the definition (as in the text):",pairs:[["<b>accurate</b>","correct, without any mistakes"],["<b>dishonest</b>","not true"],["<b>patient</b>","someone who is receiving medical treatment"],["<b>remedy</b>","a solution or treatment to an illness"],["<b>take advantage of</b>","to make good use of the opportunities offered by something"],["<b>validity</b>","being true or acceptable"]]}],
-   a2:[{t:"writemodel",task:"Using a mind map (Benefits vs Dangers), write one paragraph that summarises the benefits and dangers of medical advice on the internet. Use the present simple passive at least twice, and end with your opinion: can we expect real solutions to serious problems online?",plan:["Topic sentence — the internet and health information","Benefits branch — how it helps people (use a passive)","Dangers branch — the risks (use a passive)","Closing — your opinion, with a reason"],model:{topic:"On the internet, a huge amount of medical information is shared, and it brings both benefits and dangers.",r1:"On the benefits side, people’s attitudes about healthcare are changed as patients do their own research, and better medical decisions can be made when information is written in clear language.",r2:"On the dangers side, the information is not always accurate, and worried readers are misled by fraudulent claims that are created only to increase sales.",close:"In my view, the internet is a useful tool, but real solutions to serious problems should still be found with a real doctor."}}],
+   a2:[{t:"writemodel",task:"Write one organised paragraph (70–90 words) explaining to a friend the benefits and dangers of getting medical advice online:",plan:["Q1: Explain why so many people search for medical advice on the internet.","Q2: Describe one clear benefit and one clear danger, with a reason for each.","Q3: State your opinion on when it is safe to trust online medical advice, and why."],grammar:"Use the present simple passive at least twice (e.g., information is shared, readers are misled).",model:{topic:"On the internet, a huge amount of medical information is shared, and it brings both benefits and dangers.",r1:"On the benefits side, people’s attitudes about healthcare are changed as patients do their own research, and better medical decisions can be made when information is written in clear language.",r2:"On the dangers side, the information is not always accurate, and worried readers are misled by fraudulent claims that are created only to increase sales.",close:"In my view, the internet is a useful tool, but real solutions to serious problems should still be found with a real doctor."}}],
    culture:[{t:"p",html:"<b>UAE–World Connection.</b> Artificial intelligence now answers health questions in seconds, and the UAE is a world leader in using AI wisely. Mastering AI means using it as a helpful tool while still checking facts and thinking for yourself."},{t:"prompts",items:["How can AI help a patient — and how could it mislead one?","Who should you trust for a serious health problem, and why?"]}],
    enrich:[{t:"p",html:"<b>More passive practice.</b>"},{t:"mcq",intro:"Rewrite in the present simple passive — choose the best option:",qs:[{q:"“Doctors write prescriptions.” →",opts:["Prescriptions are written by doctors.","Prescriptions write doctors.","Doctors is written."],ans:0},{q:"“Websites promote false cures.” →",opts:["False cures are promoted by websites.","False cures promote websites.","Websites are promote."],ans:0}]},{t:"reflect",items:["Write one sentence in the present simple passive about the internet.","Write one way to check if a website is honest."]}],
    exit:[{t:"reflect",items:["Write your topic sentence from today.","Name one benefit and one danger of online medical advice.","(KWL “L”) One thing you learned about writing a summary."]},{t:"rating",label:"How confident do you feel writing a clear, organised paragraph?"}]
@@ -4040,7 +4099,7 @@ var C2_LESSONS={
      ["manage","to succeed in dealing with something difficult","verb","Good planning helps you …… your time and stress."]
    ]}],
    a1:[{t:"p",html:"<b>Before you write.</b> Study the grammar and the writing plan, then draft your paragraph."},{t:"note",html:"<b>Grammar — gerunds (G.19.1):</b> a gerund is the <i>-ing</i> form of a verb used as a noun.<br>• As a subject: “<b>Exercising</b> reduces stress.”<br>• After a preposition: “She is good <b>at dealing</b> with pressure.”<br>• After certain verbs: “I enjoy <b>listening</b> to music to relax.”"},{t:"mcq",intro:"Choose the correct form:",qs:[{q:"____ enough sleep is one of the best coping strategies.",opts:["Getting","Get","To getting"],ans:0},{q:"You can handle stress by ____ your time well.",opts:["managing","manage","to manage"],ans:0},{q:"I find ____ to a friend really helps.",opts:["talking","talk","talked"],ans:0},{q:"____ problems into smaller steps makes them easier.",opts:["Breaking","Break","Broke"],ans:0}]},{t:"note",html:"<b>Pre-writing plan (SLO 4.1).</b> Organise your ideas before you write:<div style='line-height:1.9;margin-top:4px'>1. <b>Topic sentence</b> — what your paragraph is about (handling stress).<br>2. <b>Point 1</b> — one coping strategy + a reason it works (use a gerund).<br>3. <b>Point 2</b> — a second strategy + a reason (use a gerund).<br>4. <b>Closing</b> — your opinion about the best way to handle stress.</div>"}],
-   a2:[{t:"writemodel",task:"Write one organised paragraph that summarises what you have learned about handling stress and gives your own opinion. Include at least two coping strategies with reasons, use gerunds at least twice, and end with your opinion about the best way to deal with stress.",plan:["Topic sentence — handling stress in everyday life","Strategy 1 — a healthy coping strategy and why it works (use a gerund)","Strategy 2 — a second strategy and why it works (use a gerund)","Closing — your opinion, with a reason"],model:{topic:"Everyone feels stressed sometimes, so learning to handle stress well is an important life skill.",r1:"One useful coping strategy is exercising, because moving your body releases tension and gives you a fresh perspective on your problems.",r2:"Another strategy is managing your time, since planning ahead and breaking large tasks into smaller steps stops you from feeling overwhelmed.",close:"In my opinion, the best way of dealing with stress is to evaluate the circumstances calmly and choose a healthy strategy, rather than ignoring the problem."}}],
+   a2:[{t:"writemodel",task:"Write one organised paragraph (70–90 words) advising a classmate on handling exam stress:",plan:["Q1: Explain why preparing for upcoming exams causes stress.","Q2: Describe two coping strategies with reasons (e.g., planning study schedules, exercising daily).","Q3: State your opinion on the single best way to manage exam stress and why."],grammar:"Use at least two gerunds (e.g., planning, exercising).",model:{topic:"Preparing for exams can make students feel very stressed, so learning to manage that stress is an important skill.",r1:"One helpful coping strategy is planning a study schedule, because dividing the work into small daily tasks stops you from feeling overwhelmed.",r2:"Another strategy is exercising regularly, since moving your body releases tension and gives you a fresh perspective before a test.",close:"In my opinion, the single best way to manage exam stress is starting early and revising a little every day, rather than leaving everything to the last night."}}],
    culture:[{t:"p",html:"<b>UAE–World Connection.</b> Self-regulation and discipline — managing your own feelings and time — are at the heart of wellbeing. The UAE promotes balance, rest and healthy habits so that young people can study and grow without being overwhelmed."},{t:"prompts",items:["Which coping strategy would you recommend to a stressed classmate, and why?","How does good time management help reduce stress?"]}],
    enrich:[{t:"p",html:"<b>More gerund practice.</b>"},{t:"mcq",intro:"Choose the sentence that uses a gerund correctly:",qs:[{q:"Which sentence is correct?",opts:["Taking short breaks helps me concentrate.","Take short breaks helps me concentrate.","To taking short breaks helps me concentrate."],ans:0},{q:"Which sentence is correct?",opts:["I relax by reading before bed.","I relax by read before bed.","I relax by to read before bed."],ans:0}]},{t:"reflect",items:["Write one sentence about handling stress that begins with a gerund.","Write one sentence that uses a gerund after a preposition (by, at, about…)."]}],
    exit:[{t:"reflect",items:["Write your topic sentence from today.","Name two coping strategies you wrote about.","(KWL “L”) One thing you learned about writing an opinion paragraph."]},{t:"rating",label:"How confident do you feel writing an organised opinion paragraph using gerunds?"}]
@@ -4508,7 +4567,7 @@ var C4_LESSONS={
      ["false memory","a memory of something that never actually happened","noun","A small suggestion can create a …… ."]
    ]}],
    a1:[{t:"p",html:"<b>Deconstruct a model & plan.</b> A strong summary has (1) a <b>topic sentence</b> (the main idea), (2) two or three <b>key ideas</b> in your own words, connected with <b>linkers</b>, and (3) a <b>closing sentence</b>."},{t:"note",html:"<b>Cohesive devices:</b> <i>First… , In addition… , For example… , As a result… , However… , Overall…</i>"},{t:"mcq",intro:"Plan your summary — choose the best option:",qs:[{q:"Which is the best topic sentence for a summary of The Human Brain?",opts:["The brain is interesting to me.","Recent research shows the brain is more complex and more changeable than we once believed.","There are many parts of the brain."],ans:1},{q:"Which sentence is a summary (own words), not a copy?",opts:["“The two hemispheres continually collaborate.”","The two halves of the brain always work together.","Scientists agree that the left hemisphere specializes."],ans:1},{q:"Which linker best introduces a consequence?",opts:["As a result","For example","However"],ans:0}]},{t:"reflect",items:["Plan — Topic sentence (main idea of the whole article):","Key idea 1 (your own words):","Key idea 2 (your own words):","One linker you will use:"]}],
-   a2:[{t:"writemodel",task:"Write a concise summary (5–7 sentences) of The Human Brain in your own words. Use a topic sentence, two or three key ideas, cohesive devices, and the present simple.",plan:["Topic sentence:","Key idea 1:","Key idea 2:"],model:{topic:"Recent research shows that the human brain is far more complex and more changeable than we once believed.",r1:"First, the old idea that people are simply “left-brained” or “right-brained” is a myth, because the two hemispheres continually collaborate on both logical and creative tasks.",r2:"In addition, memory can be unreliable, and the teenage brain keeps developing into a person’s twenties, so our thinking changes as we grow.",close:"Overall, because habits such as smoking can harm the brain while meditation appears to strengthen it, we have some power to shape how our own brains work."}}],
+   a2:[{t:"writemodel",task:"Write one organised paragraph (70–90 words) summarising for a classmate what scientists now know about the human brain:",plan:["Q1: Explain why our understanding of the brain has changed in recent years.","Q2: Describe two key findings, with a brief reason or example for each.","Q3: State your opinion on the most surprising or useful finding, and why."],grammar:"Use the present simple and cohesive devices (first, in addition, overall).",model:{topic:"Recent research shows that the human brain is far more complex and more changeable than we once believed.",r1:"First, the old idea that people are simply “left-brained” or “right-brained” is a myth, because the two hemispheres continually collaborate on both logical and creative tasks.",r2:"In addition, memory can be unreliable, and the teenage brain keeps developing into a person’s twenties, so our thinking changes as we grow.",close:"Overall, because habits such as smoking can harm the brain while meditation appears to strengthen it, we have some power to shape how our own brains work."}}],
    culture:[{t:"p",html:"<b>Lifelong learning.</b> The reading suggests the brain can keep changing. How does that idea encourage you to keep learning throughout your life?"}],
    enrich:[{t:"note",html:"<b>Extension:</b> turn your summary into a 4-line infographic plan — one key idea per line with a simple icon you would draw."}],
    exit:[{t:"reflect",items:["Exit ticket — Write the single most important idea of The Human Brain in one sentence of your own."]}]
@@ -5249,7 +5308,8 @@ if(b.t==="oreo"){
    return '<div class="a2write">'
      +(b.task?'<p><b>Your task.</b> '+esc(b.task)+'</p>':'')
      +plan
-     +'<label class="q">Write your paragraph here:</label><textarea rows="8" placeholder="Write 5–7 sentences…"></textarea>'
+     +(b.grammar?'<p style="margin:8px 0 2px;color:#0A5A62;font-weight:800">Grammar focus: <span style="font-weight:400;color:#233">'+esc(b.grammar)+'</span></p>':'')
+     +'<label class="q">Write your paragraph here:</label><textarea rows="8" placeholder="Write 70–90 words…"></textarea>'
      +'<div class="wtimer"><div class="wt-clock">07:00</div><span class="wt-phase">Ready — press Start writing</span></div>'
      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri sm" onclick="wtStart(7,\'Writing\',this)">▶ Start writing · 7 min</button>'
      +'<button class="btn sm" onclick="wtStart(3,\'Comparing with the model\',this);openModel(this)">▶ Compare with model · 3 min</button></div>'
