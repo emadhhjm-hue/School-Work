@@ -3268,7 +3268,6 @@ function renderCard(d,course,week,c){var st={y:16};
 function renderWorksheet(d,course,week,ws,groups){var st={y:16};
   header(d,st,course,"WORKSHEET \u00b7 IN-CLASS",TEAL,"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 "+week.skill+" \u00b7 practise the week's vocabulary and language.");
   fields(d,st);
-  rosterBlock(d,st,groups);
   section(d,st,"A","Vocabulary \u2014 matching","vocab");
   para(d,st,"Write the letter of the correct meaning next to each word.",{color:MUT,size:9,lh:4.6});
   var y0=st.y,LT=letters(ws.matching.length),defs=ws.matching.map(function(p){return p[1];});
@@ -3294,17 +3293,18 @@ function renderWorksheet(d,course,week,ws,groups){var st={y:16};
   para(d,st,ws.writing.words?"D \u00b7 Sample sentences:":"D \u00b7 Sample paragraph:",{bold:true,color:TEALD});note(d,st,ws.writing.sample);
   footer(d,course);return d;}
 
-function renderCheckpoint(d,course,week,ck,groups){var st={y:16};
+function renderCheckpoint(d,course,week,ck){var st={y:16};
   header(d,st,course,"WEEK "+week.n+" CHECKPOINT",AMBER,"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 assessment of learning \u00b7 circle one answer for each question.");
   fields(d,st);
-  rosterBlock(d,st,groups);
+  catBadge(d,st,"ALL GROUPS \u00b7 (SEN) MARKED",AMBER);
+  note(d,st,"Items marked (SEN) are the core questions for the SEN group.","amber");
   section(d,st,"P1","Vocabulary","meaning");var no=0;
-  ck.vocabMcq.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);});
+  ck.vocabMcq.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
   section(d,st,"P2","Language & function","grammar \u00b7 function");
-  ck.language.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);});
+  ck.language.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
   section(d,st,"P3","Reading","detail & inference");
   readBox(d,st,ck.reading.passage);
-  ck.reading.qs.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);});
+  ck.reading.qs.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
   var hasCh=ck.challenge&&ck.challenge.length;
   if(hasCh){ section(d,st,"P4","Challenge","beyond the wordlist"); ck.challenge.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);}); }
   section(d,st,hasCh?"P5":"P4","Short written response","writing \u00b7 70 words");
@@ -3421,15 +3421,74 @@ function renderTask(d,course,week,ls,tier,rosterLine){
 }
 
 
+/* ---------- Two-worksheet differentiation: A (challenging) & B (core + SEN) ---------- */
+function catBadge(d,st,text,color){
+  d.setFont("helvetica","bold");d.setFontSize(8.4);
+  var w=d.getTextWidth(text)+9, x=W-R-w, y=st.y;
+  fc(d,color||TEAL);d.roundedRect(x,y-4.6,w,7,1.6,1.6,"F");
+  tc(d,[255,255,255]);d.text(text,x+4.5,y);st.y+=8;
+}
+function leveledContent(C, ls, week, level){
+  var ck=C.checkpoint, ws=C.worksheet, V=vocabPool(ls);
+  var vdefs=V.map(function(v){return v[1];});
+  var langOpts=[]; (ck.language||[]).concat(ck.challenge||[]).forEach(function(q){(q.opts||[]).forEach(function(o){if(langOpts.indexOf(o)<0)langOpts.push(o);});});
+  if(level==="A"){
+    var vocab=(ck.vocabMcq||[]).slice(0,3).map(function(q,i){var sh=_optSet(q.opts[q.ans], vdefs.filter(function(d){return d!==q.opts[q.ans];}), 4, "av"+i+week.n); return {q:q.q,opts:sh.opts,ans:sh.ans};});
+    var chV=(ck.challenge||[]).filter(function(q){return /mean|word|nearly/i.test(q.q);})[0];
+    if(chV){var s=_optSet(chV.opts[chV.ans], chV.opts.filter(function(o){return o!==chV.opts[chV.ans];}).concat(vdefs), 4, "avc"+week.n); vocab.push({q:chV.q,opts:s.opts,ans:s.ans});}
+    var grammar=(ck.language||[]).slice(0,3).map(function(q,i){var s=_optSet(q.opts[q.ans], q.opts.filter(function(o){return o!==q.opts[q.ans];}).concat(langOpts), 4, "ag"+i+week.n); return {q:q.q,opts:s.opts,ans:s.ans};});
+    var chG=(ck.challenge||[]).filter(function(q){return !/mean|nearly/i.test(q.q);})[0];
+    if(chG){var s2=_optSet(chG.opts[chG.ans], chG.opts.filter(function(o){return o!==chG.opts[chG.ans];}).concat(langOpts), 4, "agc"+week.n); grammar.push({q:chG.q,opts:s2.opts,ans:s2.ans});}
+    var rqs=(ck.reading.qs||[]).slice(0,2).map(function(q,i){var s=_optSet(q.opts[q.ans], q.opts.filter(function(o){return o!==q.opts[q.ans];}).concat(vdefs), 4, "ar"+i+week.n); return {q:q.q,opts:s.opts,ans:s.ans};});
+    var writingA={prompt:ck.writing.prompt+"  Extension (Tier 1): then argue the OPPOSITE view in two sentences, using one above-level linker (however, therefore, nevertheless).", lines:6, sample:ck.writing.sample};
+    return {badge:"TIER 1", isA:true, vocab:vocab, grammar:grammar, reading:{passage:ck.reading.passage, qs:rqs}, writing:writingA};
+  }
+  /* level B: core 3-option items + SEN 2-option items */
+  var v3=(ck.vocabMcq||[]).slice(0,3).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
+  var sv=V[0]; if(sv){var s=_optSet(sv[1], vdefs.filter(function(d){return d!==sv[1];}), 2, "bsv"+week.n); v3.push({q:"\u201c"+sv[0]+"\u201d means:",opts:s.opts,ans:s.ans,sen:true});}
+  var g3=(ck.language||[]).slice(0,3).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
+  var sg=(ck.language||[])[1]||(ck.language||[])[0]; if(sg){var correct=sg.opts[sg.ans]; var s2b=_optSet(correct, sg.opts.filter(function(o){return o!==correct;}), 2, "bsg"+week.n); g3.push({q:sg.q,opts:s2b.opts,ans:s2b.ans,sen:true});}
+  var passB=_trimWords(ck.reading.passage, 90);
+  var rq=(ck.reading.qs||[]).slice(0,2).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
+  var sr=(ck.reading.qs||[])[0]; if(sr){var cr=sr.opts[sr.ans]; var s3=_optSet(cr, sr.opts.filter(function(o){return o!==cr;}), 2, "bsr"+week.n); rq.push({q:sr.q,opts:s3.opts,ans:s3.ans,sen:true});}
+  var wpromptB=(ws.writing&&ws.writing.prompt)?ws.writing.prompt:ck.writing.prompt;
+  var writingB={prompt:wpromptB, sen:"SEN: complete the frame \u2014 \u201cIn my opinion, ______ because ______.\u201d", lines:5, sample:(ws.writing&&ws.writing.sample)||ck.writing.sample};
+  return {badge:"TIER 2 \u00b7 TIER 3 \u00b7 SEN", isA:false, vocab:v3, grammar:g3, reading:{passage:passB, qs:rq}, writing:writingB};
+}
+function renderLeveledWS(d,courseId,course,week,ls,level){
+  var LV=leveledContent(contentFor(courseId,course,week,ls), ls, week, level);
+  var st={y:16},no=0,key=[];
+  header(d,st,course, LV.isA?"WORKSHEET A \u00b7 CHALLENGING":"WORKSHEET B \u00b7 CORE + SEN", LV.isA?TEAL:AMBER, "Week "+week.n+" \u00b7 "+course.chapter, "Chapter 1 \u00b7 "+week.title+" \u00b7 "+(LV.isA?"higher / above-level \u2014 full options (a\u2013d)":"at / below-level \u2014 questions marked (SEN) are for the SEN group")+".");
+  catBadge(d,st,LV.badge,LV.isA?TEAL:AMBER);
+  fields(d,st);
+  function q1(q){ var qq={q:(q.sen?"(SEN) ":"")+q.q, opts:q.opts, ans:q.ans}; no++; _tQ(d,st,no,qq); key.push(no+"-"+String.fromCharCode(97+q.ans)); }
+  _tSec(d,st,"A","Vocabulary", LV.isA?"circle one \u00b7 four options":"circle one \u00b7 (SEN) = two options");
+  LV.vocab.forEach(q1);
+  _tSec(d,st,"B","Grammar & language", LV.isA?"circle one \u00b7 four options":"circle one \u00b7 (SEN) = two options");
+  LV.grammar.forEach(q1);
+  _tSec(d,st,"C","Reading comprehension","read, then circle one");
+  _tPassage(d,st,LV.reading.passage);
+  LV.reading.qs.forEach(q1);
+  _tSec(d,st,"D","Writing", LV.isA?"argue your view \u00b7 ~80 words":"short response \u00b7 ~60 words");
+  para(d,st,LV.writing.prompt,{size:9.4,lh:4.8});
+  if(LV.writing.sen)note(d,st,LV.writing.sen,"amber");
+  writeLines(d,st,LV.isA?4:4);
+  st.y+=1;dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=4;
+  d.setFont("helvetica","bold");d.setFontSize(8.4);tc(d,MUT);
+  d.splitTextToSize("Answer key (teacher):  "+key.join("   "),PW).forEach(function(ln){d.text(ln,L,st.y);st.y+=4.4;});
+  footer(d,course);return d;
+}
+
 var API={
-  _build:function(kind,courseId,course,week,ls,groups){var C=contentFor(courseId,course,week,ls);var d=new (JSPDF())({unit:"mm",format:"a4"});
+  _build:function(kind,courseId,course,week,ls){var C=contentFor(courseId,course,week,ls);var d=new (JSPDF())({unit:"mm",format:"a4"});
     if(kind==="card")return renderCard(d,course,week,C.card);
-    if(kind==="worksheet")return renderWorksheet(d,course,week,C.worksheet,groups);
-    return renderCheckpoint(d,course,week,C.checkpoint,groups);},
-  download:function(kind,courseId,course,week,ls,groups){var d=this._build(kind,courseId,course,week,ls,groups);
+    if(kind==="worksheet")return renderWorksheet(d,course,week,C.worksheet);
+    return renderCheckpoint(d,course,week,C.checkpoint);},
+  download:function(kind,courseId,course,week,ls){var d=this._build(kind,courseId,course,week,ls);
     var nm={card:"Study Card",worksheet:"Worksheet",checkpoint:"Checkpoint"}[kind];
     d.save("Week "+week.n+" "+nm+".pdf");},
   downloadTask:function(tier,courseId,course,week,ls,rosterLine){var d=new (JSPDF())({unit:"mm",format:"a4"});renderTask(d,course,week,ls,tier,rosterLine);var nm={sen:"SEN",t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Task";d.save("W"+week.n+" "+nm+" Task.pdf");},
+  downloadWS:function(level,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});renderLeveledWS(d,courseId,course,week,ls,level);d.save("W"+week.n+" Worksheet "+level+".pdf");},
   autoContent:autoContent, PACKS:PACKS
 };
 if(typeof module!=="undefined"&&module.exports)module.exports=API;
@@ -3742,24 +3801,21 @@ function _icanCtx(id){ var w=(WEEKS.filter(function(x){return x.lessons.indexOf(
   return {courseId:CUR.cls, course:course, week:week, lessons:ls}; }
 function _icanGo(kind,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
-  ICANPDF.download(kind,c.courseId,c.course,c.week,c.lessons,_rosterGroups(CUR.cls)); }catch(e){ alert("Could not build the PDF: "+(e&&e.message?e.message:e)); } }
+  ICANPDF.download(kind,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the PDF: "+(e&&e.message?e.message:e)); } }
 function openCardPDF(id){ _icanGo("card",id); }
 function openSheetPDF(id){ _icanGo("worksheet",id); }
 function openChkPDF(id){ _icanGo("checkpoint",id); }
 function _docTabs(id,wk){ if(typeof ICANPDF==="undefined") return ""; if(!(WEEKS.filter(function(x){return x.lessons.indexOf(id)>=0;})[0])) return "";
   var n=(wk&&wk.n)||""; var b="background:#eef7f8;border:1px solid #cfe6e8;color:#0A5A62;font-weight:800"; var a="background:#fdf2ec;border:1px solid #f3d9cc;color:#B44412;font-weight:800"; var g="background:#eef2fb;border:1px solid #d5deef;color:#2b3a67;font-weight:800";
   return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px">'
-    +'<button class="btn sm" style="'+b+'" onclick="openSheetPDF(\''+id+'\')">\u2b07 Week '+n+' Worksheet (PDF)</button>'
-    +'<button class="btn sm" style="'+a+'" onclick="openChkPDF(\''+id+'\')">\u2b07 Week '+n+' Checkpoint (PDF)</button></div>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 2px">'
-    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'sen\',\''+id+'\')">\u2b07 W'+n+' SEN Task</button>'
-    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'t1\',\''+id+'\')">\u2b07 W'+n+' Tier 1 Task</button>'
-    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'t2\',\''+id+'\')">\u2b07 W'+n+' Tier 2 Task</button>'
-    +'<button class="btn sm" style="'+g+'" onclick="openTaskPDF(\'t3\',\''+id+'\')">\u2b07 W'+n+' Tier 3 Task</button></div>'
+    +'<button class="btn sm" style="'+b+'" onclick="openWSPDF(\'A\',\''+id+'\')">\u2b07 W'+n+' Worksheet A \u00b7 Challenging</button>'
+    +'<button class="btn sm" style="'+a+'" onclick="openWSPDF(\'B\',\''+id+'\')">\u2b07 W'+n+' Worksheet B \u00b7 Core + SEN</button>'
+    +'<button class="btn sm" style="'+a+'" onclick="openChkPDF(\''+id+'\')">\u2b07 W'+n+' Checkpoint</button></div>'
+    +'<p style="margin:2px 2px 0;font-size:.78rem;color:#667">Worksheet A = higher/above-level (full a\u2013d options). Worksheet B = at/below-level, with SEN items marked. Student names stay in the lesson plan only.</p>'
     +_rosterPanel(CUR.cls); }
-function openTaskPDF(tier,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
+function openWSPDF(level,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
-  ICANPDF.downloadTask(tier,c.courseId,c.course,c.week,c.lessons,_rosterLine(CUR.cls,tier)); }catch(e){ alert("Could not build the task: "+(e&&e.message?e.message:e)); } }
+  ICANPDF.downloadWS(level,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
 
 
 /* ---------------- COURSE 2 · 11General-10Advanced · A Picture of Health ---------------- */
@@ -4684,7 +4740,7 @@ var ROSTERS={
    t3:["Hazza Saeed Alameri"]
  },
  "11 General":{
-   sen:["Nayef Saeed Almansoori","Naser Salem Khamees Mubarak"],
+   sen:["Nayef Saeed Almansoori"],
    t1:["Aser Mohamed Anwar Mohamed","Naser Salem Khamees Mubarak"],
    t2:["Laith Faraj Thaber Abuthaher","Zaed Mohammad Ahmad Tahat","Ahmad Raed Salah Shatnawi"],
    t3:["Hemam Ibrahim Ismail Musameh","Mohammed Hatem Ghaleb","Mohamed Jasim Mohamed Awadh"]
@@ -5455,7 +5511,8 @@ function lpActivityRows(L){
   });
   return rows || '<tr><td colspan="4" class="muted">Activities as set out in the interactive lesson.</td></tr>';
 }
-function lpDifferentiation(rw){
+function lpDifferentiation(cls, rw){
+  if(rw===undefined && typeof cls!=='string'){ rw=cls; cls=(typeof CUR!=='undefined'&&CUR.cls)||''; }
   var sen = rw
     ? 'Adaptive curriculum: simplified vocabulary with visuals; sentence frames; chunk the reading into shorter sections; graphic organiser with main-idea boxes pre-labelled; extended time; speech-to-text option for drafting.'
     : 'Adaptive curriculum: pre-teach key words with pictures; replay audio and allow pauses; sentence frames and picture cues for speaking; shorter listening chunks; extended thinking time.';
@@ -5468,15 +5525,31 @@ function lpDifferentiation(rw){
   var t3 = rw
     ? 'Prerequisite skills: basic sentence structure and punctuation; foundational reading fluency (chunking, sight words); guided writing with mentor-text templates.'
     : 'Prerequisite skills: match key words to meaning; foundational listening (short clips, sight words); guided speaking with sentence stems and models.';
-  return '<table><tr><th>SEN (Special Needs – Support)</th><th>Tier 1 (High – above level)</th><th>Tier 2 (Medium – at level)</th><th>Tier 3 (Low – sub level)</th></tr>'
-    +'<tr><td>'+esc(sen)+'</td><td>'+esc(t1)+'</td><td>'+esc(t2)+'</td><td>'+esc(t3)+'</td></tr></table>'
-    +'<p class="muted" style="margin-top:6px">Student names by tier are added after class observation. (No SEN currently in 11-Advanced / 12-General.)</p>'
-    +'<table><tr><th style="width:22%">11-A</th><th>Tier 1</th><th>Tier 2</th><th>Tier 3</th></tr>'
-    + (function(){var r='';for(var i=1;i<=10;i++){r+='<tr><td>'+i+'.</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';}return r;})()
-    +'</table>'
-    +'<table><tr><th style="width:22%">12-G</th><th>Tier 1</th><th>Tier 2</th><th>Tier 3</th></tr>'
-    + (function(){var r='';for(var i=11;i<=16;i++){r+='<tr><td>'+i+'.</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';}return r;})()
-    +'<tr><td>Faster achievers (optional activities)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table>';
+  var strat='<table><tr><th>SEN (Special Needs – Support)</th><th>Tier 1 (High – above level)</th><th>Tier 2 (Medium – at level)</th><th>Tier 3 (Low – sub level)</th></tr>'
+    +'<tr><td>'+esc(sen)+'</td><td>'+esc(t1)+'</td><td>'+esc(t2)+'</td><td>'+esc(t3)+'</td></tr></table>';
+  // Per-class student lists (names) — LESSON PLAN ONLY. Four categories in columns.
+  var groups=(typeof _rosterGroups==='function')?_rosterGroups(cls):[];
+  function cell(list){ return list&&list.length ? '<ol style="margin:0;padding-left:16px">'+list.map(function(n){return '<li>'+esc(n)+'</li>';}).join('')+'</ol>' : '<span class="muted">— none</span>'; }
+  var names='';
+  if(groups.length){
+    names='<p class="muted" style="margin-top:6px">Student names by tier (differentiation groups — lesson plan reference only; not shown to students):</p>';
+    groups.forEach(function(gp){
+      names+='<table><tr><th style="width:22%">'+esc(gp.grade)+'</th><th>SEN — Special Needs</th><th>Tier 1 — High</th><th>Tier 2 — Medium</th><th>Tier 3 — Low</th></tr>'
+        +'<tr><td class="muted">Students</td><td>'+cell(gp.sen)+'</td><td>'+cell(gp.t1)+'</td><td>'+cell(gp.t2)+'</td><td>'+cell(gp.t3)+'</td></tr>'
+        +'<tr><td class="muted">Fast achievers<br>(optional activities)</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table>';
+    });
+  } else {
+    names='<p class="muted" style="margin-top:6px">No differentiation roster is on file for this class yet. Names are added after class observation.</p>';
+  }
+  return strat+names;
+}
+function _classLabels(cls){
+  var name=(typeof COURSES!=="undefined"&&COURSES[cls]&&COURSES[cls].name)||"";
+  var parts=name.split("-").map(function(t){return t.replace(/^(\d+)\s*(Advanced|General)$/i,"$1-$2");}).filter(Boolean);
+  var classLabel=parts.length?parts.join(" \u00b7 "):(name||"\u2014");
+  var streams=[]; name.split("-").forEach(function(t){var m=t.match(/(Advanced|General)/i); if(m){var s=m[1][0].toUpperCase()+m[1].slice(1).toLowerCase(); if(streams.indexOf(s)<0)streams.push(s);}});
+  var stream=streams.length?streams.join(" / "):"\u2014";
+  return {classLabel:classLabel, stream:stream};
 }
 function buildLessonPlan(L, wk){
   var st=L.stages||{}, rw=/read|writ/i.test(L.focus||'');
@@ -5489,7 +5562,8 @@ function buildLessonPlan(L, wk){
   var vocabWords=(function(){ var v=(st.vocab||[]).filter(function(b){return b.t==='vocab';})[0]; return v?v.items.map(function(x){return x[0];}):[]; })();
   var money=/money|talk/i.test(L.book||'');
   var chapter=(L.book||'').split('·')[1]||'Chapter 1'; chapter=chapter.trim();
-  var head='<table><tr><th>Teacher</th><td>'+esc(PLAN_META.teacher)+'</td><th>Stream</th><td>Advanced / General</td><th>Class</th><td>11-Advanced · 12-General</td></tr>'
+  var _cl=_classLabels(CUR.cls);
+  var head='<table><tr><th>Teacher</th><td>'+esc(PLAN_META.teacher)+'</td><th>Stream</th><td>'+esc(_cl.stream)+'</td><th>Class</th><td>'+esc(_cl.classLabel)+'</td></tr>'
     +'<tr><th>Subject</th><td>'+esc(PLAN_META.subject)+'</td><th>Unit / Chapter</th><td>'+esc(chapter)+'</td><th>Period</th><td>'+esc(PLAN_META.period)+'</td></tr>'
     +'<tr><th>Week</th><td>Week '+(wk.n||'')+' · '+esc(L.focus||'')+'</td><th>Lesson Title</th><td>Lesson '+esc(L.num)+': '+esc(L.title)+'</td><th>Date</th><td>&nbsp;</td></tr></table>'
     +'<p class="muted">Resources: '+esc(L.book||'')+(L.page?' · '+esc(L.page):'')+'</p>';
@@ -5515,7 +5589,7 @@ function buildLessonPlan(L, wk){
     +(cultureQ.length?'<p class="muted">Discussion: '+esc(cultureQ.join(' / '))+'</p>':'')
     +'<p><b>National identity:</b> connect to UAE values (e.g. Vision / national charter — '+esc(L.charter||'')+') and building a knowledge-based society.</p>';
   var reflect='<h4>Reflection</h4><table><tr><th>What went well?</th><th>What needs to change?</th><th>Next step / individual goals</th></tr><tr><td style="height:48px">&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table>';
-  var appendix='<h4>Appendix — Differentiation (assessment-based grouping)</h4>'+lpDifferentiation(rw);
+  var appendix='<h4>Appendix — Differentiation (assessment-based grouping)</h4>'+lpDifferentiation(CUR.cls, rw);
   return '<div class="lpm-doc">'
     +'<h2>Literacy Lesson Plan — Lesson '+esc(L.num)+': '+esc(L.title)+'</h2>'
     +'<p class="muted">'+esc(L.focus||'')+' · Week '+(wk.n||'')+' · '+esc(PLAN_META.school)+'</p>'
