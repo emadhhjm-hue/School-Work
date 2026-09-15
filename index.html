@@ -87,6 +87,11 @@
   .classcard .cc-name{font-size:1.25rem;font-weight:800;color:var(--ink)}
   .classcard .cc-chapter{font-weight:700;color:var(--blue);margin-top:2px}
   .classcard .cc-blurb{color:var(--muted);margin-top:8px;font-size:.9rem;line-height:1.5}
+  .grammar-orb{align-self:center;justify-self:center;width:150px;height:150px;border-radius:50%;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;text-align:center;background:radial-gradient(circle at 32% 28%,#9b7ad6,#6a3fb0 70%);box-shadow:0 10px 26px rgba(106,63,176,.38),inset 0 2px 6px rgba(255,255,255,.35);transition:transform .15s ease, box-shadow .15s ease}
+  .grammar-orb:hover{transform:scale(1.06);box-shadow:0 14px 34px rgba(106,63,176,.5),inset 0 2px 6px rgba(255,255,255,.4)}
+  .grammar-orb .go-emoji{font-size:1.9rem;line-height:1}
+  .grammar-orb .go-title{font-weight:900;letter-spacing:1.5px;font-size:1.02rem;margin-top:3px}
+  .grammar-orb .go-sub{font-size:.72rem;opacity:.92}
   .classcard .cc-meta{margin-top:12px;display:inline-block;background:#eef3fb;color:var(--ink);font-weight:800;font-size:.75rem;padding:5px 12px;border-radius:999px}
   .classcard.soon{border-left-color:var(--muted);opacity:.85}
   .classcard.soon .cc-meta{background:#f0eff2;color:var(--muted)}
@@ -5681,6 +5686,10 @@ function renderClasses(){
      +'<div class="cc-blurb">'+esc(c.blurb)+'</div>'
      +'<div class="cc-meta">'+esc(meta)+'</div></button>';
  });
+ html+='<button class="grammar-orb" title="Grammar Reference \u2014 study rules and practise (opens test-english.com)" onclick="window.open(\'https://test-english.com/grammar-points/contents/\',\'_blank\',\'noopener\')">'
+   +'<span class="go-emoji">\uD83D\uDCDA</span>'
+   +'<span class="go-title">GRAMMAR</span>'
+   +'<span class="go-sub">study &amp; practise \u2197</span></button>';
  html+='</div>';
  app.innerHTML=html;
 }
