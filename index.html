@@ -50,6 +50,12 @@
   #ttTable td[data-k="p"]{background:#f4f6f9;font-weight:700;color:#556}
   #ttTable td.tt-class{background:#fde7ef;font-weight:800;color:#9b1b46}
   #ttTable td.tt-same{background:#fdeff4;color:#c98aa6}
+  #ttTable td.tt-meeting{background:#f5a623;font-weight:800;color:#3a2400}
+  #ttTable td.tt-brkc{background:#3f4650;color:#e6e9ef;border-color:#333}
+  #ttTable tr.tt-break td[data-k="time"]{background:#3f4650;color:#e6e9ef;border-color:#333}
+  #ttTable tr.tt-break td[data-k="p"]{background:#333a44;color:#cfd6e0}
+  .tt-fri{font-size:.8rem;color:#233;margin:6px 2px 2px;background:#eef2f9;border:1px solid #dbe3ec;border-radius:8px;padding:6px 10px}
+  .tt-fri .tt-brk-lbl{background:#3f4650;color:#fff;padding:1px 6px;border-radius:4px;font-weight:700}
   #ttTable[data-edit="1"] td[contenteditable="true"]:focus{outline:2px solid var(--blue);background:#fffdf3}
   .tt-hint{font-size:.78rem;color:var(--muted);margin:6px 2px 2px}
   .hero{background:linear-gradient(120deg,#1a2238,#2B5FA6 55%,#7A2FD0);color:#fff;border-radius:18px;padding:26px 28px;box-shadow:var(--shadow);margin-bottom:22px}
@@ -5695,13 +5701,13 @@ var TT_DEFAULT={
     {time:"7:10-7:25 M.A.", p:"15", mon:"", tue:"", wed:"Behind lib", thu:"", fri:"Behind lib"},
     {time:"07:25-08:10", p:"1", mon:"=", tue:"=", wed:"11A", thu:"11B", fri:"12B"},
     {time:"08:15-09:00", p:"2", mon:"12B", tue:"12B", wed:"=", thu:"11A", fri:"="},
-    {time:"09:05-09:50", p:"3", mon:"11B", tue:"=", wed:"11B", thu:"Dept Meeting", fri:"Behind lib"},
-    {time:"09:50-10:10", p:"20m", mon:"", tue:"", wed:"Behind lib", thu:"", fri:"11A"},
-    {time:"10:10-10:55", p:"4", mon:"12B", tue:"11B", wed:"=", thu:"10B", fri:"11B"},
-    {time:"11:00-11:45", p:"5", mon:"=", tue:"11A", wed:"12B", thu:"=", fri:""},
-    {time:"11:45-12:30", p:"6", mon:"10B", tue:"11B", wed:"11A", thu:"10B", fri:""},
+    {time:"09:05-09:50", p:"3", mon:"11B", tue:"=", wed:"12B", thu:"=", fri:"Behind lib"},
+    {time:"09:50-10:10", p:"20m", mon:"", tue:"", wed:"Behind lib", thu:"", fri:"11B"},
+    {time:"10:10-10:55", p:"4", mon:"12B", tue:"11B", wed:"11B", thu:"10B", fri:"11A"},
+    {time:"11:00-11:45", p:"5", mon:"=", tue:"11A", wed:"Dept Meeting", thu:"=", fri:""},
+    {time:"11:45-12:30", p:"6", mon:"10B", tue:"=", wed:"11A", thu:"10B", fri:""},
     {time:"12:30-12:45", p:"15m", mon:"", tue:"", wed:"Behind lib", thu:"", fri:""},
-    {time:"12:45-01:30", p:"7", mon:"11A", tue:"=", wed:"=", thu:"12B", fri:""},
+    {time:"12:45-01:30", p:"7", mon:"11A", tue:"11B", wed:"=", thu:"12B", fri:""},
     {time:"01:30-02:15", p:"8", mon:"=", tue:"10B", wed:"10B", thu:"=", fri:""}
   ],
   note:""
@@ -5740,8 +5746,9 @@ function timetableHTML(){
   var body=tt.rows.map(function(r){
     var cells='<td data-k="time" contenteditable="false">'+esc(r.time||"")+'</td>'
       +'<td data-k="p" contenteditable="false">'+esc(r.p||"")+'</td>'
-      +days.map(function(d){ var v=r[d[0]]||""; var cls=/^\s*=\s*$/.test(v)?" tt-same":(/^1[0-2][AB]$/.test(v.trim())?" tt-class":""); return '<td class="ttc'+cls+'" data-k="'+d[0]+'" contenteditable="false">'+esc(v)+'</td>'; }).join("");
-    return "<tr>"+cells+"</tr>";
+      +days.map(function(d){ var v=r[d[0]]||""; var pv=(r.p||"").trim(); var isBreak=/^(20m|15m)$/.test(pv); var grey=(isBreak&&d[0]!=="fri")||(d[0]==="fri"&&pv==="3"); var cls=/^\s*=\s*$/.test(v)?" tt-same":(/^1[0-2][AB]$/.test(v.trim())?" tt-class":(/dept\s*meeting/i.test(v)?" tt-meeting":(grey?" tt-brkc":""))); return '<td class="ttc'+cls+'" data-k="'+d[0]+'" contenteditable="false">'+esc(v)+'</td>'; }).join("");
+    var brk=/^\s*(20m|15m)\s*$/.test((r.p||"").trim());
+    return "<tr"+(brk?' class="tt-break"':"")+">"+cells+"</tr>";
   }).join("");
   return '<details class="tt-wrap">'
     +'<summary class="tt-summary">\uD83D\uDCC5 My weekly timetable <span class="tt-caret">\u25be</span><span class="tt-sub">tap to show / hide</span></summary>'
@@ -5752,7 +5759,7 @@ function timetableHTML(){
     +'<button class="btn sm" onclick="ttReset()">\u21ba Reset</button>'
     +'<span id="ttMsg" class="tt-msg"></span></div>'
     +'<div class="tt-scroll"><table id="ttTable" data-edit="0"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
-    +'<p class="tt-hint">Classes: 11A, 11B, 12B, 10B \u00b7 \u201c=\u201d means the same class continues \u00b7 edits are saved in this browser only.</p></details>';
+    +'<p class="tt-hint">Classes: 11A, 11B, 12B, 10B \u00b7 \u201c=\u201d means the same class continues \u00b7 edits are saved in this browser only.</p>'+'<div class="tt-fri">\uD83D\uDD52 <b>Friday timings</b> (shorter periods): P1 07:15\u201308:00 \u00b7 P2 08:05\u201308:50 \u00b7 <b class="tt-brk-lbl">Recess 08:50\u201309:05</b> \u00b7 P3 09:05\u201309:50 \u00b7 P4 09:50\u201310:35</div></details>';
 }
 function renderClasses(){
  stopTimer(); CUR.id=null;
