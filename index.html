@@ -3684,24 +3684,28 @@ function renderWorksheet(d,course,week,ws,groups){var st={y:16};
 function renderCheckpoint(d,course,week,ck){var st={y:16};
   header(d,st,course,"WEEK "+week.n+" CHECKPOINT",AMBER,"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 assessment of learning \u00b7 circle one answer for each question.");
   fields(d,st);
+  var vmcq=(ck.vocabMcq||[]).map(function(q){return {q:q.q,opts:(q.opts||[]).slice(),ans:q.ans};});
+  var lang=(ck.language||[]).map(function(q){return {q:q.q,opts:(q.opts||[]).slice(),ans:q.ans};});
+  var rqs=(ck.reading.qs||[]).map(function(q){return {q:q.q,opts:(q.opts||[]).slice(),ans:q.ans};});
+  var _co=0; _co=diversifyMixed(vmcq,_co); _co=diversifyMixed(lang,_co); _co=diversifyMixed(rqs,_co);
   catBadge(d,st,"ALL GROUPS \u00b7 (SEN) MARKED",AMBER);
   note(d,st,"Items marked (SEN) are the core questions for the SEN group.","amber");
   section(d,st,"P1","Vocabulary","meaning");var no=0;
-  ck.vocabMcq.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
+  vmcq.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
   section(d,st,"P2","Language & function","grammar \u00b7 function");
-  ck.language.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
+  lang.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
   section(d,st,"P3","Reading","detail & inference");
   readBox(d,st,ck.reading.passage);
-  ck.reading.qs.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
+  rqs.forEach(function(q,idx){no++;numItem(d,st,no,(idx===0?"(SEN) ":"")+q.q);opts(d,st,q.opts);});
   var hasCh=ck.challenge&&ck.challenge.length;
   if(hasCh){ section(d,st,"P4","Challenge","beyond the wordlist"); ck.challenge.forEach(function(q){no++;numItem(d,st,no,q.q);opts(d,st,q.opts);}); }
   section(d,st,hasCh?"P5":"P4","Short written response","writing \u00b7 70 words");
   note(d,st,ck.writing.scenario,"amber");para(d,st,ck.writing.prompt,{size:9.6,lh:4.8});writeLines(d,st,ck.writing.lines||5);
   keyTitle(d,st,"ANSWER KEY & RUBRIC \u00b7 Checkpoint \u00b7 Week "+week.n);
   var i=0,p1=[],p2=[],p3=[],p4=[];
-  ck.vocabMcq.forEach(function(q){i++;p1.push(i+" "+String.fromCharCode(97+q.ans));});
-  ck.language.forEach(function(q){i++;p2.push(i+" "+q.opts[q.ans]);});
-  ck.reading.qs.forEach(function(q){i++;p3.push(i+" "+q.opts[q.ans]);});
+  vmcq.forEach(function(q){i++;p1.push(i+" "+String.fromCharCode(65+q.ans));});
+  lang.forEach(function(q){i++;p2.push(i+" "+String.fromCharCode(65+q.ans)+" ("+q.opts[q.ans]+")");});
+  rqs.forEach(function(q){i++;p3.push(i+" "+String.fromCharCode(65+q.ans));});
   if(hasCh)ck.challenge.forEach(function(q){i++;p4.push(i+" "+q.opts[q.ans]);});
   para(d,st,"Part 1 \u00b7 Vocabulary:  "+p1.join("  \u00b7  "),{bold:true,lh:5.4});
   para(d,st,"Part 2 \u00b7 Language:  "+p2.join("  \u00b7  "),{bold:true,lh:5.4});
@@ -3712,7 +3716,7 @@ function renderCheckpoint(d,course,week,ck){var st={y:16};
   para(d,st,(hasCh?"Part 5":"Part 4")+" \u00b7 Writing marking rubric (10 marks):",{bold:true,color:TEALD});
   var cW=PW-16,ry=st.y;fc(d,INK);d.rect(L,ry-4.4,cW,6,"F");d.rect(L+cW,ry-4.4,16,6,"F");d.setFont("helvetica","bold");d.setFontSize(8.6);tc(d,[255,255,255]);d.text("Criterion",L+2,ry);d.text("Marks",L+cW+2,ry);var yy=ry+6;
   ck.rubric.forEach(function(r){d.setFont("helvetica","normal");d.setFontSize(8.8);var ls=d.splitTextToSize(r[0],cW-4),h=Math.max(6,ls.length*4.4+1.6);dc(d,LINE);d.setLineWidth(.3);d.rect(L,yy-4.4,cW,h,"S");d.rect(L+cW,yy-4.4,16,h,"S");tc(d,INK);ls.forEach(function(ln,k){d.text(ln,L+2,yy+k*4.4);});d.setFont("helvetica","bold");tc(d,TEALD);d.text(r[1],L+cW+6,yy);yy+=h;});
-  footer(d,course);return d;}
+  frameAll(d,AMBER);footer(d,course);return d;}
 
 /* ---------- Week-1 hand-authored pack (approved) ---------- */
 var PACKS={ "c1|1":{
@@ -3789,7 +3793,7 @@ function taskContent(course,week,ls,tier){
 /* compact, single-page renderers used only by the differentiated tasks */
 function _tSec(d,st,tag,heading,slo){st.y+=1.4;d.setFont("helvetica","bold");d.setFontSize(10.2);tc(d,TEAL);d.text(tag+" \u00b7 "+heading,L,st.y);d.setFont("helvetica","italic");d.setFontSize(7.8);tc(d,MUT);d.text(slo,W-R,st.y,{align:"right"});st.y+=2.4;dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=4;}
 function _tQ(d,st,n,q){d.setFont("helvetica","bold");d.setFontSize(9.6);tc(d,TEALD);var head=n+". ";var lead=d.getTextWidth(head);d.text(head,L,st.y);d.setFont("helvetica","normal");tc(d,INK);var ls=d.splitTextToSize(q.q,PW-lead-2);d.text(ls[0]||"",L+lead,st.y);for(var i=1;i<ls.length;i++){st.y+=4.4;d.text(ls[i],L+lead,st.y);}st.y+=4.6;
-  var lt="abcdefgh",line=q.opts.map(function(o,i){return "("+lt[i]+")  "+o;}).join("     ");d.setFont("helvetica","normal");d.setFontSize(9.2);tc(d,[40,55,72]);var ol=d.splitTextToSize(line,PW-8);ol.forEach(function(ln){d.text(ln,L+6,st.y);st.y+=4.4;});st.y+=2;}
+  var lt="ABCDEFGH",line=q.opts.map(function(o,i){return "("+lt[i]+")  "+o;}).join("     ");d.setFont("helvetica","normal");d.setFontSize(9.2);tc(d,[40,55,72]);var ol=d.splitTextToSize(line,PW-8);ol.forEach(function(ln){d.text(ln,L+6,st.y);st.y+=4.4;});st.y+=2;}
 function _tPassage(d,st,txt){d.setFont("helvetica","normal");d.setFontSize(9);var ls=d.splitTextToSize(txt,PW-10),h=ls.length*4.4+5;fc(d,WASH);dc(d,[207,230,232]);d.setLineWidth(.3);d.roundedRect(L,st.y-3,PW,h,2.4,2.4,"FD");tc(d,INK);var yy=st.y+1.2;ls.forEach(function(ln){d.text(ln,L+5,yy);yy+=4.4;});st.y+=h+2;}
 function renderTask(d,course,week,ls,tier,rosterLine){
   var C=taskContent(course,week,ls,tier),T=C.meta,st={y:16},no=0,key=[];
@@ -3816,57 +3820,62 @@ function catBadge(d,st,text,color){
   fc(d,color||TEAL);d.roundedRect(x,y-4.6,w,7,1.6,1.6,"F");
   tc(d,[255,255,255]);d.text(text,x+4.5,y);st.y+=8;
 }
-function leveledContent(C, ls, week, level){
-  var ck=C.checkpoint, ws=C.worksheet, V=vocabPool(ls);
-  var vdefs=V.map(function(v){return v[1];});
-  var langOpts=[]; (ck.language||[]).concat(ck.challenge||[]).forEach(function(q){(q.opts||[]).forEach(function(o){if(langOpts.indexOf(o)<0)langOpts.push(o);});});
-  if(level==="A"){
-    var vocab=(ck.vocabMcq||[]).slice(0,3).map(function(q,i){var sh=_optSet(q.opts[q.ans], vdefs.filter(function(d){return d!==q.opts[q.ans];}), 4, "av"+i+week.n); return {q:q.q,opts:sh.opts,ans:sh.ans};});
-    var chV=(ck.challenge||[]).filter(function(q){return /mean|word|nearly/i.test(q.q);})[0];
-    if(chV){var s=_optSet(chV.opts[chV.ans], chV.opts.filter(function(o){return o!==chV.opts[chV.ans];}).concat(vdefs), 4, "avc"+week.n); vocab.push({q:chV.q,opts:s.opts,ans:s.ans});}
-    var grammar=(ck.language||[]).slice(0,3).map(function(q,i){var s=_optSet(q.opts[q.ans], q.opts.filter(function(o){return o!==q.opts[q.ans];}).concat(langOpts), 4, "ag"+i+week.n); return {q:q.q,opts:s.opts,ans:s.ans};});
-    var chG=(ck.challenge||[]).filter(function(q){return !/mean|nearly/i.test(q.q);})[0];
-    if(chG){var s2=_optSet(chG.opts[chG.ans], chG.opts.filter(function(o){return o!==chG.opts[chG.ans];}).concat(langOpts), 4, "agc"+week.n); grammar.push({q:chG.q,opts:s2.opts,ans:s2.ans});}
-    var RD=(ck.reading&&ck.reading._rd)||{full:{passage:ck.reading.passage,qs:ck.reading.qs}};
-    var _ord={full:0,core:1,sen:2};
-    var rqs=(RD.full.qs||[]).slice().sort(function(a,b){return (_ord[a.lvl]||1)-(_ord[b.lvl]||1);}).slice(0,3).map(function(q,i){return makeRQ(q,4,"ar"+i+week.n);});
-    var writingA={prompt:ck.writing.prompt+"  Extension (Tier 1): then argue the OPPOSITE view in two sentences, using one above-level linker (however, therefore, nevertheless).", lines:6, sample:ck.writing.sample};
-    return {badge:"TIER 1", isA:true, vocab:vocab, grammar:grammar, reading:{passage:RD.full.passage, qs:rqs}, writing:writingA};
-  }
-  /* level B: core 3-option items + SEN 2-option items */
-  var v3=(ck.vocabMcq||[]).slice(0,3).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
-  var sv=V[0]; if(sv){var s=_optSet(sv[1], vdefs.filter(function(d){return d!==sv[1];}), 2, "bsv"+week.n); v3.push({q:"Read: \u201c"+sentWithWord(sv)+"\u201d \u2014 what does \u2018"+sv[0]+"\u2019 mean?",opts:s.opts,ans:s.ans,sen:true});}
-  var g3=(ck.language||[]).slice(0,3).map(function(q){return {q:q.q,opts:q.opts,ans:q.ans};});
-  var sg=(ck.language||[])[1]||(ck.language||[])[0]; if(sg){var correct=sg.opts[sg.ans]; var s2b=_optSet(correct, sg.opts.filter(function(o){return o!==correct;}), 2, "bsg"+week.n); g3.push({q:sg.q,opts:s2b.opts,ans:s2b.ans,sen:true});}
-  var RDb=(ck.reading&&ck.reading._rd)||{core:{passage:ck.reading.passage,qs:ck.reading.qs},sen:{qs:ck.reading.qs}};
-  var passB=RDb.core.passage;
-  var rq=(RDb.core.qs||[]).slice(0,2).map(function(q,i){return makeRQ(q,3,"br"+i+week.n);});
-  var sr=(RDb.sen.qs||[])[1]||(RDb.sen.qs||[])[0]; if(sr){var sq=makeRQ(sr,2,"bsr"+week.n); sq.sen=true; rq.push(sq);}
-  var wpromptB=(ws.writing&&ws.writing.prompt)?ws.writing.prompt:ck.writing.prompt;
-  var writingB={prompt:wpromptB, sen:"SEN: complete the frame \u2014 \u201cIn my opinion, ______ because ______.\u201d", lines:5, sample:(ws.writing&&ws.writing.sample)||ck.writing.sample};
-  return {badge:"TIER 2 \u00b7 TIER 3 \u00b7 SEN", isA:false, vocab:v3, grammar:g3, reading:{passage:passB, qs:rq}, writing:writingB};
+function drawFrame(d,color){ dc(d,color||TEAL); d.setLineWidth(.8); d.roundedRect(L-4,9,PW+8,276,4,4,"S"); d.setLineWidth(.3); }
+function peerBox(d,st){ st.y+=1; var h=14; dc(d,[150,120,190]); fc(d,[249,246,253]); d.setLineWidth(.4); d.roundedRect(L,st.y,PW,h,2,2,"FD");
+  d.setFont("helvetica","bold");d.setFontSize(8);tc(d,[92,60,130]); d.text("\u270E Peer review",L+3,st.y+4);
+  d.setFont("helvetica","normal");d.setFontSize(8);tc(d,INK);
+  d.text("Reviewed by: __________________",L+3,st.y+8.6);
+  d.text("One thing done well: ________________________",L+62,st.y+8.6);
+  d.text("One thing to improve: ______________________________________________________",L+3,st.y+12.5);
+  st.y+=h+1.5; }
+function diversifyAnswers(qs,nOpt,off){ off=off||0; (qs||[]).forEach(function(q,i){ var t=(off+i)%nOpt; if(q.opts&&q.opts.length>t&&q.ans!==t){ var c=q.opts[q.ans]; q.opts[q.ans]=q.opts[t]; q.opts[t]=c; q.ans=t; } }); return off+((qs||[]).length); }
+function diversifyMixed(qs,off){ off=off||0; (qs||[]).forEach(function(q,i){ var n=(q.opts||[]).length; if(n<2)return; var t=(off+i)%n; if(q.ans!==t){var c=q.opts[q.ans];q.opts[q.ans]=q.opts[t];q.opts[t]=c;q.ans=t;} }); return off+((qs||[]).length); }
+function frameAll(d,color){ var p=d.getNumberOfPages(); for(var i=1;i<=p;i++){ d.setPage(i); dc(d,color||AMBER); d.setLineWidth(.8); d.roundedRect(L-4,9,PW+8,276,4,4,"S"); } d.setLineWidth(.3); }
+function makeVocabQ(q,k,vdefs,seed){ var correct=q.opts[q.ans]; var s=_optSet(correct, vdefs.filter(function(x){return x!==correct;}), k, seed); return {q:q.q,opts:s.opts,ans:s.ans}; }
+function readingPrompt(tier){
+  if(tier==="t1") return {prompt:"Using the text you read above, write a paragraph (about 90 words). Address these THREE points:  (1) What is the main message of the text?  (2) Give TWO details or examples from the text that support it.  (3) Do you agree with the writer? Give your opinion and ONE clear reason.", lines:3, rubric:"Rubric: all 3 points answered \u00b7 clear opinion + reason \u00b7 accurate grammar & vocabulary \u00b7 ideas linked (first, also, however)."};
+  if(tier==="t2") return {prompt:"Using the text above, write a short paragraph (about 60 words). Address these THREE points:  (1) What is the text mainly about?  (2) Write ONE detail from the text.  (3) What do you think about it, and why?", lines:4, rubric:"Rubric: the 3 points answered \u00b7 an opinion with a reason \u00b7 mostly correct grammar."};
+  return {prompt:"Look at the text above. Write 3\u20134 short sentences (under 80 words). Address these THREE points:  (1) What is the text about?  (2) Write ONE thing you learned.  (3) Do you agree? Complete: \u201cI think ______ because ______.\u201d", lines:4, rubric:"Rubric: 3\u20134 sentences \u00b7 the points answered \u00b7 uses the sentence starter."};
 }
-function renderLeveledWS(d,courseId,course,week,ls,level){
-  var LV=leveledContent(contentFor(courseId,course,week,ls), ls, week, level);
-  var st={y:16},no=0,key=[];
-  header(d,st,course, LV.isA?"WORKSHEET A \u00b7 CHALLENGING":"WORKSHEET B \u00b7 CORE + SEN", LV.isA?TEAL:AMBER, "Week "+week.n+" \u00b7 "+course.chapter, "Chapter 1 \u00b7 "+week.title+" \u00b7 "+(LV.isA?"higher / above-level \u2014 full options (a\u2013d)":"at / below-level \u2014 questions marked (SEN) are for the SEN group")+".");
-  catBadge(d,st,LV.badge,LV.isA?TEAL:AMBER);
+function leveledContent(C, ls, week, tier){
+  var ck=C.checkpoint, V=vocabPool(ls), vdefs=V.map(function(v){return v[1];});
+  var langOpts=[]; (ck.language||[]).concat(ck.challenge||[]).forEach(function(q){(q.opts||[]).forEach(function(o){if(langOpts.indexOf(o)<0)langOpts.push(o);});});
+  var RD=(ck.reading&&ck.reading._rd)||{full:{passage:ck.reading.passage,qs:ck.reading.qs},core:{passage:ck.reading.passage,qs:ck.reading.qs},sen:{passage:ck.reading.passage,qs:ck.reading.qs}};
+  var nOpt = tier==="t1"?4:(tier==="t2"?3:2);
+  var vCount = tier==="t3"?2:3, gCount = 2, rCount=2;
+  var vocab=(ck.vocabMcq||[]).slice(0,vCount).map(function(q,i){return makeVocabQ(q,nOpt,vdefs,"v"+tier+i+week.n);});
+  var grammar=(ck.language||[]).slice(0,gCount).map(function(q,i){var correct=q.opts[q.ans]; var s=_optSet(correct, q.opts.filter(function(o){return o!==correct;}).concat(langOpts), nOpt, "g"+tier+i+week.n); return {q:q.q,opts:s.opts,ans:s.ans};});
+  var rsrc = tier==="t1"?(RD.full.qs||RD.core.qs) : (tier==="t2"?(RD.core.qs||RD.sen.qs) : (RD.sen.qs||RD.core.qs));
+  var reading=(rsrc||[]).slice(0,rCount).map(function(q,i){return makeRQ(q,nOpt,"r"+tier+i+week.n);});
+  var passage=_trimWords(RD.sen.passage||RD.core.passage||"", tier==="t1"?58:(tier==="t2"?62:52));
+  return {tier:tier, nOpt:nOpt, vocab:vocab, grammar:grammar, reading:{passage:passage, qs:reading}, writing:readingPrompt(tier)};
+}
+var TIERMETA={ t1:{name:"TIER 1 \u00b7 CHALLENGING",color:TEAL,badge:"TIER 1"}, t2:{name:"TIER 2 \u00b7 AVERAGE",color:AMBER,badge:"TIER 2"}, t3:{name:"TIER 3 \u00b7 SUPPORT (+SEN)",color:[180,68,18],badge:"TIER 3 + SEN"} };
+function renderLeveledWS(d,courseId,course,week,ls,tier){
+  var LV=leveledContent(contentFor(courseId,course,week,ls), ls, week, tier);
+  var mt=TIERMETA[tier]||TIERMETA.t1;
+  drawFrame(d, mt.color);
+  var st={y:15},no=0,key=[];
+  header(d,st,course, "WORKSHEET \u00b7 "+mt.name, mt.color, "Week "+week.n+" \u00b7 "+course.chapter, week.title+" \u00b7 "+LV.nOpt+" options per question.");
+  catBadge(d,st,mt.badge,mt.color);
   fields(d,st);
-  function q1(q){ var qq={q:(q.sen?"(SEN) ":"")+q.q, opts:q.opts, ans:q.ans}; no++; _tQ(d,st,no,qq); key.push(no+"-"+String.fromCharCode(97+q.ans)); }
-  _tSec(d,st,"A","Vocabulary", LV.isA?"circle one \u00b7 four options":"circle one \u00b7 (SEN) = two options");
+  var _off=0; _off=diversifyAnswers(LV.vocab,LV.nOpt,_off); _off=diversifyAnswers(LV.grammar,LV.nOpt,_off); _off=diversifyAnswers(LV.reading.qs,LV.nOpt,_off);
+  function q1(q){ no++; _tQ(d,st,no,q); key.push(no+"-"+String.fromCharCode(65+q.ans)); }
+  _tSec(d,st,"A","Vocabulary","circle one \u00b7 "+LV.nOpt+" options");
   LV.vocab.forEach(q1);
-  _tSec(d,st,"B","Grammar & language", LV.isA?"circle one \u00b7 four options":"circle one \u00b7 (SEN) = two options");
+  _tSec(d,st,"B","Grammar & language","circle one \u00b7 "+LV.nOpt+" options");
   LV.grammar.forEach(q1);
-  _tSec(d,st,"C","Reading comprehension","read, then circle one");
+  _tSec(d,st,"C","Reading","read, then circle one");
   _tPassage(d,st,LV.reading.passage);
   LV.reading.qs.forEach(q1);
-  _tSec(d,st,"D","Writing", LV.isA?"argue your view \u00b7 ~80 words":"short response \u00b7 ~60 words");
-  para(d,st,LV.writing.prompt,{size:9.4,lh:4.8});
-  if(LV.writing.sen)note(d,st,LV.writing.sen,"amber");
-  writeLines(d,st,LV.isA?4:4);
-  st.y+=1;dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=4;
-  d.setFont("helvetica","bold");d.setFontSize(8.4);tc(d,MUT);
-  d.splitTextToSize("Answer key (teacher):  "+key.join("   "),PW).forEach(function(ln){d.text(ln,L,st.y);st.y+=4.4;});
+  _tSec(d,st,"D","Short writing","address the 3 points from the text");
+  para(d,st,LV.writing.prompt,{size:8.8,lh:4.4});
+  note(d,st,LV.writing.rubric,"amber");
+  writeLines(d,st,LV.writing.lines);
+  peerBox(d,st);
+  st.y+=.5;dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=3.5;
+  d.setFont("helvetica","bold");d.setFontSize(7.6);tc(d,MUT);
+  d.splitTextToSize("Answer key (teacher \u2014 fold to hide):  "+key.join("   "),PW).forEach(function(ln){d.text(ln,L,st.y);st.y+=3.8;});
   footer(d,course);return d;
 }
 
@@ -3879,7 +3888,7 @@ var API={
     var nm={card:"Study Card",worksheet:"Worksheet",checkpoint:"Checkpoint"}[kind];
     d.save("Week "+week.n+" "+nm+".pdf");},
   downloadTask:function(tier,courseId,course,week,ls,rosterLine){var d=new (JSPDF())({unit:"mm",format:"a4"});renderTask(d,course,week,ls,tier,rosterLine);var nm={sen:"SEN",t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Task";d.save("W"+week.n+" "+nm+" Task.pdf");},
-  downloadWS:function(level,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});renderLeveledWS(d,courseId,course,week,ls,level);d.save("W"+week.n+" Worksheet "+level+".pdf");},
+  downloadWS:function(tier,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});renderLeveledWS(d,courseId,course,week,ls,tier);var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";d.save("W"+week.n+" "+nm+" Worksheet.pdf");},
   autoContent:autoContent, PACKS:PACKS
 };
 if(typeof module!=="undefined"&&module.exports)module.exports=API;
@@ -4259,14 +4268,15 @@ function openChkPDF(id){ _icanGo("checkpoint",id); }
 function _docTabs(id,wk){ if(typeof ICANPDF==="undefined") return ""; if(!(WEEKS.filter(function(x){return x.lessons.indexOf(id)>=0;})[0])) return "";
   var n=(wk&&wk.n)||""; var b="background:#eef7f8;border:1px solid #cfe6e8;color:#0A5A62;font-weight:800"; var a="background:#fdf2ec;border:1px solid #f3d9cc;color:#B44412;font-weight:800"; var g="background:#eef2fb;border:1px solid #d5deef;color:#2b3a67;font-weight:800";
   return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px">'
-    +'<button class="btn sm" style="'+b+'" onclick="openWSPDF(\'A\',\''+id+'\')">\u2b07 W'+n+' Worksheet A \u00b7 Challenging</button>'
-    +'<button class="btn sm" style="'+a+'" onclick="openWSPDF(\'B\',\''+id+'\')">\u2b07 W'+n+' Worksheet B \u00b7 Core + SEN</button>'
+    +'<button class="btn sm" style="'+b+'" onclick="openWSPDF(\'t1\',\''+id+'\')">\u2b07 W'+n+' Tier 1 \u00b7 Challenging</button>'
+    +'<button class="btn sm" style="'+a+'" onclick="openWSPDF(\'t2\',\''+id+'\')">\u2b07 W'+n+' Tier 2 \u00b7 Average</button>'
+    +'<button class="btn sm" style="'+g+'" onclick="openWSPDF(\'t3\',\''+id+'\')">\u2b07 W'+n+' Tier 3 \u00b7 Support (+SEN)</button>'
     +'<button class="btn sm" style="'+a+'" onclick="openChkPDF(\''+id+'\')">\u2b07 W'+n+' Checkpoint</button></div>'
-    +'<p style="margin:2px 2px 0;font-size:.78rem;color:#667">Worksheet A = higher/above-level (full a\u2013d options). Worksheet B = at/below-level, with SEN items marked. Student names stay in the lesson plan only.</p>'
+    +'<p style="margin:2px 2px 0;font-size:.78rem;color:#667">Tier 1 = challenging (4 options) \u00b7 Tier 2 = average (3 options) \u00b7 Tier 3 = support + SEN (2 options). One page each, framed, with rubric &amp; peer-review. Checkpoint = 2 pages + answer key. Student names stay in the lesson plan only.</p>'
     +_rosterPanel(CUR.cls)+_seatingPanel(CUR.cls); }
-function openWSPDF(level,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
+function openWSPDF(tier,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
-  ICANPDF.downloadWS(level,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
+  ICANPDF.downloadWS(tier,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
 
 
 /* ---------------- COURSE 2 · 11General-10Advanced · A Picture of Health ---------------- */
@@ -5386,27 +5396,27 @@ var COURSES={
 var ROSTERS={
  "11 Advanced":{
    sen:[],
-   t1:["Mohammad Zakaria Hasan","Hamza Ali Mohammed","Ayham Belal Mahmoud Almoghair","Ahmed Naser Yehia Abbas"],
-   t2:["Marwan Moamen Mohamed","Mohammed Mukhtar Mubarak","Mohamed Ahmed Khaled Hindawi","Mazen Mohamed Abdelfattah","Ammar Atheer Adnan Abuslaih","Abdel Rahman Tareq Bani Yaseen"],
-   t3:["Adam Bahaaeldin Abdelmeguid","Tayemalla Mohamed Ali Taghyan","Qais Ahmad Moosa Salamih Shatnawi","Hashem Mustafa Salah","Abdulmalek Alaa Akkad"]
+   t1:["Ahmed Naser Yehia Abbas","Mohammad Zakaria Hasan","Hamza Ali Mohammed","Mazen Mohamed Abdelfattah","Abdel Rahman Tareq Bani Yaseen","Adam Bahaaeldin Abdelmeguid","Mohammed Mukhtar Mubarak","Ammar Atheer Adnan Abuslaih"],
+   t2:["Ayham Belal Mahmoud Almoghair","Hashem Mustafa Salah","Marwan Moamen Mohamed","Ayhm Mohd Suliman Al Zyoud","Qais Ahmad Moosa Salamih Shatnawi"],
+   t3:["Mohamed Ahmed Khaled Hindawi","Tayemalla Mohamed Ali Taghyan","Abdulmalek Alaa Akkad"]
  },
  "12 General":{
    sen:["Nasser Mohamed Rashid Al Sinaidi"],
-   t1:["Abdulrahman Asim Osman Abdalla","Mutaz Muwafaq Mohammad Rawasdeh"],
-   t2:["Abdalla Omar Khalil Ahmed Alhosani"],
-   t3:["Hazza Saeed Alameri"]
+   t1:["Mutaz Muwafaq Mohammad Rawasdeh","Abdulrahman Asim Osman Abdalla"],
+   t2:["Hazza Saeed Alameri","Abdalla Omar Khalil Ahmed Alhosani"],
+   t3:[]
  },
  "11 General":{
    sen:["Nayef Saeed Almansoori"],
-   t1:["Aser Mohamed Anwar Mohamed","Naser Salem Khamees Mubarak"],
-   t2:["Laith Faraj Thaber Abuthaher","Zaed Mohammad Ahmad Tahat","Ahmad Raed Salah Shatnawi"],
-   t3:["Hemam Ibrahim Ismail Musameh","Mohammed Hatem Ghaleb","Mohamed Jasim Mohamed Awadh"]
+   t1:["Naser Salem Khamees Mubarak"],
+   t2:["Zaed Mohammad Ahmad Tahat","Laith Faraj Thaber Abuthaher","Ahmad Raed Salah Shatnawi"],
+   t3:["Aser Mohamed Anwar Mohamed","Mohammed Hatem Ghaleb","Hemam Ibrahim Ismail Musameh","Mohamed Jasim Mohamed Awadh","Mohamed Omar Ahmed Alakheri"]
  },
  "10 General":{
    sen:["Hammam Nasser Zainallah Hamdhan"],
-   t1:["Omar Assad Mohd Said Alrajabi"],
-   t2:["Hussein Abdulrahman Hussein Al Baihani"],
-   t3:["Mohsen Abdulsalam Mohsin","Saeed Khalid Sultan Hamad","Zayed Mohamed Ghanem","Khaled Saddam Abdo Mohammed"]
+   t1:["Omar Assad Mohd Said Alrajabi","Zayed Mohamed Ghanem"],
+   t2:["Khaled Saddam Abdo Mohammed","Mohsen Abdulsalam Mohsin","Hussein Abdulrahman Hussein Al Baihani"],
+   t3:["Hamad Ali Abdulla Saeed Alyammahi","Saeed Khalid Sultan Hamad"]
  }
 };
 var CLASS_ROSTERS={ c1:["11 Advanced","12 General"], c2:["11 General"], c3:["10 General"], c4:[] };
