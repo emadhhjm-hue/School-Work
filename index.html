@@ -249,6 +249,7 @@
   .qr-tip{margin-top:12px;background:#fff8ea;border:1px solid #f0e2bf;border-radius:10px;padding:10px 12px;font-size:.85rem;color:#7a5a1a}
   .wk-plan{margin-left:auto;border:1.5px solid var(--blue);background:#fff;color:var(--blue);border-radius:9px;padding:5px 12px;font-weight:800;cursor:pointer;font-size:.82rem}
   .wk-plan:hover{background:#eef4ff}
+  .wk-chk{margin-left:0}
   .lpm-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;background:#f4f6fc;border-bottom:1px solid #e6e9f2}
   .lpm-tab{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:.85rem}
   .lpm-tab.on{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -3900,6 +3901,57 @@ function renderLeveledWS(d,courseId,course,week,ls,tier){
   frameAll(d,mt.color);footer(d,course);return d;
 }
 
+function vocabBox(d,st,words){
+  var txt="Key words to use: "+words.join("  \u00b7  ")+"        Add 3 of your own:  ____________   ____________   ____________";
+  var lns=d.splitTextToSize(txt,PW-8),h=lns.length*4.6+5;
+  fc(d,[247,251,251]);dc(d,[207,230,232]);d.setLineWidth(.3);d.roundedRect(L,st.y-3,PW,h,2.4,2.4,"FD");
+  d.setFont("helvetica","normal");d.setFontSize(8.8);tc(d,INK);var yy=st.y+1.4;lns.forEach(function(ln){d.text(ln,L+4,yy);yy+=4.6;});
+  st.y+=h+2;
+}
+function blankBox(d,st,h){
+  fc(d,[255,255,255]);dc(d,[205,216,228]);d.setLineWidth(.35);d.roundedRect(L,st.y,PW,h,2.4,2.4,"FD");
+  dc(d,[224,231,240]);d.setLineWidth(.25);d.setLineDashPattern([1,2],0);var yy=st.y+8;while(yy<st.y+h-3){d.line(L+4,yy,W-R-4,yy);yy+=7.5;}d.setLineDashPattern([],0);
+  st.y+=h+2;
+}
+function writeRubric(d,st){
+  if(st.y>236){d.addPage();st.y=18;}
+  para(d,st,"Marking rubric \u2014 5 marks per criterion \u00b7 /25 total:",{bold:true,color:TEALD});
+  var crit=[["Task completion","all 3 points covered in detail"],["Structure","paragraphs, topic sentences, linking words"],["Grammar","accurate simple & complex structures"],["Vocabulary","varied, suitable words"],["Spelling & punctuation","accurate throughout"]];
+  var c1=42, c2=PW-c1-16, ry=st.y;
+  fc(d,INK);d.rect(L,ry-4.4,c1,6,"F");d.rect(L+c1,ry-4.4,c2,6,"F");d.rect(L+c1+c2,ry-4.4,16,6,"F");
+  d.setFont("helvetica","bold");d.setFontSize(8);tc(d,[255,255,255]);d.text("Criterion",L+2,ry);d.text("Look for",L+c1+2,ry);d.text("/5",L+c1+c2+5,ry);var yy=ry+6;
+  crit.forEach(function(r){d.setFontSize(8.2);var lns=d.splitTextToSize(r[1],c2-4),h=Math.max(6.5,lns.length*4.2+1.8);dc(d,LINE);d.setLineWidth(.3);d.rect(L,yy-4.2,c1,h,"S");d.rect(L+c1,yy-4.2,c2,h,"S");d.rect(L+c1+c2,yy-4.2,16,h,"S");tc(d,INK);d.setFont("helvetica","bold");d.text(r[0],L+2,yy);d.setFont("helvetica","normal");lns.forEach(function(ln,k){d.text(ln,L+c1+2,yy+k*4.2);});yy+=h;});
+  st.y=yy+2;
+}
+function renderWritingWS(d,courseId,course,week,ls,tier){
+  var C=contentFor(courseId,course,week,ls);
+  var RD=(C.checkpoint.reading&&C.checkpoint.reading._rd)||{title:""};
+  var theme=RD.title || (ls||[]).map(function(L){return L.title;}).filter(Boolean).slice(-1)[0] || "this week's topic";
+  var mt=TIERMETA[tier]||TIERMETA.t1;
+  var wc = tier==="t1"?"150\u2013200 words":(tier==="t2"?"120\u2013150 words":"3\u20134 sentences (under 80 words)");
+  var V=vocabPool(ls).slice(0,8).map(function(v){return v[0];});
+  var st={y:15};
+  header(d,st,course,"WRITING WORKSHEET \u00b7 "+mt.name, mt.color, "Week "+week.n+" \u00b7 "+course.chapter, week.title+" \u00b7 plan \u2192 draft (writing-focused).");
+  catBadge(d,st,mt.badge,mt.color);
+  compactFields(d,st);
+  _tSec(d,st,"1","Your writing task \u2014 process","read the situation, build words, then brainstorm");
+  para(d,st,"Situation: your school magazine is collecting students' writing about \u201c"+theme+"\u201d. Write your piece ("+wc+") that addresses these THREE points:",{size:9.4,lh:4.8});
+  var pts = tier==="t3"
+    ? "(1) What is \u201c"+theme+"\u201d? Write one sentence.   (2) Write ONE reason or example.   (3) Give your opinion: \u201cI think ______ because ______.\u201d"
+    : "(1) Introduce \u201c"+theme+"\u201d and explain why it matters.   (2) Give TWO reasons or examples, with details.   (3) End with your opinion and a recommendation or call to action.";
+  para(d,st,pts,{size:9,lh:4.6});
+  para(d,st,"Step 1 \u00b7 Vocabulary building:",{bold:true,color:TEALD});
+  vocabBox(d,st,V);
+  para(d,st,"Step 2 \u00b7 Brainstorm / free-write your ideas (notes, a mind-map, or short sentences):",{bold:true,color:TEALD});
+  blankBox(d,st, tier==="t3"?36:48);
+  d.addPage(); st.y=18;
+  _tSec(d,st,"2","Final draft","write your best version \u00b7 use the rubric below");
+  writeLines(d,st, tier==="t1"?11:(tier==="t2"?8:4));
+  writeRubric(d,st);
+  peerBox(d,st);
+  frameAll(d,mt.color);footer(d,course);return d;
+}
+
 var API={
   _build:function(kind,courseId,course,week,ls){var C=contentFor(courseId,course,week,ls);var d=new (JSPDF())({unit:"mm",format:"a4"});
     if(kind==="card")return renderCard(d,course,week,C.card);
@@ -3909,7 +3961,7 @@ var API={
     var nm={card:"Study Card",worksheet:"Worksheet",checkpoint:"Checkpoint"}[kind];
     d.save("Week "+week.n+" "+nm+".pdf");},
   downloadTask:function(tier,courseId,course,week,ls,rosterLine){var d=new (JSPDF())({unit:"mm",format:"a4"});renderTask(d,course,week,ls,tier,rosterLine);var nm={sen:"SEN",t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Task";d.save("W"+week.n+" "+nm+" Task.pdf");},
-  downloadWS:function(tier,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});renderLeveledWS(d,courseId,course,week,ls,tier);var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";d.save("W"+week.n+" "+nm+" Worksheet.pdf");},
+  downloadWS:function(type,tier,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});if(type==="write"){renderWritingWS(d,courseId,course,week,ls,tier);}else{renderLeveledWS(d,courseId,course,week,ls,tier);}var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";var tn=(type==="write"?"Writing":"Reading");d.save("W"+week.n+" "+tn+" "+nm+".pdf");},
   autoContent:autoContent, PACKS:PACKS
 };
 if(typeof module!=="undefined"&&module.exports)module.exports=API;
@@ -4288,16 +4340,23 @@ function openSheetPDF(id){ _icanGo("worksheet",id); }
 function openChkPDF(id){ _icanGo("checkpoint",id); }
 function _docTabs(id,wk){ if(typeof ICANPDF==="undefined") return ""; if(!(WEEKS.filter(function(x){return x.lessons.indexOf(id)>=0;})[0])) return "";
   var n=(wk&&wk.n)||""; var b="background:#eef7f8;border:1px solid #cfe6e8;color:#0A5A62;font-weight:800"; var a="background:#fdf2ec;border:1px solid #f3d9cc;color:#B44412;font-weight:800"; var g="background:#eef2fb;border:1px solid #d5deef;color:#2b3a67;font-weight:800";
-  return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px">'
-    +'<button class="btn sm" style="'+b+'" onclick="openWSPDF(\'t1\',\''+id+'\')">\u2b07 W'+n+' Tier 1 \u00b7 Challenging</button>'
-    +'<button class="btn sm" style="'+a+'" onclick="openWSPDF(\'t2\',\''+id+'\')">\u2b07 W'+n+' Tier 2 \u00b7 Average</button>'
-    +'<button class="btn sm" style="'+g+'" onclick="openWSPDF(\'t3\',\''+id+'\')">\u2b07 W'+n+' Tier 3 \u00b7 Support (+SEN)</button>'
+  return '<div style="font-size:.72rem;font-weight:800;color:#0A5A62;margin:10px 2px 2px;letter-spacing:.4px">\uD83D\uDCD6 READING WORKSHEET (reading + 10 MCQs + short writing)</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 2px">'
+    +'<button class="btn sm" style="'+b+'" onclick="openWSPDF(\'read\',\'t1\',\''+id+'\')">\u2b07 W'+n+' Reading \u00b7 Tier 1</button>'
+    +'<button class="btn sm" style="'+a+'" onclick="openWSPDF(\'read\',\'t2\',\''+id+'\')">\u2b07 W'+n+' Reading \u00b7 Tier 2</button>'
+    +'<button class="btn sm" style="'+g+'" onclick="openWSPDF(\'read\',\'t3\',\''+id+'\')">\u2b07 W'+n+' Reading \u00b7 Tier 3</button>'
     +'</div>'
-    +'<p style="margin:2px 2px 0;font-size:.78rem;color:#667">Tier 1 = challenging (4 options) \u00b7 Tier 2 = average (3 options) \u00b7 Tier 3 = support + SEN (2 options). Framed, with rubric &amp; peer-review checklist. The weekly Checkpoint is next to the Lesson Plan button above. Student names stay in the lesson plan only.</p>'
+    +'<div style="font-size:.72rem;font-weight:800;color:#7a3f10;margin:8px 2px 2px;letter-spacing:.4px">\u270D READING/WRITING WORKSHEET (scenario \u2192 plan \u2192 rubric-guided draft)</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 2px">'
+    +'<button class="btn sm" style="'+b+'" onclick="openWSPDF(\'write\',\'t1\',\''+id+'\')">\u2b07 W'+n+' Writing \u00b7 Tier 1</button>'
+    +'<button class="btn sm" style="'+a+'" onclick="openWSPDF(\'write\',\'t2\',\''+id+'\')">\u2b07 W'+n+' Writing \u00b7 Tier 2</button>'
+    +'<button class="btn sm" style="'+g+'" onclick="openWSPDF(\'write\',\'t3\',\''+id+'\')">\u2b07 W'+n+' Writing \u00b7 Tier 3</button>'
+    +'</div>'
+    +'<p style="margin:3px 2px 0;font-size:.76rem;color:#667">Tier 1 challenging (4 options) \u00b7 Tier 2 average (3) \u00b7 Tier 3 support + SEN (2). One worksheet per day (2 reading + 2 writing); the weekly <b>Checkpoint</b> is next to the <b>Lesson Plan</b> button above.</p>'
     +_rosterPanel(CUR.cls)+_seatingPanel(CUR.cls); }
-function openWSPDF(tier,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
+function openWSPDF(type,tier,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
-  ICANPDF.downloadWS(tier,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
+  ICANPDF.downloadWS(type,tier,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
 
 
 /* ---------------- COURSE 2 · 11General-10Advanced · A Picture of Health ---------------- */
