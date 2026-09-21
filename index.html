@@ -3162,7 +3162,7 @@ function header(d,st,course,kind,kindColor,title,meta){emblem(d,L,st.y);
   d.setFontSize(8.5);var kw=d.getTextWidth(kind)+9;fc(d,kindColor);d.roundedRect(W-R-kw,st.y+.5,kw,6.6,3.3,3.3,"F");tc(d,[255,255,255]);d.text(kind,W-R-kw+4.5,st.y+5);
   st.y+=13;dc(d,INK);d.setLineWidth(.7);d.line(L,st.y,W-R,st.y);st.y+=6;
   d.setFont("times","bold");d.setFontSize(18);tc(d,INK);d.text(title,L,st.y);st.y+=5.4;
-  d.setFont("helvetica","normal");d.setFontSize(9);tc(d,MUT);d.splitTextToSize(meta,PW).forEach(function(ln){d.text(ln,L,st.y);st.y+=4.4;});st.y+=2;}
+  d.setFont("helvetica","normal");d.setFontSize(9);tc(d,MUT);var _mt=(meta||"").replace(/[\u2192\u2794\u27a1]/g,"\u2013").replace(/\s{2,}/g," ");d.splitTextToSize(_mt,PW-2).slice(0,2).forEach(function(ln){d.text(ln,L,st.y);st.y+=4.4;});st.y+=2;}
 function fields(d,st){var y=st.y,cols=[[L,96,"Student name"],[L+100,40,"Class"],[L+144,W-R-(L+144),"Date"]];d.setFontSize(7.5);d.setFont("helvetica","bold");
   cols.forEach(function(c){tc(d,TEALD);d.text(c[2].toUpperCase(),c[0],y);dc(d,MUT);d.setLineWidth(.3);d.setLineDashPattern([.8,.8],0);d.line(c[0],y+5,c[0]+c[1]-4,y+5);d.setLineDashPattern([],0);});st.y+=11;}
 function section(d,st,tag,heading,slo){if(st.y>258){d.addPage();st.y=20;}var y=st.y;fc(d,INK);d.roundedRect(L,y-4.4,7.2,7.2,1.4,1.4,"F");
@@ -3507,7 +3507,7 @@ function weekReading(courseId, ls, week, ctx){
     full:{passage:P.join(" "), qs:qs},
     core:{passage:P.slice(0,3).join(" "), qs:qs.filter(function(q){return q.lvl!=="full";})},
     sen:{passage:P.slice(0,2).join(" "), qs:qs.filter(function(q){return q.lvl==="sen";})},
-    paras:P.slice(0,4), title:(R.title||""),
+    paras:P, title:(R.title||""),
     authored:!!(typeof READINGS!=="undefined"&&READINGS&&READINGS[key])
   };
 }
@@ -3683,29 +3683,49 @@ function renderWorksheet(d,course,week,ws,groups){var st={y:16};
   para(d,st,ws.writing.words?"D \u00b7 Sample sentences:":"D \u00b7 Sample paragraph:",{bold:true,color:TEALD});note(d,st,ws.writing.sample);
   footer(d,course);return d;}
 
-function renderCheckpoint(d,courseId,course,week,ls){
+function renderCheckpoint(d,courseId,course,week,ls,priorWeeks){
   var C=contentFor(courseId,course,week,ls);
-  var LV=leveledContent(C, ls, week, "t1");
-  var ck=C.checkpoint, st={y:15}, no=0, mcqs=LV.mcqs;
-  header(d,st,course,"WEEK "+week.n+" CHECKPOINT",AMBER,"Week "+week.n+" \u00b7 "+course.chapter, week.title+" \u00b7 assessment of learning \u00b7 circle one answer for each question.");
-  catBadge(d,st,"CHECKPOINT",AMBER);
+  var RD=(C.checkpoint.reading&&C.checkpoint.reading._rd)||{full:{passage:C.checkpoint.reading.passage,qs:C.checkpoint.reading.qs},paras:[C.checkpoint.reading.passage],title:""};
+  var vPool=[], gPool=[];
+  function reword(q){ var m=q.q.match(/[\u2018\u201c]([^\u2019\u201d]+)[\u2019\u201d]/); var w=m?m[1]:""; return w?("The word \u2018"+w+"\u2019 most nearly means:"):q.q; }
+  function addFrom(cc){ (cc.checkpoint.vocabMcq||[]).forEach(function(q){vPool.push({q:reword(q),opts:q.opts.slice(),ans:q.ans});}); (cc.checkpoint.language||[]).forEach(function(q){gPool.push({q:q.q,opts:q.opts.slice(),ans:q.ans});}); }
+  (priorWeeks||[]).forEach(function(pw){ try{ addFrom(contentFor(courseId,course,pw.week,pw.ls)); }catch(e){} });
+  addFrom(C);
+  function uniq(a){var s={},o=[];a.forEach(function(q){if(!s[q.q]){s[q.q]=1;o.push(q);}});return o;}
+  var vocab=uniq(vPool).slice(0,5), grammar=uniq(gPool).slice(0,5);
+  var pool=assessPool(C, ls, week, RD), reading=[];
+  ["mainidea","comprehension","comprehension","inference","pronoun"].forEach(function(cat,i){
+    var u=reading.filter(function(x){return x._c===cat;}).length, item=(pool[cat]||[])[u];
+    if(!item){["comprehension","mainidea","inference","pronoun","paragraph","vocab"].some(function(oc){var uu=reading.filter(function(x){return x._c===oc;}).length;if((pool[oc]||[])[uu]){item=pool[oc][uu];cat=oc;return true;}return false;});}
+    if(item){var s=_optSet(item.correct,item.dist,4,"ck"+cat+i+week.n); reading.push({q:item.q,opts:s.opts,ans:s.ans,_c:cat});}
+  });
+  diversifyList(vocab,3,"ckv"+week.n); diversifyList(grammar,3,"ckg"+week.n); diversifyList(reading,4,"ckr"+week.n);
+  var st={y:15}, no=0, cum=(priorWeeks&&priorWeeks.length)?" (cumulative)":"";
+  header(d,st,course,"WEEK "+week.n+" CHECKPOINT",AMBER,"Week "+week.n+" \u00b7 "+course.chapter, "Full exam: vocabulary, grammar, reading and writing.");
+  catBadge(d,st,"CHECKPOINT \u00b7 EXAM",AMBER);
   compactFields(d,st);
-  _tSec(d,st,"A","Reading","grammar \u00b7 vocabulary \u00b7 comprehension \u00b7 "+mcqs.length+" questions");
-  _tParas(d,st,LV.paras);
-  mcqs.forEach(function(q){ if(st.y>258){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); });
-  if(st.y>230){d.addPage();st.y=18;}
-  _tSec(d,st,"B","Short written response","address the 3 points \u00b7 follow the tips");
-  para(d,st,LV.writing.prompt,{size:9.4,lh:4.8});
-  note(d,st,LV.writing.tips,"amber");
-  if(st.y+13*7.5>272){d.addPage();st.y=18;}
-  writeLines(d,st,13);
+  var vkey=[],gkey=[],rkey=[];
+  _tSec(d,st,"A","Vocabulary","circle one \u00b7 5 questions"+cum);
+  vocab.forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); vkey.push(no+"-"+String.fromCharCode(65+q.ans)); });
+  _tSec(d,st,"B","Grammar","circle one \u00b7 5 questions"+cum);
+  grammar.forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); gkey.push(no+"-"+String.fromCharCode(65+q.ans)); });
+  if(st.y>196){d.addPage();st.y=18;}
+  _tSec(d,st,"C","Reading","read the text, then circle one \u00b7 5 questions");
+  _tParas(d,st,RD.paras||[]);
+  reading.forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); rkey.push(no+"-"+String.fromCharCode(65+q.ans)); });
+  if(st.y>206){d.addPage();st.y=18;}
+  var theme=RD.title||week.title;
+  _tSec(d,st,"D","Writing","address the 3 points \u00b7 then peer-review");
+  para(d,st,"Theme: there is a real debate about \u201c"+theme+"\u201d, and people take different sides. Write your argument (120\u2013180 words):  (1) State the TWO sides of the argument.  (2) Choose the side you find more powerful and support it with examples from the text AND from your own experience or knowledge.  (3) Close with a sentence stating which side outweighs the other, and why.",{size:9.2,lh:4.7});
+  if(st.y+9*7.5>270){d.addPage();st.y=18;}
+  writeLines(d,st,9);
+  peerBox(d,st);
   keyTitle(d,st,"ANSWER KEY & RUBRIC \u00b7 Checkpoint \u00b7 Week "+week.n);
-  var key=mcqs.map(function(q,i){return (i+1)+" "+String.fromCharCode(65+q.ans);});
-  para(d,st,"Reading MCQs:  "+key.join("   \u00b7   "),{bold:true,lh:5.4});st.y+=2;
-  para(d,st,"Writing marking rubric (10 marks):",{bold:true,color:TEALD});
+  para(d,st,"A \u00b7 Vocabulary:  "+vkey.join("   ")+"       B \u00b7 Grammar:  "+gkey.join("   "),{bold:true,lh:5.2});
+  para(d,st,"C \u00b7 Reading:  "+rkey.join("   "),{bold:true,lh:5.2}); st.y+=2;
+  para(d,st,"D \u00b7 Writing rubric (10 marks):",{bold:true,color:TEALD});
   var cW=PW-16,ry=st.y;fc(d,INK);d.rect(L,ry-4.4,cW,6,"F");d.rect(L+cW,ry-4.4,16,6,"F");d.setFont("helvetica","bold");d.setFontSize(8.6);tc(d,[255,255,255]);d.text("Criterion",L+2,ry);d.text("Marks",L+cW+2,ry);var yy=ry+6;
-  var rub=(ck.rubric&&ck.rubric.length)?ck.rubric:[["Task \u2014 all 3 points addressed clearly","3"],["Organisation \u2014 paragraphs, topic sentences, linking words","3"],["Language \u2014 grammar, vocabulary, spelling","3"],["Effort, length & handwriting","1"]];
-  rub.forEach(function(r){d.setFont("helvetica","normal");d.setFontSize(8.8);var lns=d.splitTextToSize(r[0],cW-4),h=Math.max(6,lns.length*4.4+1.6);dc(d,LINE);d.setLineWidth(.3);d.rect(L,yy-4.4,cW,h,"S");d.rect(L+cW,yy-4.4,16,h,"S");tc(d,INK);lns.forEach(function(ln,k){d.text(ln,L+2,yy+k*4.4);});d.setFont("helvetica","bold");tc(d,TEALD);d.text(r[1],L+cW+6,yy);yy+=h;});
+  [["Task \u2014 both sides given + a clear stance with a reason","3"],["Support \u2014 examples from the text and own experience","3"],["Organisation \u2014 paragraphs, linking words, closing sentence","2"],["Language \u2014 grammar, vocabulary, spelling","2"]].forEach(function(r){d.setFont("helvetica","normal");d.setFontSize(8.8);var lns=d.splitTextToSize(r[0],cW-4),h=Math.max(6,lns.length*4.4+1.6);dc(d,LINE);d.setLineWidth(.3);d.rect(L,yy-4.4,cW,h,"S");d.rect(L+cW,yy-4.4,16,h,"S");tc(d,INK);lns.forEach(function(ln,k){d.text(ln,L+2,yy+k*4.4);});d.setFont("helvetica","bold");tc(d,TEALD);d.text(r[1],L+cW+6,yy);yy+=h;});
   frameAll(d,AMBER);footer(d,course);return d;
 }
 /* ---------- Week-1 hand-authored pack (approved) ---------- */
@@ -3842,6 +3862,18 @@ function peerBox(d,st){
   d.text("Reviewed by: __________________     One thing to improve: __________________________________________",L+4,by);
   st.y+=h+2;
 }
+function supportBox(d,st,vocab){
+  var rows=["Sentence starters:  In my opinion\u2026 \u00b7 I believe that\u2026 \u00b7 One reason is\u2026 \u00b7 For example\u2026 \u00b7 On the other hand\u2026 \u00b7 In conclusion\u2026",
+    "Linking words:  because \u00b7 also \u00b7 however \u00b7 therefore \u00b7 first \u00b7 finally \u00b7 in addition",
+    "Useful phrases:  This shows that\u2026 \u00b7 The most important point is\u2026 \u00b7 I (dis)agree that\u2026 \u00b7 Overall, \u2026 outweighs \u2026",
+    "Key words:  "+(vocab||[]).slice(0,7).join(" \u00b7 ")];
+  var all=[];rows.forEach(function(l){all=all.concat(d.splitTextToSize(l,PW-8));});
+  var h=all.length*4.2+7; if(st.y+h>272){d.addPage();st.y=18;}
+  fc(d,[255,250,240]);dc(d,[240,215,180]);d.setLineWidth(.35);d.roundedRect(L,st.y-3,PW,h,2.4,2.4,"FD");
+  d.setFont("helvetica","bold");d.setFontSize(8);tc(d,[120,80,20]);d.text("Language support \u2014 use these to build your writing:",L+4,st.y+1);
+  d.setFont("helvetica","normal");d.setFontSize(8);tc(d,[90,60,20]);var yy=st.y+5.6;all.forEach(function(ln){d.text(ln,L+4,yy);yy+=4.2;});
+  st.y+=h+2;
+}
 function assessPool(C, ls, week, RD){
   var ck=C.checkpoint, V=vocabPool(ls), vdefs=V.map(function(v){return v[1];});
   var langOpts=[]; (ck.language||[]).concat(ck.challenge||[]).forEach(function(q){(q.opts||[]).forEach(function(o){if(langOpts.indexOf(o)<0)langOpts.push(o);});});
@@ -3855,9 +3887,11 @@ function assessPool(C, ls, week, RD){
 var TIER_TPL={ t1:["grammar","grammar","vocab","vocab","mainidea","paragraph","comprehension","comprehension","inference","pronoun"], t2:["grammar","vocab","mainidea","comprehension","inference","pronoun"], t3:["mainidea","vocab","comprehension"] };
 function writingSection(tier, theme){
   var wc = tier==="t1"?"150\u2013200 words":(tier==="t2"?"120\u2013150 words":"3\u20134 sentences (under 80 words)");
-  var prompt="Write about \u201c"+theme+"\u201d ("+wc+"). Address these THREE points:  (1) Introduce "+theme+" and explain why it matters.  (2) Give TWO reasons or examples, with details from the text or your own experience.  (3) Give your opinion and end with a recommendation or call to action.";
-  var tips = tier==="t3" ? "Tips: write 3\u20134 clear sentences \u00b7 answer the 3 points \u00b7 use \u201cI think ______ because ______.\u201d"
-    : "Tips: write at least THREE paragraphs of balanced length \u00b7 start each with a topic sentence + a supporting example \u00b7 link paragraphs with words like first, also, however, therefore \u00b7 close with a call to action, an opinion, or a summarising statement.";
+  var prompt;
+  if(tier==="t3") prompt="Theme: people disagree about \u201c"+theme+"\u201d.  (1) Which side do you think is stronger?  (2) Give ONE reason with an example (from the text or your own life).  (3) Finish with: \u201cI think ______ is stronger because ______.\u201d  Write "+wc+".";
+  else prompt="Theme: there is a real debate about \u201c"+theme+"\u201d, and people take different sides.  (1) State the TWO sides of the argument.  (2) Say which side you find more powerful and support it with examples from the text AND from your own experience, knowledge or reading.  (3) End with a closing sentence that states which side outweighs the other, and why.  Write "+wc+".";
+  var tips = tier==="t3" ? "Tips: write 3\u20134 clear sentences \u00b7 use the language support below \u00b7 finish with the sentence frame."
+    : "Tips: write at least THREE balanced paragraphs \u00b7 give each a topic sentence + a supporting example \u00b7 link ideas with first, also, however, therefore \u00b7 close by stating which side outweighs the other, and why.";
   return {prompt:prompt, tips:tips, lines: tier==="t1"?11:(tier==="t2"?8:4)};
 }
 function leveledContent(C, ls, week, tier){
@@ -3873,7 +3907,7 @@ function leveledContent(C, ls, week, tier){
   });
   diversifyList(mcqs, nOpt, "ws"+tier+week.n);
   var theme=RD.title || (ls||[]).map(function(L){return L.title;}).filter(Boolean)[0] || "this week's topic";
-  var paras=(RD.paras&&RD.paras.length?RD.paras:[RD.core.passage||RD.full.passage||""]);
+  var paras=(RD.paras&&RD.paras.length?RD.paras.slice(0,4):[RD.core.passage||RD.full.passage||""]);
   return {tier:tier, nOpt:nOpt, paras:paras, mcqs:mcqs, writing:writingSection(tier, theme)};
 }
 var TIERMETA={ t1:{name:"TIER 1 \u00b7 CHALLENGING",color:TEAL,badge:"TIER 1"}, t2:{name:"TIER 2 \u00b7 AVERAGE",color:AMBER,badge:"TIER 2"}, t3:{name:"TIER 3 \u00b7 SUPPORT (+SEN)",color:[180,68,18],badge:"TIER 3 + SEN"} };
@@ -3891,6 +3925,7 @@ function renderLeveledWS(d,courseId,course,week,ls,tier){
   _tSec(d,st,"B","Writing","address the 3 points \u00b7 follow the tips");
   para(d,st,LV.writing.prompt,{size:9,lh:4.6});
   note(d,st,LV.writing.tips,"amber");
+  if(tier!=="t1"){ supportBox(d,st, vocabPool(ls).map(function(v){return v[0];})); }
   if(st.y+LV.writing.lines*7.5>272){d.addPage();st.y=18;}
   writeLines(d,st,LV.writing.lines);
   peerBox(d,st);
@@ -3931,19 +3966,20 @@ function renderWritingWS(d,courseId,course,week,ls,tier){
   var wc = tier==="t1"?"150\u2013200 words":(tier==="t2"?"120\u2013150 words":"3\u20134 sentences (under 80 words)");
   var V=vocabPool(ls).slice(0,8).map(function(v){return v[0];});
   var st={y:15};
-  header(d,st,course,"WRITING WORKSHEET \u00b7 "+mt.name, mt.color, "Week "+week.n+" \u00b7 "+course.chapter, week.title+" \u00b7 plan \u2192 draft (writing-focused).");
+  header(d,st,course,"WRITING WORKSHEET \u00b7 "+mt.name, mt.color, "Week "+week.n+" \u00b7 "+course.chapter, "Argumentative writing \u00b7 plan, then rubric-guided draft.");
   catBadge(d,st,mt.badge,mt.color);
   compactFields(d,st);
   _tSec(d,st,"1","Your writing task \u2014 process","read the situation, build words, then brainstorm");
-  para(d,st,"Situation: your school magazine is collecting students' writing about \u201c"+theme+"\u201d. Write your piece ("+wc+") that addresses these THREE points:",{size:9.4,lh:4.8});
+  para(d,st,"Theme: there is a real debate about \u201c"+theme+"\u201d, and people take different sides. Write your argument ("+wc+"):",{size:9.4,lh:4.8});
   var pts = tier==="t3"
-    ? "(1) What is \u201c"+theme+"\u201d? Write one sentence.   (2) Write ONE reason or example.   (3) Give your opinion: \u201cI think ______ because ______.\u201d"
-    : "(1) Introduce \u201c"+theme+"\u201d and explain why it matters.   (2) Give TWO reasons or examples, with details.   (3) End with your opinion and a recommendation or call to action.";
+    ? "(1) Which side do you think is stronger?   (2) Give ONE reason with an example (from the text or your life).   (3) Finish: \u201cI think ______ is stronger because ______.\u201d"
+    : "(1) State the TWO sides of the argument.   (2) Say which side you find more powerful and support it with examples from the text AND your own experience / knowledge / reading.   (3) Close by stating which side outweighs the other, and why.";
   para(d,st,pts,{size:9,lh:4.6});
   para(d,st,"Step 1 \u00b7 Vocabulary building:",{bold:true,color:TEALD});
   vocabBox(d,st,V);
-  para(d,st,"Step 2 \u00b7 Brainstorm / free-write your ideas (notes, a mind-map, or short sentences):",{bold:true,color:TEALD});
-  blankBox(d,st, tier==="t3"?36:48);
+  if(tier!=="t1"){ para(d,st,"Step 2 \u00b7 Language support:",{bold:true,color:TEALD}); supportBox(d,st,V); }
+  para(d,st,"Step "+(tier!=="t1"?"3":"2")+" \u00b7 Brainstorm / free-write your ideas (notes, a mind-map, or short sentences):",{bold:true,color:TEALD});
+  blankBox(d,st, tier==="t3"?30:(tier==="t2"?36:48));
   d.addPage(); st.y=18;
   _tSec(d,st,"2","Final draft","write your best version \u00b7 use the rubric below");
   writeLines(d,st, tier==="t1"?11:(tier==="t2"?8:4));
@@ -3957,6 +3993,8 @@ var API={
     if(kind==="card")return renderCard(d,course,week,C.card);
     if(kind==="worksheet")return renderWorksheet(d,course,week,C.worksheet);
     return renderCheckpoint(d,courseId,course,week,ls);},
+  makeWS:function(type,tier,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});if(type==="write"){renderWritingWS(d,courseId,course,week,ls,tier);}else{renderLeveledWS(d,courseId,course,week,ls,tier);}var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";return {doc:d,name:"Week "+week.n+" "+(type==="write"?"Writing":"Reading")+" "+nm};},
+  makeChk:function(courseId,course,week,ls,priorWeeks){var d=new (JSPDF())({unit:"mm",format:"a4"});renderCheckpoint(d,courseId,course,week,ls,priorWeeks);return {doc:d,name:"Week "+week.n+" Checkpoint"};},
   download:function(kind,courseId,course,week,ls){var d=this._build(kind,courseId,course,week,ls);
     var nm={card:"Study Card",worksheet:"Worksheet",checkpoint:"Checkpoint"}[kind];
     d.save("Week "+week.n+" "+nm+".pdf");},
@@ -4337,7 +4375,23 @@ function _icanGo(kind,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF
   ICANPDF.download(kind,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the PDF: "+(e&&e.message?e.message:e)); } }
 function openCardPDF(id){ _icanGo("card",id); }
 function openSheetPDF(id){ _icanGo("worksheet",id); }
-function openChkPDF(id){ _icanGo("checkpoint",id); }
+function openChkPDF(id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
+  var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
+  var prior=_priorWeeks(c.week.n); var r=ICANPDF.makeChk(c.courseId,c.course,c.week,c.lessons,prior); openPdfModal(r.name, r.doc); }catch(e){ alert("Could not build the checkpoint: "+(e&&e.message?e.message:e)); } }
+function _priorWeeks(curN){ var out=[]; (WEEKS||[]).forEach(function(w){ if(w.n<curN && w.lessons && w.lessons.length){ var ls=w.lessons.map(function(x){return LESSONS[x];}).filter(Boolean); if(ls.length){ out.push({week:{n:w.n,skill:w.skill,title:ls.map(function(L){return L.title;}).join(" & ")}, ls:ls}); } } }); return out; }
+function openPdfModal(name, doc){ try{
+  var url=doc.output("bloburl"); window.__pdfDoc=doc; window.__pdfName=name;
+  var ov=document.getElementById("pdfOv");
+  if(!ov){ ov=document.createElement("div"); ov.id="pdfOv"; ov.className="lpm-ov"; ov.setAttribute("onclick","if(event.target===this)closePdfModal()"); document.body.appendChild(ov); }
+  ov.innerHTML='<div class="lpm" style="max-width:940px;width:95vw;height:92vh;display:flex;flex-direction:column;padding:0;overflow:hidden">'
+    +'<div class="lpm-bar" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h3 style="margin:0;font-size:1rem">\uD83D\uDCC4 '+esc(name)+'</h3><div>'
+    +'<button onclick="_savePdf()" style="background:#16a34a;color:#fff;border:0;border-radius:8px;padding:7px 14px;font-weight:800;cursor:pointer">\uD83D\uDDA8 Print / Save PDF</button>'
+    +'<button onclick="closePdfModal()" style="background:#fff;color:#333;border:1px solid #cbd5e1;border-radius:8px;padding:7px 14px;font-weight:800;cursor:pointer;margin-left:8px">\u2715 Close</button></div></div>'
+    +'<iframe title="'+esc(name)+'" src="'+url+'" style="flex:1;border:0;width:100%;background:#525659"></iframe></div>';
+  ov.classList.add("open");
+}catch(e){ alert("Could not open the preview: "+(e&&e.message?e.message:e)); } }
+function _savePdf(){ if(window.__pdfDoc){ window.__pdfDoc.save((window.__pdfName||"worksheet")+".pdf"); } }
+function closePdfModal(){ var o=document.getElementById("pdfOv"); if(o){ o.classList.remove("open"); o.innerHTML=""; } }
 function _docTabs(id,wk){ if(typeof ICANPDF==="undefined") return ""; if(!(WEEKS.filter(function(x){return x.lessons.indexOf(id)>=0;})[0])) return "";
   var n=(wk&&wk.n)||""; var b="background:#eef7f8;border:1px solid #cfe6e8;color:#0A5A62;font-weight:800"; var a="background:#fdf2ec;border:1px solid #f3d9cc;color:#B44412;font-weight:800"; var g="background:#eef2fb;border:1px solid #d5deef;color:#2b3a67;font-weight:800";
   return '<div style="font-size:.72rem;font-weight:800;color:#0A5A62;margin:10px 2px 2px;letter-spacing:.4px">\uD83D\uDCD6 READING WORKSHEET (reading + 10 MCQs + short writing)</div>'
@@ -4356,7 +4410,7 @@ function _docTabs(id,wk){ if(typeof ICANPDF==="undefined") return ""; if(!(WEEKS
     +_rosterPanel(CUR.cls)+_seatingPanel(CUR.cls); }
 function openWSPDF(type,tier,id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
-  ICANPDF.downloadWS(type,tier,c.courseId,c.course,c.week,c.lessons); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
+  var r=ICANPDF.makeWS(type,tier,c.courseId,c.course,c.week,c.lessons); openPdfModal(r.name, r.doc); }catch(e){ alert("Could not build the worksheet: "+(e&&e.message?e.message:e)); } }
 
 
 /* ---------------- COURSE 2 · 11General-10Advanced · A Picture of Health ---------------- */
@@ -6436,7 +6490,7 @@ function openWeekPlan(n){
 }
 function openWeekChk(n){ var w=(WEEKS.filter(function(x){return x.n===n;})[0]||{}); if(w.lessons&&w.lessons.length) openChkPDF(w.lessons[0]); }
 function closeLessonPlan(){ document.getElementById('lpmOv').classList.remove('open'); }
-document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ var o=document.getElementById('lpmOv'); if(o&&o.classList.contains('open')) closeLessonPlan(); } });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ var o=document.getElementById('lpmOv'); if(o&&o.classList.contains('open')) closeLessonPlan(); var p=document.getElementById('pdfOv'); if(p&&p.classList.contains('open')) closePdfModal(); } });
 function worksheetPDF(id){
   var art=document.getElementById(id); var text=art?articleText(art):'';
   var L=LESSONS[CUR.id]||{}; var w=window.open('','_blank');
