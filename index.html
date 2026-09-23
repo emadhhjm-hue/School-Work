@@ -3777,13 +3777,26 @@ function assessPool(C, ls, week, RD){
   return pool;
 }
 var TIER_TPL={ t1:["grammar","grammar","vocab","vocab","mainidea","paragraph","comprehension","comprehension","inference","pronoun"], t2:["grammar","vocab","mainidea","comprehension","inference","pronoun"], t3:["mainidea","vocab","comprehension"] };
-function writingSection(tier, theme){
-  var wc = tier==="t1"?"150\u2013200 words":(tier==="t2"?"120\u2013150 words":"3\u20134 sentences (under 80 words)");
+function weekWriteTask(ls){
+  var wm=null;
+  (ls||[]).forEach(function(L){ if(!L||!L.stages)return; ["a2","a1","a3","warm","obj"].forEach(function(k){ (L.stages[k]||[]).forEach(function(b){ if(b&&b.t==="writemodel"&&!wm) wm=b; }); }); });
+  return wm;
+}
+function writingSection(tier, theme, wm){
+  var wc = tier==="t1"?"100\u2013150 words":(tier==="t2"?"80\u2013120 words":"under 80 words");
   var prompt;
-  if(tier==="t3") prompt="Theme: people disagree about \u201c"+theme+"\u201d.  (1) Which side do you think is stronger?  (2) Give ONE reason with an example (from the text or your own life).  (3) Finish with: \u201cI think ______ is stronger because ______.\u201d  Write "+wc+".";
-  else prompt="Theme: there is a real debate about \u201c"+theme+"\u201d, and people take different sides.  (1) State the TWO sides of the argument.  (2) Say which side you find more powerful and support it with examples from the text AND from your own experience, knowledge or reading.  (3) End with a closing sentence that states which side outweighs the other, and why.  Write "+wc+".";
-  var tips = tier==="t3" ? "Tips: write 3\u20134 clear sentences \u00b7 use the language support below \u00b7 finish with the sentence frame."
-    : "Tips: write at least THREE balanced paragraphs \u00b7 give each a topic sentence + a supporting example \u00b7 link ideas with first, also, however, therefore \u00b7 close by stating which side outweighs the other, and why.";
+  if(wm && wm.task){
+    var task=String(wm.task).replace(/^(Part|Task|Activity|Step)\s*\d+\s*[·:.)\-]?\s*/i,"");
+    if(/\([^)]*words?[^)]*\)/i.test(task)){ task=task.replace(/\([^)]*words?[^)]*\)/i,"("+wc+")"); }
+    else { task=task.replace(/[:\s]+$/,"")+" ("+wc+")"; }
+    task=task.replace(/[:\s]+$/,"");
+    var pts=(wm.plan||[]).slice(0,3).map(function(p,i){ return "("+(i+1)+") "+String(p).replace(/^Q?\s*\d+\s*[:.)\-]?\s*/i,""); });
+    prompt=task+":  "+pts.join("  ");
+  } else {
+    prompt="Your teacher asks you to write a short piece for the class about \u201c"+theme+"\u201d. Write one organised paragraph ("+wc+"):  (1) Explain what \u201c"+theme+"\u201d is and why it matters.  (2) Give TWO specific examples or details from this week\u2019s lesson.  (3) End with your opinion and one clear recommendation.";
+  }
+  var tips = tier==="t3" ? "Tips: write 3\u20134 clear sentences \u00b7 answer the 3 points \u00b7 use the language support below."
+    : "Tips: write ONE organised paragraph \u00b7 a topic sentence, then the 3 points with reasons and examples \u00b7 link your ideas (first, also, however) \u00b7 finish with a closing sentence.";
   return {prompt:prompt, tips:tips, lines: tier==="t1"?11:(tier==="t2"?8:4)};
 }
 function leveledContent(C, ls, week, tier){
@@ -3800,7 +3813,7 @@ function leveledContent(C, ls, week, tier){
   diversifyList(mcqs, nOpt, "ws"+tier+week.n);
   var theme=RD.title || (ls||[]).map(function(L){return L.title;}).filter(Boolean)[0] || "this week's topic";
   var paras=(RD.paras&&RD.paras.length?RD.paras.slice(0,4):[RD.core.passage||RD.full.passage||""]);
-  return {tier:tier, nOpt:nOpt, paras:paras, mcqs:mcqs, writing:writingSection(tier, theme)};
+  return {tier:tier, nOpt:nOpt, paras:paras, mcqs:mcqs, writing:writingSection(tier, theme, weekWriteTask(ls))};
 }
 var TIERMETA={ t1:{name:"TIER 1 \u00b7 CHALLENGING",color:TEAL,badge:"TIER 1"}, t2:{name:"TIER 2 \u00b7 AVERAGE",color:AMBER,badge:"TIER 2"}, t3:{name:"TIER 3 \u00b7 SUPPORT (+SEN)",color:[180,68,18],badge:"TIER 3 + SEN"} };
 function renderLeveledWS(d,courseId,course,week,ls,tier){
@@ -3855,18 +3868,14 @@ function renderWritingWS(d,courseId,course,week,ls,tier){
   var RD=(C.checkpoint.reading&&C.checkpoint.reading._rd)||{title:""};
   var theme=RD.title || (ls||[]).map(function(L){return L.title;}).filter(Boolean).slice(-1)[0] || "this week's topic";
   var mt=TIERMETA[tier]||TIERMETA.t1;
-  var wc = tier==="t1"?"150\u2013200 words":(tier==="t2"?"120\u2013150 words":"3\u20134 sentences (under 80 words)");
   var V=vocabPool(ls).slice(0,8).map(function(v){return v[0];});
   var st={y:15};
-  header(d,st,course,"WRITING WORKSHEET \u00b7 "+mt.name, mt.color, "Week "+week.n+" \u00b7 "+course.chapter, "Argumentative writing \u00b7 plan, then rubric-guided draft.");
+  header(d,st,course,"WRITING WORKSHEET \u00b7 "+mt.name, mt.color, "Week "+week.n+" \u00b7 "+course.chapter, "Writing task \u00b7 plan, then rubric-guided draft.");
   catBadge(d,st,mt.badge,mt.color);
   compactFields(d,st);
-  _tSec(d,st,"1","Your writing task \u2014 process","read the situation, build words, then brainstorm");
-  para(d,st,"Theme: there is a real debate about \u201c"+theme+"\u201d, and people take different sides. Write your argument ("+wc+"):",{size:9.4,lh:4.8});
-  var pts = tier==="t3"
-    ? "(1) Which side do you think is stronger?   (2) Give ONE reason with an example (from the text or your life).   (3) Finish: \u201cI think ______ is stronger because ______.\u201d"
-    : "(1) State the TWO sides of the argument.   (2) Say which side you find more powerful and support it with examples from the text AND your own experience / knowledge / reading.   (3) Close by stating which side outweighs the other, and why.";
-  para(d,st,pts,{size:9,lh:4.6});
+  _tSec(d,st,"1","Your writing task \u2014 process","read the task, build words, then plan");
+  var _W=writingSection(tier, theme, weekWriteTask(ls));
+  para(d,st,_W.prompt,{size:9.4,lh:4.8});
   para(d,st,"Step 1 \u00b7 Vocabulary building:",{bold:true,color:TEALD});
   vocabBox(d,st,V);
   if(tier!=="t1"){ para(d,st,"Step 2 \u00b7 Language support:",{bold:true,color:TEALD}); supportBox(d,st,V); }
