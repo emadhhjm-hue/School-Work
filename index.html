@@ -5446,9 +5446,15 @@ var ROSTERS={
    t1:["Omar Assad Mohd Said Alrajabi","Zayed Mohamed Ghanem"],
    t2:["Khaled Saddam Abdo Mohammed","Mohsen Abdulsalam Mohsin","Hussein Abdulrahman Hussein Al Baihani"],
    t3:["Hamad Ali Abdulla Saeed Alyammahi","Saeed Khalid Sultan Hamad"]
+ },
+ "10 Advanced":{
+   sen:[],
+   t1:["Ibrahim Hani Ahmad Saleem","Awab Amir Yousif Salih","Khaled El Imam","Khaled Sameh Naeim Ahmed","Sameeh Mohammad S Samara","Abd Alkarim Ayham Alslaiman","Abdellatif Mahmoud Sayed Abdellatif","Mohamed Naguib Mahfouz Abdelrazek","Wadeia Ahmad Akram Annab"],
+   t2:["Ahmed Abdel Wahab Alsaid","Ahmed Mahmoud Zaki Barbary","Thiab Khaled Abdulla Ahmed Alhammadi","Abdel Rahman Abdallah M","Ali Ahmed Abdelhamid Ibrahim","Faris Samer Fawaz Haj Hasan","Mazen Hany Aboelela"],
+   t3:["Adam Abdelhadi Elshahhat","Ameer Ali Mohammad Ali Khwaileh","Zaid Yahya Mohammad Hamad"]
  }
 };
-var CLASS_ROSTERS={ c1:["11 Advanced","12 General"], c2:["11 General"], c3:["10 General"], c4:[] };
+var CLASS_ROSTERS={ c1:["11 Advanced","12 General"], c2:["11 General","10 Advanced"], c3:["10 General"], c4:[] };
 function _rosterNames(cls,tier){var labs=(CLASS_ROSTERS[cls]||[]),multi=labs.length>1,out=[];labs.forEach(function(lab){var r=ROSTERS[lab]||{};(r[tier]||[]).forEach(function(nm){out.push(multi?(nm+" ("+lab+")"):nm);});});return out;}
 function _rosterLine(cls,tier){var a=_rosterNames(cls,tier);return a.length?a.join(", "):"\u2014 (none listed)";}
 function _rosterGroups(cls){ return (CLASS_ROSTERS[cls]||[]).map(function(lab){var r=ROSTERS[lab]||{};return {grade:lab,sen:(r.sen||[]),t1:(r.t1||[]),t2:(r.t2||[]),t3:(r.t3||[])};}); }
