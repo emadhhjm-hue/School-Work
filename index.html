@@ -3145,6 +3145,29 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 "use strict";
 function JSPDF(){ return (typeof window!=="undefined"&&window.jspdf)?window.jspdf.jsPDF:require("jspdf").jsPDF; }
 
+/* ---- PDF-safe text: the built-in PDF fonts only cover the Windows-1252 set. Any other character
+   (arrows, emoji, check marks, maths signs...) makes jsPDF switch encoding, which spaces the letters
+   out and pushes lines past the page border. Every string is cleaned before it is measured or drawn. ---- */
+var _CP1252X=[0x20AC,0x201A,0x0192,0x201E,0x2026,0x2020,0x2021,0x02C6,0x2030,0x0160,0x2039,0x0152,0x017D,0x2018,0x2019,0x201C,0x201D,0x2022,0x2013,0x2014,0x02DC,0x2122,0x0161,0x203A,0x0153,0x017E,0x0178];
+var _PDFMAP={"\u2192":"->","\u2190":"<-","\u2194":"<->","\u21D2":"=>","\u2191":"up","\u2193":"down","\u2197":"(up)","\u2198":"(down)","\u2713":"v","\u2714":"v","\u2717":"x","\u2718":"x","\u2610":"[ ]","\u2611":"[v]","\u2612":"[x]","\u2605":"*","\u2606":"*","\u2212":"-","\u2010":"-","\u2011":"-","\u2012":"-","\u2015":"-","\u2248":"~","\u2264":"<=","\u2265":">=","\u2260":"!=","\u02BC":"'","\u2032":"'","\u2033":"\"","\u2009":" ","\u200A":" ","\u202F":" ","\u2007":" ","\u2002":" ","\u2003":" ","\u200B":"","\u2060":"","\uFEFF":"","\u25B6":">","\u25BA":">","\u25BC":"v","\u25B2":"^","\u2022":"\u2022","\u25CF":"\u2022","\u25E6":"-","\u2023":"-","\u2043":"-","\u2027":"\u00b7","\u2219":"\u00b7","\u201F":"\u201D","\u201B":"\u2019","\u2035":"'","\u00AD":"","\u026A":"i","\u028A":"u","\u0259":"e","\u025B":"e","\u0254":"o","\u028C":"u","\u00E6":"\u00E6","\u02C8":"'","\u02CC":",","\u270E":""};
+function _pdfOK(c){ if(c===10||c===13||c===9) return true; if(c>=32&&c<=126) return true; if(c>=0xA0&&c<=0xFF) return true; return _CP1252X.indexOf(c)>=0; }
+function _pdfSafe(t){
+  if(t==null) return t; t=String(t); var out="";
+  Array.from(t).forEach(function(ch){ var c=ch.codePointAt(0);
+    if(_pdfOK(c)){ out+=ch; return; }
+    if(Object.prototype.hasOwnProperty.call(_PDFMAP,ch)){ out+=_PDFMAP[ch]; return; }
+    var n=ch.normalize?ch.normalize("NFKD").replace(/[\u0300-\u036f]/g,""):"";
+    if(n&&Array.from(n).every(function(x){return _pdfOK(x.codePointAt(0));})){ out+=n; return; }
+    /* anything else (emoji, pictographs, other scripts) is dropped */ });
+  return out;
+}
+function _pdfSafeAny(t){ return Array.isArray(t)? t.map(_pdfSafe) : (typeof t==="string"? _pdfSafe(t) : t); }
+function _mkDoc(o){ var d=new (JSPDF())(o), T=d.text, S=d.splitTextToSize, G=d.getTextWidth;
+  d.text=function(){ var a=Array.prototype.slice.call(arguments); a[0]=_pdfSafeAny(a[0]); return T.apply(d,a); };
+  d.splitTextToSize=function(t,w,op){ return S.call(d,_pdfSafeAny(t),w,op); };
+  d.getTextWidth=function(t){ return G.call(d,_pdfSafeAny(t)); };
+  return d; }
+
 var INK=[16,35,59],TEAL=[14,124,134],TEALD=[10,90,98],AMBER=[180,68,18],
     MUT=[91,107,124],LINE=[210,220,230],WASH=[243,249,250];
 var L=18,R=18,W=210,PW=210-36,BOT=280,GAP=/(?:\u2026+|_{2,}|\.{3,})/;
@@ -3690,7 +3713,8 @@ function renderCheckpoint(d,courseId,course,week,ls,priorWeeks){
   if(st.y>206){d.addPage();st.y=18;}
   var theme=RD.title||week.title;
   _tSec(d,st,"D","Writing","address the 3 points \u00b7 then peer-review");
-  para(d,st,"Problem to solve \u2014 think, then write (120\u2013180 words):  You have studied \u201c"+theme+"\u201d this week. Identify a real problem or puzzle connected to it.  (1) Describe the problem clearly and explain why it matters.  (2) Work out how to fix it, giving specific examples from the text and from real life.  (3) End with a strong call to action.",{size:9.2,lh:4.7});
+  var _CW=writingSection("t1", theme, weekWriteTask(ls), RD);
+  para(d,st,String(_CW.prompt).replace(/\(100\u2013150 words\)/,"(120\u2013180 words)"),{size:9.2,lh:4.7});
   if(st.y+9*7.5>270){d.addPage();st.y=18;}
   writeLines(d,st,9);
   peerBox(d,st);
@@ -3699,7 +3723,7 @@ function renderCheckpoint(d,courseId,course,week,ls,priorWeeks){
   para(d,st,"C \u00b7 Reading:  "+rkey.join("   "),{bold:true,lh:5.2}); st.y+=2;
   para(d,st,"D \u00b7 Writing rubric (10 marks):",{bold:true,color:TEALD});
   var cW=PW-16,ry=st.y;fc(d,INK);d.rect(L,ry-4.4,cW,6,"F");d.rect(L+cW,ry-4.4,16,6,"F");d.setFont("helvetica","bold");d.setFontSize(8.6);tc(d,[255,255,255]);d.text("Criterion",L+2,ry);d.text("Marks",L+cW+2,ry);var yy=ry+6;
-  [["Task \u2014 both sides given + a clear stance with a reason","3"],["Support \u2014 examples from the text and own experience","3"],["Organisation \u2014 paragraphs, linking words, closing sentence","2"],["Language \u2014 grammar, vocabulary, spelling","2"]].forEach(function(r){d.setFont("helvetica","normal");d.setFontSize(8.8);var lns=d.splitTextToSize(r[0],cW-4),h=Math.max(6,lns.length*4.4+1.6);dc(d,LINE);d.setLineWidth(.3);d.rect(L,yy-4.4,cW,h,"S");d.rect(L+cW,yy-4.4,16,h,"S");tc(d,INK);lns.forEach(function(ln,k){d.text(ln,L+2,yy+k*4.4);});d.setFont("helvetica","bold");tc(d,TEALD);d.text(r[1],L+cW+6,yy);yy+=h;});
+  [["Task \u2014 all 3 points covered and clearly connected to this week\u2019s text","3"],["Support \u2014 examples from the text and own experience","3"],["Organisation \u2014 paragraphs, linking words, closing sentence","2"],["Language \u2014 grammar, vocabulary, spelling","2"]].forEach(function(r){d.setFont("helvetica","normal");d.setFontSize(8.8);var lns=d.splitTextToSize(r[0],cW-4),h=Math.max(6,lns.length*4.4+1.6);dc(d,LINE);d.setLineWidth(.3);d.rect(L,yy-4.4,cW,h,"S");d.rect(L+cW,yy-4.4,16,h,"S");tc(d,INK);lns.forEach(function(ln,k){d.text(ln,L+2,yy+k*4.4);});d.setFont("helvetica","bold");tc(d,TEALD);d.text(r[1],L+cW+6,yy);yy+=h;});
   frameAll(d,AMBER);footer(d,course);return d;
 }
 /* ---------- Week-1 hand-authored pack (approved) ---------- */
@@ -3983,17 +4007,17 @@ function renderWritingWS(d,courseId,course,week,ls,tier){
 }
 
 var API={
-  _build:function(kind,courseId,course,week,ls){var C=contentFor(courseId,course,week,ls);var d=new (JSPDF())({unit:"mm",format:"a4"});
+  _build:function(kind,courseId,course,week,ls){var C=contentFor(courseId,course,week,ls);var d=_mkDoc({unit:"mm",format:"a4"});
     if(kind==="card")return renderCard(d,course,week,C.card);
     if(kind==="worksheet")return renderWorksheet(d,course,week,C.worksheet);
     return renderCheckpoint(d,courseId,course,week,ls);},
-  makeWS:function(type,tier,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});if(type==="write"){renderWritingWS(d,courseId,course,week,ls,tier);}else{renderLeveledWS(d,courseId,course,week,ls,tier);}var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";return {doc:d,name:"Week "+week.n+" "+(type==="write"?"Writing":"Reading")+" "+nm};},
-  makeChk:function(courseId,course,week,ls,priorWeeks){var d=new (JSPDF())({unit:"mm",format:"a4"});renderCheckpoint(d,courseId,course,week,ls,priorWeeks);return {doc:d,name:"Week "+week.n+" Checkpoint"};},
+  makeWS:function(type,tier,courseId,course,week,ls){var d=_mkDoc({unit:"mm",format:"a4"});if(type==="write"){renderWritingWS(d,courseId,course,week,ls,tier);}else{renderLeveledWS(d,courseId,course,week,ls,tier);}var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";return {doc:d,name:"Week "+week.n+" "+(type==="write"?"Writing":"Reading")+" "+nm};},
+  makeChk:function(courseId,course,week,ls,priorWeeks){var d=_mkDoc({unit:"mm",format:"a4"});renderCheckpoint(d,courseId,course,week,ls,priorWeeks);return {doc:d,name:"Week "+week.n+" Checkpoint"};},
   download:function(kind,courseId,course,week,ls){var d=this._build(kind,courseId,course,week,ls);
     var nm={card:"Study Card",worksheet:"Worksheet",checkpoint:"Checkpoint"}[kind];
     d.save("Week "+week.n+" "+nm+".pdf");},
-  downloadTask:function(tier,courseId,course,week,ls,rosterLine){var d=new (JSPDF())({unit:"mm",format:"a4"});renderTask(d,course,week,ls,tier,rosterLine);var nm={sen:"SEN",t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Task";d.save("W"+week.n+" "+nm+" Task.pdf");},
-  downloadWS:function(type,tier,courseId,course,week,ls){var d=new (JSPDF())({unit:"mm",format:"a4"});if(type==="write"){renderWritingWS(d,courseId,course,week,ls,tier);}else{renderLeveledWS(d,courseId,course,week,ls,tier);}var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";var tn=(type==="write"?"Writing":"Reading");d.save("W"+week.n+" "+tn+" "+nm+".pdf");},
+  downloadTask:function(tier,courseId,course,week,ls,rosterLine){var d=_mkDoc({unit:"mm",format:"a4"});renderTask(d,course,week,ls,tier,rosterLine);var nm={sen:"SEN",t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Task";d.save("W"+week.n+" "+nm+" Task.pdf");},
+  downloadWS:function(type,tier,courseId,course,week,ls){var d=_mkDoc({unit:"mm",format:"a4"});if(type==="write"){renderWritingWS(d,courseId,course,week,ls,tier);}else{renderLeveledWS(d,courseId,course,week,ls,tier);}var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";var tn=(type==="write"?"Writing":"Reading");d.save("W"+week.n+" "+tn+" "+nm+".pdf");},
   autoContent:autoContent, PACKS:PACKS
 };
 if(typeof module!=="undefined"&&module.exports)module.exports=API;
