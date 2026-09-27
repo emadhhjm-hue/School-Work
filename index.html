@@ -5982,13 +5982,13 @@ function go(view, a, b){
 var TT_DEFAULT={
   rows:[
     {time:"7:10-7:25 M.A.", p:"15", mon:"", tue:"", wed:"Behind lib", thu:"", fri:"Behind lib"},
-    {time:"07:25-08:10", p:"1", mon:"10B", tue:"10A", wed:"=", thu:"=", fri:"="},
+    {time:"07:25-08:10", p:"1", mon:"10A", tue:"10A", wed:"=", thu:"=", fri:"="},
     {time:"08:15-09:00", p:"2", mon:"=", tue:"=", wed:"=", thu:"10A", fri:"10A"},
     {time:"09:05-09:50", p:"3", mon:"11B", tue:"12B", wed:"12B", thu:"11B", fri:"Behind lib"},
     {time:"09:50-10:10", p:"20m", mon:"", tue:"", wed:"Behind lib", thu:"", fri:"11B"},
     {time:"10:10-10:55", p:"4", mon:"12B", tue:"11B", wed:"11B", thu:"10B", fri:"12B"},
-    {time:"11:00-11:45", p:"5", mon:"10B", tue:"=", wed:"E.Meeting", thu:"=", fri:""},
-    {time:"11:45-12:30", p:"6", mon:"=", tue:"11B", wed:"=", thu:"10B", fri:""},
+    {time:"11:00-11:45", p:"5", mon:"=", tue:"=", wed:"Dept Meeting", thu:"=", fri:""},
+    {time:"11:45-12:30", p:"6", mon:"10B", tue:"11B", wed:"=", thu:"10B", fri:""},
     {time:"12:30-12:45", p:"15m", mon:"", tue:"", wed:"Behind lib", thu:"", fri:""},
     {time:"12:45-01:30", p:"7", mon:"12B", tue:"=", wed:"10A", thu:"12B", fri:""},
     {time:"01:30-02:15", p:"8", mon:"=", tue:"10B", wed:"10B", thu:"=", fri:""}
@@ -6042,7 +6042,7 @@ function timetableHTML(){
     +'<button class="btn sm" onclick="ttReset()">\u21ba Reset</button>'
     +'<span id="ttMsg" class="tt-msg"></span></div>'
     +'<div class="tt-scroll"><table id="ttTable" data-edit="0"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
-    +'<p class="tt-hint">Classes: 11A, 11B, 12B, 10B \u00b7 \u201c=\u201d means the same class continues \u00b7 edits are saved in this browser only.</p>'+'<div class="tt-fri">\uD83D\uDD52 <b>Friday timings</b> (shorter periods): P1 07:15\u201308:00 \u00b7 P2 08:05\u201308:50 \u00b7 <b class="tt-brk-lbl">Recess 08:50\u201309:05</b> \u00b7 P3 09:05\u201309:50 \u00b7 P4 09:50\u201310:35</div></details>';
+    +'<p class="tt-hint">Classes: 10A, 10B, 11B, 12B \u00b7 \u201c=\u201d means the same class continues \u00b7 edits are saved in this browser only.</p>'+'<div class="tt-fri">\uD83D\uDD52 <b>Friday timings</b> (shorter periods): P1 07:15\u201308:00 \u00b7 P2 08:05\u201308:50 \u00b7 <b class="tt-brk-lbl">Recess 08:50\u201309:05</b> \u00b7 P3 09:05\u201309:50 \u00b7 P4 09:50\u201310:35</div></details>';
 }
 function renderClasses(){
  stopTimer(); CUR.id=null;
