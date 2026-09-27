@@ -3177,6 +3177,12 @@ function nd(d,st){if(st.y>BOT){d.addPage();st.y=20;}}
 function seedShuffle(arr,seed){var idx=arr.map(function(_,i){return i;}),s=2166136261,i;for(i=0;i<seed.length;i++){s^=seed.charCodeAt(i);s=Math.imul(s,16777619);}s=s>>>0;for(var k=idx.length-1;k>0;k--){s=(Math.imul(s,1664525)+1013904223)>>>0;var j=s%(k+1),t=idx[k];idx[k]=idx[j];idx[j]=t;}return {opts:idx.map(function(i){return arr[i];}),ans:idx.indexOf(0)};}
 function fillEx(it){return (it[3]||"").replace(GAP, it[0]).replace(/\s+([.,!?;:])/g,"$1").replace(/\s{2,}/g," ").trim();}
 function sentWithWord(v){var ex=v[3]||"";if(ex&&GAP.test(ex)){return ex.replace(GAP,"\u2018"+v[0]+"\u2019").replace(/\s+([.,!?;:])/g,"$1").replace(/\s{2,}/g," ").trim();}return "We use the word \u2018"+v[0]+"\u2019 when we talk about this week's topic.";}
+/* ---- Vocabulary in context: every vocabulary item is assessed as a gap-fill in a sentence (the word's example),
+   with other words from the week as options \u2014 students infer the meaning from the context. ---- */
+function _ctxSent(v){var ex=(v&&v[3])||"";if(ex&&GAP.test(ex))return ex.replace(GAP,"______").replace(/\s+([.,!?;:])/g,"$1").replace(/\s{2,}/g," ").trim();return null;}
+function _wc(x){return String(x||"").toLowerCase().split(/[\s\/(]/)[0];}
+function _ctxDist(v,V){var same=[],other=[];(V||[]).forEach(function(o){if(!o||o[0]===v[0])return;if(v[2]&&o[2]&&_wc(o[2])===_wc(v[2]))same.push(o[0]);else other.push(o[0]);});return seedShuffle(same,"cs"+v[0]).opts.concat(seedShuffle(other,"cx"+v[0]).opts);}
+function _ctxQText(v){var s=_ctxSent(v);return s?("Choose the word that best completes the sentence:  \u201c"+s+"\u201d"):("Choose the word that matches this meaning in context:  \u201c"+v[1]+"\u201d");}
 
 function emblem(d,x,y){fc(d,TEAL);d.roundedRect(x,y,11,11,2.4,2.4,"F");fc(d,[255,255,255]);d.roundedRect(x+2.4,y+3,2.6,5.2,.5,.5,"F");d.roundedRect(x+6,y+3,2.6,5.2,.5,.5,"F");dc(d,TEALD);d.setLineWidth(.3);d.line(x+5.5,y+3.2,x+5.5,y+8);}
 function header(d,st,course,kind,kindColor,title,meta){emblem(d,L,st.y);
@@ -3213,9 +3219,9 @@ var CHALLENGE_BANK=[
  {q:"Choose the best linker: \u201cThe idea was risky; ___, the team went ahead.\u201d",opts:["nevertheless","therefore","in addition"]},
  {q:"Report it: \u201cI will help you,\u201d he said. \u2192 He said he ___ help me.",opts:["would","will","willing"]},
  {q:"Make it passive: \u201cSomeone has taken my seat.\u201d \u2192 \u201cMy seat ___.\u201d",opts:["has been taken","is taking","was taking"]},
- {q:"\u201cMitigate\u201d most nearly means:",opts:["make less severe","make worse","make public"]},
+ {q:"Choose the word that best completes the sentence:  \u201cPlanting more trees can help ______ the effects of air pollution.\u201d",opts:["mitigate","worsen","publicise"]},
  {q:"A word's \u201cconnotation\u201d is:",opts:["the feelings it suggests beyond its literal meaning","its number of syllables","its dictionary spelling"]},
- {q:"\u201cUbiquitous\u201d means:",opts:["found almost everywhere","extremely rare","very old"]},
+ {q:"Choose the word that best completes the sentence:  \u201cSmartphones are now ______ \u2014 you see them in every classroom, bus and shop.\u201d",opts:["ubiquitous","scarce","ancient"]},
  {q:"A \u201ctopic sentence\u201d usually:",opts:["states the main idea of a paragraph","gives the final example","lists the sources"]},
  {q:"Choose the correct relative pronoun: \u201cThe scientist ___ work changed medicine won a prize.\u201d",opts:["whose","who","which"]}
 ];
@@ -3631,7 +3637,7 @@ function autoContent(course,week,ls,courseId){
       lines:5,
       sample:wSample}};
   // checkpoint (different items + exam-mode reading + challenge)
-  var vmcq=V.slice(0,6).map(function(v,i){var opts=[v[1]];V.forEach(function(o){if(o[0]!==v[0]&&opts.length<3)opts.push(o[1]);});var sh=seedShuffle(opts,v[0]+week.n);return {q:"Read: \u201c"+sentWithWord(v)+"\u201d  \u2014 what does \u2018"+v[0]+"\u2019 mean here?",opts:sh.opts,ans:sh.ans};});
+  var vmcq=V.slice(0,6).map(function(v,i){var sh=_optSet(v[0],_ctxDist(v,V),3,v[0]+week.n);return {q:_ctxQText(v),opts:sh.opts,ans:sh.ans};});
   var lang=M.slice(2,5);
   var objAll=[]; ls.forEach(function(L){oi(L).forEach(function(o){objAll.push(o);});});
   var RD=weekReading(courseId, ls, week, {V:V,exs:exs,titles:titles,shortTheme:shortTheme});
@@ -3711,7 +3717,7 @@ function renderCheckpoint(d,courseId,course,week,ls,priorWeeks){
   var C=contentFor(courseId,course,week,ls);
   var RD=(C.checkpoint.reading&&C.checkpoint.reading._rd)||{full:{passage:C.checkpoint.reading.passage,qs:C.checkpoint.reading.qs},paras:[C.checkpoint.reading.passage],title:""};
   var vPool=[], gPool=[];
-  function reword(q){ var t=q.q||""; var m=t.match(/what does [\u2018\u201c]([^\u2019\u201d]+)[\u2019\u201d]/i)||t.match(/[\u2018\u201c]([^\u2019\u201d\u2018\u201c]+)[\u2019\u201d][^\u2018\u201c]*$/); var w=m?m[1]:""; return w?("The word \u2018"+w+"\u2019 most nearly means:"):t; }
+  function reword(q){ var t=q.q||""; var m=t.match(/what does [\u2018\u201c]([^\u2019\u201d]+)[\u2019\u201d]/i)||t.match(/[\u2018\u201c]([^\u2019\u201d\u2018\u201c]+)[\u2019\u201d][^\u2018\u201c]*$/); var w=m?m[1]:""; return t; }
   function addFrom(cc,cur){ (cc.checkpoint.vocabMcq||[]).forEach(function(q){vPool.push({q:reword(q),correct:q.opts[q.ans],dist:q.opts.filter(function(o,i){return i!==q.ans;}),cur:cur});}); (cc.checkpoint.language||[]).forEach(function(q){gPool.push({q:q.q,correct:q.opts[q.ans],dist:q.opts.filter(function(o,i){return i!==q.ans;}),cur:cur});}); }
   addFrom(C,true);
   (priorWeeks||[]).forEach(function(pw){ try{ addFrom(contentFor(courseId,course,pw.week,pw.ls),false); }catch(e){} });
@@ -3769,9 +3775,9 @@ var PACKS={ "c1|1":{
       prompt:"Sentence practice. Write ONE correct sentence of your own for each word below. Then write ONE sentence of advice for someone who has spent all their money and is now broke.",
       lines:5,
       sample:"Model sentences: I made a budget to control my spending. It is hard to make ends meet on a small income. I try to put aside ten dirhams every week. (Advice: You could plan your spending before the month starts.)"}},
-  checkpoint:{vocabMcq:[{q:"\u201cmake ends meet\u201d means:",opts:["to spend a lot of money","to have just enough money to live on","to lose your job"],ans:1},{q:"If something \u201ccosts an arm and a leg\u201d, it is:",opts:["very cheap","completely free","very expensive"],ans:2},{q:"\u201cwages\u201d are:",opts:["money paid for work","money you borrow for study","a fee you pay a school"],ans:0},{q:"A \u201cscholarship\u201d is:",opts:["a loan you must repay","money given to help a student study","a monthly budget"],ans:1},{q:"To \u201cput aside\u201d money means to:",opts:["waste it quickly","save it regularly","borrow it from a friend"],ans:1},{q:"Challenge \u2014 \u201cAfter losing his job, Sami was completely broke.\u201d Here \u201cbroke\u201d means:",opts:["injured","having no money","very busy"],ans:1}],
+  checkpoint:{vocabMcq:[{q:"Choose the word or phrase that best completes the sentence:  \u201cWith rent, food and bus fares to pay, it is hard to ______ on a part-time salary.\u201d",opts:["put aside","make ends meet","drop out"],ans:1},{q:"Choose the word or phrase that best completes the sentence:  \u201cI love that new phone, but it will ______ \u2014 I could never afford it.\u201d",opts:["put aside","cost an arm and a leg","make ends meet"],ans:1},{q:"Choose the word that best completes the sentence:  \u201cThe factory pays its workers\u2019 ______ every Friday.\u201d",opts:["wages","tuition fees","scholarship"],ans:0},{q:"Choose the word that best completes the sentence:  \u201cHer excellent grades won her a full ______, so she will not pay any tuition fees.\u201d",opts:["student loan","scholarship","budget"],ans:1},{q:"Choose the phrase that best completes the sentence:  \u201cI ______ fifty dirhams every week, so by summer I will have enough for a new bike.\u201d",opts:["take time off","put aside","drop out"],ans:1},{q:"Challenge \u2014 choose the word that best completes the sentence:  \u201cAfter spending all his money on a new game, Sami was completely ______ until payday.\u201d",opts:["wealthy","broke","busy"],ans:1}],
     language:[{q:"\u201cI'd suggest ______ some money aside each month.\u201d",opts:["to put","putting","put"],ans:1},{q:"\u201cShe recommends ______ a budget.\u201d",opts:["to make","making","make"],ans:1},{q:"Choose the softest way to give advice:",opts:["\u201cYou must apply for a scholarship.\u201d","\u201cYou have to apply.\u201d","\u201cYou could apply for a scholarship.\u201d"],ans:2}],
-    challenge:[{q:"Which sentence is correct?",opts:["If I were you, I would save more.","If I was you, I will save more.","If I am you, I saved more."],ans:0},{q:"\u201cMitigate\u201d most nearly means:",opts:["make worse","make less severe","make public"],ans:1}],
+    challenge:[{q:"Which sentence is correct?",opts:["If I were you, I would save more.","If I was you, I will save more.","If I am you, I saved more."],ans:0},{q:"Choose the word that best completes the sentence:  \u201cSaving a little every month can ______ the stress of unexpected costs.\u201d",opts:["worsen","mitigate","publicise"],ans:1}],
     reading:{passage:"Managing money is one of the biggest worries for new students. Many of them live on a tight budget, where every dirham counts, and they try hard not to spend more than they earn. When an emergency happens, or a new phone that costs an arm and a leg tempts them, it is easy to become broke very quickly. Some students take a part-time job to raise their income, while others apply for a scholarship or a student loan to help with their tuition fees. The most successful students, however, usually do the same simple things. They make a clear plan at the start of the month and put a little aside each week, even when their income is small. They avoid borrowing money for things they do not really need, and they ask for advice before making a big decision. With patience and a sensible plan, most students find that they can make ends meet and still enjoy their studies.",
       qs:[{q:"What is the passage mainly about?",opts:["how new students can manage their money","the best phones to buy at university","how to choose a part-time job"],ans:0},{q:"According to the passage, the most successful students:",opts:["spend more than they earn","plan and save a little regularly","never make a budget"],ans:1},{q:"Which word in the passage means \u201cmoney given to a student to help pay for study\u201d?",opts:["scholarship","budget","income"],ans:0}]},
     writing:{scenario:"Scenario: A friend wants to buy a phone that costs an arm and a leg, but she is almost broke.",
@@ -3806,9 +3812,8 @@ function taskContent(course,week,ls,tier){
   var wordList=V.map(function(v){return v[0];});
   /* A. Vocabulary MCQs (3) */
   var vocab=V.slice(0,3).map(function(v,i){
-    var others=defs.filter(function(d){return d!==v[1];});
-    var sh=_optSet(v[1],others,K,"tv"+i+tier+week.n);
-    return {q:"\u201c"+v[0]+"\u201d means:",opts:sh.opts,ans:sh.ans};});
+    var sh=_optSet(v[0],_ctxDist(v,V),K,"tv"+i+tier+week.n);
+    return {q:_ctxQText(v),opts:sh.opts,ans:sh.ans};});
   /* B. Grammar & language MCQs (3) */
   var seen={},gsrc=M.filter(function(q){if(seen[q.q])return false;seen[q.q]=1;return true;});
   var allOpts=[];M.forEach(function(q){q.opts.forEach(function(o){if(allOpts.indexOf(o)<0)allOpts.push(o);});});
@@ -3913,7 +3918,8 @@ function assessPool(C, ls, week, RD){
   function catQ(q){var t=(q.q||"").toLowerCase(); if(/refers? to/.test(t))return"pronoun"; if(/infer|imply|conclude|suggest|the writer/.test(t))return"inference"; if(/main (idea|message)|mainly about|best summary/.test(t))return"mainidea"; if(/according to paragraph|in paragraph/.test(t))return"paragraph"; if(/means|closest in meaning/.test(t))return"vocab"; return"comprehension";}
   var pool={grammar:[],vocab:[],mainidea:[],paragraph:[],comprehension:[],inference:[],pronoun:[]};
   (ck.language||[]).forEach(function(q){pool.grammar.push({q:q.q,correct:q.opts[q.ans],dist:q.opts.filter(function(o,i){return i!==q.ans;}).concat(langOpts)});});
-  (ck.vocabMcq||[]).forEach(function(q){var m=q.q.match(/[\u2018\u201c]([^\u2019\u201d]+)[\u2019\u201d]/); var word=m?m[1]:""; var correct=q.opts[q.ans]; pool.vocab.push({q:"In the passage, the word \u2018"+word+"\u2019 is closest in meaning to:",correct:correct,dist:vdefs.filter(function(dd){return dd!==correct;})});});
+  V.forEach(function(v){ if(_ctxSent(v)) pool.vocab.push({q:_ctxQText(v),correct:v[0],dist:_ctxDist(v,V)}); });
+  if(!pool.vocab.length)(ck.vocabMcq||[]).forEach(function(q){pool.vocab.push({q:q.q,correct:q.opts[q.ans],dist:q.opts.filter(function(o,i){return i!==q.ans;})});});
   (RD.full.qs||[]).forEach(function(q){var c=catQ(q); pool[c].push({q:q.q,correct:q.opts[0],dist:q.opts.slice(1)});});
   return pool;
 }
