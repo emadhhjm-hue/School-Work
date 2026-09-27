@@ -3182,7 +3182,7 @@ function sentWithWord(v){var ex=v[3]||"";if(ex&&GAP.test(ex)){return ex.replace(
 function _ctxSent(v){var ex=(v&&v[3])||"";if(ex&&GAP.test(ex))return ex.replace(GAP,"______").replace(/\s+([.,!?;:])/g,"$1").replace(/\s{2,}/g," ").trim();return null;}
 function _wc(x){return String(x||"").toLowerCase().split(/[\s\/(]/)[0];}
 function _ctxDist(v,V){var same=[],other=[];(V||[]).forEach(function(o){if(!o||o[0]===v[0])return;if(v[2]&&o[2]&&_wc(o[2])===_wc(v[2]))same.push(o[0]);else other.push(o[0]);});return seedShuffle(same,"cs"+v[0]).opts.concat(seedShuffle(other,"cx"+v[0]).opts);}
-function _ctxQText(v){var s=_ctxSent(v);return s?("Choose the word that best completes the sentence:  \u201c"+s+"\u201d"):("Choose the word that matches this meaning in context:  \u201c"+v[1]+"\u201d");}
+function _ctxQText(v){var s=_ctxSent(v);return s?("\u201c"+s+"\u201d"):("Which word means \u201c"+v[1]+"\u201d?");}
 
 function emblem(d,x,y){fc(d,TEAL);d.roundedRect(x,y,11,11,2.4,2.4,"F");fc(d,[255,255,255]);d.roundedRect(x+2.4,y+3,2.6,5.2,.5,.5,"F");d.roundedRect(x+6,y+3,2.6,5.2,.5,.5,"F");dc(d,TEALD);d.setLineWidth(.3);d.line(x+5.5,y+3.2,x+5.5,y+8);}
 function header(d,st,course,kind,kindColor,title,meta){emblem(d,L,st.y);
@@ -3219,9 +3219,9 @@ var CHALLENGE_BANK=[
  {q:"Choose the best linker: \u201cThe idea was risky; ___, the team went ahead.\u201d",opts:["nevertheless","therefore","in addition"]},
  {q:"Report it: \u201cI will help you,\u201d he said. \u2192 He said he ___ help me.",opts:["would","will","willing"]},
  {q:"Make it passive: \u201cSomeone has taken my seat.\u201d \u2192 \u201cMy seat ___.\u201d",opts:["has been taken","is taking","was taking"]},
- {q:"Choose the word that best completes the sentence:  \u201cPlanting more trees can help ______ the effects of air pollution.\u201d",opts:["mitigate","worsen","publicise"]},
+ {q:"\u201cPlanting more trees can help ______ the effects of air pollution.\u201d",opts:["mitigate","worsen","publicise"]},
  {q:"A word's \u201cconnotation\u201d is:",opts:["the feelings it suggests beyond its literal meaning","its number of syllables","its dictionary spelling"]},
- {q:"Choose the word that best completes the sentence:  \u201cSmartphones are now ______ \u2014 you see them in every classroom, bus and shop.\u201d",opts:["ubiquitous","scarce","ancient"]},
+ {q:"\u201cSmartphones are now ______ \u2014 you see them in every classroom, bus and shop.\u201d",opts:["ubiquitous","scarce","ancient"]},
  {q:"A \u201ctopic sentence\u201d usually:",opts:["states the main idea of a paragraph","gives the final example","lists the sources"]},
  {q:"Choose the correct relative pronoun: \u201cThe scientist ___ work changed medicine won a prize.\u201d",opts:["whose","who","which"]}
 ];
@@ -3725,8 +3725,12 @@ function renderCheckpoint(d,courseId,course,week,ls,priorWeeks){
   var vSel=mix(vPool,"pv"+week.n+courseId), gSel=mix(gPool,"pg"+week.n+courseId);
   var vAll=[]; vPool.forEach(function(it){ it.dist.forEach(function(x){if(vAll.indexOf(x)<0)vAll.push(x);}); });
   var gAll=[]; gPool.forEach(function(it){ it.dist.forEach(function(x){if(gAll.indexOf(x)<0)gAll.push(x);}); });
-  var vocab=vSel.map(function(it,i){ var s=_optSet(it.correct, it.dist.concat(vAll), 4, "ckv"+i+week.n); return {q:it.q,opts:s.opts,ans:s.ans}; });
-  var grammar=gSel.map(function(it,i){ var s=_optSet(it.correct, it.dist.concat(gAll), 4, "ckg"+i+week.n); return {q:it.q,opts:s.opts,ans:s.ans}; });
+  /* extra options borrowed from other questions must look like the correct answer (sentence vs phrase, similar length) */
+  function shape(correct,cands){ var c=String(correct), sent=/[.!?]$/.test(c.trim())&&c.split(/\s+/).length>3, n=c.split(/\s+/).length;
+    return cands.filter(function(x){ var t=String(x); if(t===c) return false; var ts=/[.!?]$/.test(t.trim())&&t.split(/\s+/).length>3, tn=t.split(/\s+/).length; return ts===sent && tn<=Math.max(2,n*2) && tn>=Math.floor(n/2); })
+      .sort(function(a,b){ return Math.abs(String(a).split(/\s+/).length-n)-Math.abs(String(b).split(/\s+/).length-n); }); }
+  var vocab=vSel.map(function(it,i){ var s=_optSet(it.correct, it.dist.concat(shape(it.correct,vAll)), 4, "ckv"+i+week.n); return {q:it.q,opts:s.opts,ans:s.ans}; });
+  var grammar=gSel.map(function(it,i){ var s=_optSet(it.correct, it.dist.concat(shape(it.correct,gAll)), 4, "ckg"+i+week.n); return {q:it.q,opts:s.opts,ans:s.ans}; });
   var pool=assessPool(C, ls, week, RD), reading=[];
   ["mainidea","inference","comprehension","pronoun","inference"].forEach(function(cat,i){
     var u=reading.filter(function(x){return x._c===cat;}).length, item=(pool[cat]||[])[u];
@@ -3739,8 +3743,8 @@ function renderCheckpoint(d,courseId,course,week,ls,priorWeeks){
   catBadge(d,st,"CHECKPOINT \u00b7 EXAM",AMBER);
   compactFields(d,st);
   var vkey=[],gkey=[],rkey=[];
-  _tSec(d,st,"A","Vocabulary","circle one \u00b7 4 options \u00b7 5 questions"+cum);
-  vocab.forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); vkey.push(no+"-"+String.fromCharCode(65+q.ans)); });
+  _tSec(d,st,"A","Vocabulary","complete each sentence \u00b7 circle the best word \u00b7 5 questions"+cum);
+  vocab.forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; q.q=String(q.q).replace(/^(Challenge \u2014 )?choose the (?:word or phrase|word|phrase) that (?:best completes the sentence|matches this meaning in context):\s*/i,function(m,c){return c?"Challenge \u2014 ":"";}); _tQ(d,st,no,q); vkey.push(no+"-"+String.fromCharCode(65+q.ans)); });
   _tSec(d,st,"B","Grammar","circle one \u00b7 4 options \u00b7 5 questions"+cum);
   grammar.forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); gkey.push(no+"-"+String.fromCharCode(65+q.ans)); });
   if(st.y>196){d.addPage();st.y=18;}
@@ -3775,9 +3779,9 @@ var PACKS={ "c1|1":{
       prompt:"Sentence practice. Write ONE correct sentence of your own for each word below. Then write ONE sentence of advice for someone who has spent all their money and is now broke.",
       lines:5,
       sample:"Model sentences: I made a budget to control my spending. It is hard to make ends meet on a small income. I try to put aside ten dirhams every week. (Advice: You could plan your spending before the month starts.)"}},
-  checkpoint:{vocabMcq:[{q:"Choose the word or phrase that best completes the sentence:  \u201cWith rent, food and bus fares to pay, it is hard to ______ on a part-time salary.\u201d",opts:["put aside","make ends meet","drop out"],ans:1},{q:"Choose the word or phrase that best completes the sentence:  \u201cI love that new phone, but it will ______ \u2014 I could never afford it.\u201d",opts:["put aside","cost an arm and a leg","make ends meet"],ans:1},{q:"Choose the word that best completes the sentence:  \u201cThe factory pays its workers\u2019 ______ every Friday.\u201d",opts:["wages","tuition fees","scholarship"],ans:0},{q:"Choose the word that best completes the sentence:  \u201cHer excellent grades won her a full ______, so she will not pay any tuition fees.\u201d",opts:["student loan","scholarship","budget"],ans:1},{q:"Choose the phrase that best completes the sentence:  \u201cI ______ fifty dirhams every week, so by summer I will have enough for a new bike.\u201d",opts:["take time off","put aside","drop out"],ans:1},{q:"Challenge \u2014 choose the word that best completes the sentence:  \u201cAfter spending all his money on a new game, Sami was completely ______ until payday.\u201d",opts:["wealthy","broke","busy"],ans:1}],
+  checkpoint:{vocabMcq:[{q:"\u201cWith rent, food and bus fares to pay, it is hard to ______ on a part-time salary.\u201d",opts:["put aside","make ends meet","drop out"],ans:1},{q:"\u201cI love that new phone, but it will ______ \u2014 I could never afford it.\u201d",opts:["put aside","cost an arm and a leg","make ends meet"],ans:1},{q:"\u201cThe factory pays its workers\u2019 ______ every Friday.\u201d",opts:["wages","tuition fees","scholarship"],ans:0},{q:"\u201cHer excellent grades won her a full ______, so she will not pay any tuition fees.\u201d",opts:["student loan","scholarship","budget"],ans:1},{q:"\u201cI ______ fifty dirhams every week, so by summer I will have enough for a new bike.\u201d",opts:["take time off","put aside","drop out"],ans:1},{q:"Challenge \u2014 \u201cAfter spending all his money on a new game, Sami was completely ______ until payday.\u201d",opts:["wealthy","broke","busy"],ans:1}],
     language:[{q:"\u201cI'd suggest ______ some money aside each month.\u201d",opts:["to put","putting","put"],ans:1},{q:"\u201cShe recommends ______ a budget.\u201d",opts:["to make","making","make"],ans:1},{q:"Choose the softest way to give advice:",opts:["\u201cYou must apply for a scholarship.\u201d","\u201cYou have to apply.\u201d","\u201cYou could apply for a scholarship.\u201d"],ans:2}],
-    challenge:[{q:"Which sentence is correct?",opts:["If I were you, I would save more.","If I was you, I will save more.","If I am you, I saved more."],ans:0},{q:"Choose the word that best completes the sentence:  \u201cSaving a little every month can ______ the stress of unexpected costs.\u201d",opts:["worsen","mitigate","publicise"],ans:1}],
+    challenge:[{q:"Which sentence is correct?",opts:["If I were you, I would save more.","If I was you, I will save more.","If I am you, I saved more."],ans:0},{q:"\u201cSaving a little every month can ______ the stress of unexpected costs.\u201d",opts:["worsen","mitigate","publicise"],ans:1}],
     reading:{passage:"Managing money is one of the biggest worries for new students. Many of them live on a tight budget, where every dirham counts, and they try hard not to spend more than they earn. When an emergency happens, or a new phone that costs an arm and a leg tempts them, it is easy to become broke very quickly. Some students take a part-time job to raise their income, while others apply for a scholarship or a student loan to help with their tuition fees. The most successful students, however, usually do the same simple things. They make a clear plan at the start of the month and put a little aside each week, even when their income is small. They avoid borrowing money for things they do not really need, and they ask for advice before making a big decision. With patience and a sensible plan, most students find that they can make ends meet and still enjoy their studies.",
       qs:[{q:"What is the passage mainly about?",opts:["how new students can manage their money","the best phones to buy at university","how to choose a part-time job"],ans:0},{q:"According to the passage, the most successful students:",opts:["spend more than they earn","plan and save a little regularly","never make a budget"],ans:1},{q:"Which word in the passage means \u201cmoney given to a student to help pay for study\u201d?",opts:["scholarship","budget","income"],ans:0}]},
     writing:{scenario:"Scenario: A friend wants to buy a phone that costs an arm and a leg, but she is almost broke.",
@@ -3800,9 +3804,9 @@ var TASKMETA={
   t3:{cat:"Tier 3", label:"Tier 3 \u2014 Low / Sub-level", words:80, opts:3}
 };
 function _trimWords(txt,n){var w=txt.replace(/\s+/g," ").trim().split(" ");if(w.length<=n)return w.join(" ");var cut=w.slice(0,n).join(" ");var dot=cut.lastIndexOf(". ");if(dot>Math.floor(n*0.55))return cut.slice(0,dot+1);return cut.replace(/[,;:\-]?\s*$/,"")+".";}
-function _optSet(correct,pool,k,seed){var arr=[correct],i=0;
-  while(arr.length<k && i<pool.length){var c=pool[i++];if(c && arr.indexOf(c)<0)arr.push(c);}
-  var filler=["None of these","Not given in the text","A different meaning"],fi=0;
+function _optSet(correct,pool,k,seed){var arr=[correct],i=0,one=/^[A-Za-z]$/.test(String(correct).trim());
+  while(arr.length<k && i<pool.length){var c=pool[i++];if(c && arr.indexOf(c)<0 && (one ? /^[A-Za-z]$/.test(String(c).trim()) : !/^[A-Za-z]$/.test(String(c).trim())))arr.push(c);}
+  var filler=one?["A","B","C","D","E","F"]:["None of these","Not given in the text","A different meaning"],fi=0;
   while(arr.length<k){var f=filler[fi++]||("Option "+arr.length);if(arr.indexOf(f)<0)arr.push(f);}
   return seedShuffle(arr.slice(0,k),seed);}
 function taskContent(course,week,ls,tier){
@@ -3842,13 +3846,13 @@ function taskContent(course,week,ls,tier){
 function _tSec(d,st,tag,heading,slo){st.y+=1.4;d.setFont("helvetica","bold");d.setFontSize(10.2);tc(d,TEAL);d.text(tag+" \u00b7 "+heading,L,st.y);d.setFont("helvetica","italic");d.setFontSize(7.8);tc(d,MUT);d.text(slo,W-R,st.y,{align:"right"});st.y+=2.4;dc(d,LINE);d.setLineWidth(.3);d.line(L,st.y,W-R,st.y);st.y+=4;}
 function _tQ(d,st,n,q){d.setFont("helvetica","bold");d.setFontSize(9.6);tc(d,TEALD);var head=n+". ";var lead=d.getTextWidth(head);d.text(head,L,st.y);d.setFont("helvetica","normal");tc(d,INK);var ls=d.splitTextToSize(q.q,PW-lead-2);d.text(ls[0]||"",L+lead,st.y);for(var i=1;i<ls.length;i++){st.y+=4.4;d.text(ls[i],L+lead,st.y);}st.y+=4.6;
   var lt="ABCDEFGH",line=q.opts.map(function(o,i){return "("+lt[i]+")  "+o;}).join("     ");d.setFont("helvetica","normal");d.setFontSize(9.2);tc(d,[40,55,72]);var ol=d.splitTextToSize(line,PW-8);ol.forEach(function(ln){d.text(ln,L+6,st.y);st.y+=4.4;});st.y+=2;}
-function _tPassage(d,st,txt){d.setFont("helvetica","normal");d.setFontSize(9);var ls=d.splitTextToSize(txt,PW-10),h=ls.length*4.4+5;fc(d,WASH);dc(d,[207,230,232]);d.setLineWidth(.3);d.roundedRect(L,st.y-3,PW,h,2.4,2.4,"FD");tc(d,INK);var yy=st.y+1.2;ls.forEach(function(ln){d.text(ln,L+5,yy);yy+=4.4;});st.y+=h+2;}
+function _tPassage(d,st,txt){d.setFont("helvetica","normal");d.setFontSize(9);if(st.y>250){d.addPage();st.y=18;}_boxFlow(d,st,[{n:"",lines:d.splitTextToSize(txt,PW-10),gap:0}],5);}
 function renderTask(d,course,week,ls,tier,rosterLine){
   var C=taskContent(course,week,ls,tier),T=C.meta,st={y:16},no=0,key=[];
   header(d,st,course,"DIFFERENTIATED TASK \u00b7 "+T.cat,(tier==="sen"?AMBER:TEAL),"Week "+week.n+" \u00b7 "+course.chapter,"Chapter 1 \u00b7 "+week.title+" \u00b7 "+T.label+" \u00b7 one-page, skill-based check.");
   fields(d,st);
   if(rosterLine){d.setFont("helvetica","italic");d.setFontSize(8.2);tc(d,MUT);var rl=d.splitTextToSize(T.cat+" group:  "+rosterLine,PW);rl.slice(0,2).forEach(function(ln){d.text(ln,L,st.y);st.y+=4;});st.y+=1;}
-  _tSec(d,st,"A","Vocabulary","3 questions \u00b7 circle one");
+  _tSec(d,st,"A","Vocabulary","complete each sentence \u00b7 circle the best word \u00b7 3 questions");
   C.vocab.forEach(function(q){no++;_tQ(d,st,no,q);key.push(no+"-"+String.fromCharCode(97+q.ans));});
   _tSec(d,st,"B","Grammar & language","3 questions \u00b7 circle one");
   C.grammar.forEach(function(q){no++;_tQ(d,st,no,q);key.push(no+"-"+String.fromCharCode(97+q.ans));});
@@ -3874,13 +3878,32 @@ function compactFields(d,st){ d.setFont("helvetica","normal");d.setFontSize(8.6)
   d.text("Name:",L,st.y);d.line(L+11,st.y,L+80,st.y);
   d.text("Class:",L+86,st.y);d.line(L+98,st.y,L+126,st.y);
   d.text("Date:",L+132,st.y);d.line(L+143,st.y,W-R,st.y); st.y+=7; }
+function _boxFlow(d,st,items,indent){
+  /* items: [{n:label or "", lines:[...], gap:after}] -- draws the shaded box page by page so text never passes the page border */
+  var LIM=268, LH=4.4, segs=[], cur={y0:st.y,items:[],h:5}, y=st.y+1.4;
+  items.forEach(function(it){
+    var k=0;
+    while(k<it.lines.length){
+      if(y+LH>LIM){ segs.push(cur); cur={y0:null,items:[],h:5,newPage:true}; y=18+1.4; }
+      var room=Math.max(1,Math.floor((LIM-y)/LH)), chunk=it.lines.slice(k,k+room);
+      cur.items.push({n:(k===0?it.n:""),lines:chunk,y:y}); y+=chunk.length*LH; k+=chunk.length;
+      if(k>=it.lines.length) y+=(it.gap||2.5);
+    }
+  });
+  segs.push(cur);
+  segs.forEach(function(sg,si){
+    if(si>0){ d.addPage(); }
+    var top=(si===0?st.y:18), last=sg.items[sg.items.length-1], bottom=last?(last.y+(last.lines.length-1)*LH+3.2):top+2;
+    fc(d,WASH);dc(d,[207,230,232]);d.setLineWidth(.3);d.roundedRect(L,top-3,PW,bottom-top+3,2.4,2.4,"FD");
+    sg.items.forEach(function(it){ if(it.n!==""&&it.n!=null){d.setFont("helvetica","bold");tc(d,TEAL);d.text(String(it.n),L+4,it.y);} d.setFont("helvetica","normal");tc(d,INK);d.setFontSize(9); it.lines.forEach(function(ln,k){d.text(ln,L+indent,it.y+k*LH);}); });
+    st.y=bottom+2.4;
+  });
+}
 function _tParas(d,st,paras){
-  d.setFontSize(9);var all=[];paras.forEach(function(p,i){all.push({n:i+1,lines:d.splitTextToSize(p,PW-14)});});
-  var h=5;all.forEach(function(a){h+=a.lines.length*4.4+2.5;});
-  fc(d,WASH);dc(d,[207,230,232]);d.setLineWidth(.3);d.roundedRect(L,st.y-3,PW,h,2.4,2.4,"FD");
-  var yy=st.y+1.4;
-  all.forEach(function(a){d.setFont("helvetica","bold");tc(d,TEAL);d.text(String(a.n),L+4,yy);d.setFont("helvetica","normal");tc(d,INK);a.lines.forEach(function(ln,k){d.text(ln,L+11,yy+k*4.4);});yy+=a.lines.length*4.4+2.5;});
-  st.y+=h+2;
+  d.setFontSize(9);d.setFont("helvetica","normal");
+  var items=paras.map(function(p,i){return {n:i+1,lines:d.splitTextToSize(p,PW-14),gap:2.5};});
+  if(st.y>250){d.addPage();st.y=18;}
+  _boxFlow(d,st,items,11);
 }
 function diversifyList(qs, nOpt, seed){
   var n=qs.length, targets=[]; for(var i=0;i<n;i++)targets.push(i%nOpt);
