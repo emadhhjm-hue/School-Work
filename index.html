@@ -52,6 +52,8 @@
   #ttTable td.tt-same{background:#fdeff4;color:#c98aa6}
   #ttTable td.tt-meeting{background:#f5a623;font-weight:800;color:#3a2400}
 #ttTable td.tt-duty{background:#dcf5e3;color:#1c6b3a;font-weight:700;border-color:#b9e4c6}
+#ttTable td.tt-brkduty{background:#2b313a;color:#fff;font-weight:800;letter-spacing:.2px;box-shadow:inset 4px 0 0 #3ecf7a}
+#ttTable td.tt-brkduty::before{content:"\25cf ";color:#3ecf7a}
   #ttTable td.tt-brkc{background:#3f4650;color:#e6e9ef;border-color:#333}
   #ttTable tr.tt-break td[data-k="time"]{background:#3f4650;color:#e6e9ef;border-color:#333}
   #ttTable tr.tt-break td[data-k="p"]{background:#333a44;color:#cfd6e0}
@@ -6009,11 +6011,11 @@ var TT_DEFAULT={
     {time:"07:25-08:10", p:"1", mon:"10A", tue:"10A", wed:"=", thu:"=", fri:"="},
     {time:"08:15-09:00", p:"2", mon:"=", tue:"=", wed:"=", thu:"10A", fri:"10A"},
     {time:"09:05-09:50", p:"3", mon:"11B", tue:"12B", wed:"12B", thu:"11B", fri:"duty-C2 b."},
-    {time:"09:50-10:10", p:"20m", mon:"", tue:"", wed:"", thu:"", fri:"11B"},
+    {time:"09:50-10:10", p:"20m", mon:"", tue:"supr.", wed:"", thu:"supr.", fri:"11B"},
     {time:"10:10-10:55", p:"4", mon:"12B", tue:"11B", wed:"11B", thu:"10B", fri:"12B"},
     {time:"11:00-11:45", p:"5", mon:"=", tue:"=", wed:"Dpt M.", thu:"=", fri:""},
     {time:"11:45-12:30", p:"6", mon:"10B", tue:"11B", wed:"=", thu:"10B", fri:""},
-    {time:"12:30-12:45", p:"15m", mon:"", tue:"", wed:"", thu:"", fri:""},
+    {time:"12:30-12:45", p:"15m", mon:"", tue:"supr.", wed:"", thu:"supr.", fri:""},
     {time:"12:45-01:30", p:"7", mon:"12B", tue:"=", wed:"10A", thu:"12B", fri:""},
     {time:"01:30-02:15", p:"8", mon:"=", tue:"10B", wed:"10B", thu:"=", fri:""}
   ],
@@ -6053,7 +6055,7 @@ function timetableHTML(){
   var body=tt.rows.map(function(r){
     var cells='<td data-k="time" contenteditable="false">'+esc(r.time||"")+'</td>'
       +'<td data-k="p" contenteditable="false">'+esc(r.p||"")+'</td>'
-      +days.map(function(d){ var v=r[d[0]]||""; var pv=(r.p||"").trim(); var isBreak=/^(20m|15m)$/.test(pv); var grey=(isBreak&&d[0]!=="fri")||(d[0]==="fri"&&pv==="3"); var cls=/^\s*=\s*$/.test(v)?" tt-same":(/^1[0-2][AB]$/.test(v.trim())?" tt-class":(/(dept|e\.?)\s*meeting|meeting|^\s*dpt\.?\s*m/i.test(v)?" tt-meeting":(/supr|supervis|duty/i.test(v)?" tt-duty":(grey?" tt-brkc":"")))); return '<td class="ttc'+cls+'" data-k="'+d[0]+'" contenteditable="false">'+esc(v)+'</td>'; }).join("");
+      +days.map(function(d){ var v=r[d[0]]||""; var pv=(r.p||"").trim(); var isBreak=/^(20m|15m)$/.test(pv); var grey=(isBreak&&d[0]!=="fri")||(d[0]==="fri"&&pv==="3"); var cls=/^\s*=\s*$/.test(v)?" tt-same":(/^1[0-2][AB]$/.test(v.trim())?" tt-class":(/(dept|e\.?)\s*meeting|meeting|^\s*dpt\.?\s*m/i.test(v)?" tt-meeting":(/supr|supervis|duty/i.test(v)?(grey?" tt-brkc tt-brkduty":" tt-duty"):(grey?" tt-brkc":"")))); return '<td class="ttc'+cls+'" data-k="'+d[0]+'" contenteditable="false">'+esc(v)+'</td>'; }).join("");
     var brk=/^\s*(20m|15m)\s*$/.test((r.p||"").trim());
     return "<tr"+(brk?' class="tt-break"':"")+">"+cells+"</tr>";
   }).join("");
@@ -6066,7 +6068,7 @@ function timetableHTML(){
     +'<button class="btn sm" onclick="ttReset()">\u21ba Reset</button>'
     +'<span id="ttMsg" class="tt-msg"></span></div>'
     +'<div class="tt-scroll"><table id="ttTable" data-edit="0"><colgroup><col style="width:15%"><col style="width:7%"><col style="width:15.6%"><col style="width:15.6%"><col style="width:15.6%"><col style="width:15.6%"><col style="width:15.6%"></colgroup><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
-    +'<p class="tt-hint">Classes: 10A, 10B, 11B, 12B \u00b7 \u201c=\u201d means the same class continues \u00b7 <span style=\"background:#dcf5e3;color:#1c6b3a;font-weight:700;padding:0 5px;border-radius:4px\">green</span> = supervision / duty \u00b7 edits are saved in this browser only.</p>'+'<div class="tt-fri">\uD83D\uDD52 <b>Friday timings</b> (shorter periods): P1 07:15\u201308:00 \u00b7 P2 08:05\u201308:50 \u00b7 <b class="tt-brk-lbl">Recess 08:50\u201309:05</b> \u00b7 P3 09:05\u201309:50 \u00b7 P4 09:50\u201310:35</div></details>';
+    +'<div class="tt-fri">\uD83D\uDD52 <b>Friday timings</b> (shorter periods): P1 07:15\u201308:00 \u00b7 P2 08:05\u201308:50 \u00b7 <b class="tt-brk-lbl">Recess 08:50\u201309:05</b> \u00b7 P3 09:05\u201309:50 \u00b7 P4 09:50\u201310:35</div></details>';
 }
 function renderClasses(){
  stopTimer(); CUR.id=null;
