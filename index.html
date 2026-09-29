@@ -43,14 +43,15 @@
   .tt-note[contenteditable="true"]{background:#fffdf3;border-bottom:1px solid #e0c96a}
   .tt-msg{font-size:.8rem;color:#0A5A62;font-weight:700}
   .tt-scroll{overflow-x:auto}
-  #ttTable{border-collapse:collapse;width:100%;min-width:560px;font-size:.86rem}
+  #ttTable{border-collapse:collapse;width:100%;min-width:640px;font-size:.86rem;table-layout:fixed}
   #ttTable th{background:#0b1220;color:#fff;font-weight:700;padding:6px 8px;text-align:center;border:1px solid #0b1220;white-space:nowrap}
-  #ttTable td{border:1px solid var(--line);padding:6px 8px;text-align:center;white-space:nowrap}
+  #ttTable td{border:1px solid var(--line);padding:0 6px;height:38px;text-align:center;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #ttTable td[data-k="time"]{text-align:left;font-variant-numeric:tabular-nums;color:#334}
   #ttTable td[data-k="p"]{background:#f4f6f9;font-weight:700;color:#556}
   #ttTable td.tt-class{background:#fde7ef;font-weight:800;color:#9b1b46}
   #ttTable td.tt-same{background:#fdeff4;color:#c98aa6}
   #ttTable td.tt-meeting{background:#f5a623;font-weight:800;color:#3a2400}
+#ttTable td.tt-duty{background:#dcf5e3;color:#1c6b3a;font-weight:700;border-color:#b9e4c6}
   #ttTable td.tt-brkc{background:#3f4650;color:#e6e9ef;border-color:#333}
   #ttTable tr.tt-break td[data-k="time"]{background:#3f4650;color:#e6e9ef;border-color:#333}
   #ttTable tr.tt-break td[data-k="p"]{background:#333a44;color:#cfd6e0}
@@ -6004,15 +6005,15 @@ function go(view, a, b){
 /* ---- Weekly timetable (editable, saved in this browser) ---- */
 var TT_DEFAULT={
   rows:[
-    {time:"7:10-7:25 M.A.", p:"15", mon:"", tue:"", wed:"Behind lib", thu:"", fri:"Behind lib"},
+    {time:"7:10-7:25 M.A.", p:"15", mon:"", tue:"supr.", wed:"", thu:"supr.", fri:"duty-C2 b."},
     {time:"07:25-08:10", p:"1", mon:"10A", tue:"10A", wed:"=", thu:"=", fri:"="},
     {time:"08:15-09:00", p:"2", mon:"=", tue:"=", wed:"=", thu:"10A", fri:"10A"},
-    {time:"09:05-09:50", p:"3", mon:"11B", tue:"12B", wed:"12B", thu:"11B", fri:"Behind lib"},
-    {time:"09:50-10:10", p:"20m", mon:"", tue:"", wed:"Behind lib", thu:"", fri:"11B"},
+    {time:"09:05-09:50", p:"3", mon:"11B", tue:"12B", wed:"12B", thu:"11B", fri:"duty-C2 b."},
+    {time:"09:50-10:10", p:"20m", mon:"", tue:"", wed:"", thu:"", fri:"11B"},
     {time:"10:10-10:55", p:"4", mon:"12B", tue:"11B", wed:"11B", thu:"10B", fri:"12B"},
-    {time:"11:00-11:45", p:"5", mon:"=", tue:"=", wed:"Dept Meeting", thu:"=", fri:""},
+    {time:"11:00-11:45", p:"5", mon:"=", tue:"=", wed:"Dpt M.", thu:"=", fri:""},
     {time:"11:45-12:30", p:"6", mon:"10B", tue:"11B", wed:"=", thu:"10B", fri:""},
-    {time:"12:30-12:45", p:"15m", mon:"", tue:"", wed:"Behind lib", thu:"", fri:""},
+    {time:"12:30-12:45", p:"15m", mon:"", tue:"", wed:"", thu:"", fri:""},
     {time:"12:45-01:30", p:"7", mon:"12B", tue:"=", wed:"10A", thu:"12B", fri:""},
     {time:"01:30-02:15", p:"8", mon:"=", tue:"10B", wed:"10B", thu:"=", fri:""}
   ],
@@ -6052,7 +6053,7 @@ function timetableHTML(){
   var body=tt.rows.map(function(r){
     var cells='<td data-k="time" contenteditable="false">'+esc(r.time||"")+'</td>'
       +'<td data-k="p" contenteditable="false">'+esc(r.p||"")+'</td>'
-      +days.map(function(d){ var v=r[d[0]]||""; var pv=(r.p||"").trim(); var isBreak=/^(20m|15m)$/.test(pv); var grey=(isBreak&&d[0]!=="fri")||(d[0]==="fri"&&pv==="3"); var cls=/^\s*=\s*$/.test(v)?" tt-same":(/^1[0-2][AB]$/.test(v.trim())?" tt-class":(/(dept|e\.?)\s*meeting|meeting/i.test(v)?" tt-meeting":(grey?" tt-brkc":""))); return '<td class="ttc'+cls+'" data-k="'+d[0]+'" contenteditable="false">'+esc(v)+'</td>'; }).join("");
+      +days.map(function(d){ var v=r[d[0]]||""; var pv=(r.p||"").trim(); var isBreak=/^(20m|15m)$/.test(pv); var grey=(isBreak&&d[0]!=="fri")||(d[0]==="fri"&&pv==="3"); var cls=/^\s*=\s*$/.test(v)?" tt-same":(/^1[0-2][AB]$/.test(v.trim())?" tt-class":(/(dept|e\.?)\s*meeting|meeting|^\s*dpt\.?\s*m/i.test(v)?" tt-meeting":(/supr|supervis|duty/i.test(v)?" tt-duty":(grey?" tt-brkc":"")))); return '<td class="ttc'+cls+'" data-k="'+d[0]+'" contenteditable="false">'+esc(v)+'</td>'; }).join("");
     var brk=/^\s*(20m|15m)\s*$/.test((r.p||"").trim());
     return "<tr"+(brk?' class="tt-break"':"")+">"+cells+"</tr>";
   }).join("");
@@ -6064,8 +6065,8 @@ function timetableHTML(){
     +'<button id="ttSaveBtn" class="btn sm pri" style="display:none" onclick="ttSave()">\uD83D\uDCBE Save</button>'
     +'<button class="btn sm" onclick="ttReset()">\u21ba Reset</button>'
     +'<span id="ttMsg" class="tt-msg"></span></div>'
-    +'<div class="tt-scroll"><table id="ttTable" data-edit="0"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
-    +'<p class="tt-hint">Classes: 10A, 10B, 11B, 12B \u00b7 \u201c=\u201d means the same class continues \u00b7 edits are saved in this browser only.</p>'+'<div class="tt-fri">\uD83D\uDD52 <b>Friday timings</b> (shorter periods): P1 07:15\u201308:00 \u00b7 P2 08:05\u201308:50 \u00b7 <b class="tt-brk-lbl">Recess 08:50\u201309:05</b> \u00b7 P3 09:05\u201309:50 \u00b7 P4 09:50\u201310:35</div></details>';
+    +'<div class="tt-scroll"><table id="ttTable" data-edit="0"><colgroup><col style="width:15%"><col style="width:7%"><col style="width:15.6%"><col style="width:15.6%"><col style="width:15.6%"><col style="width:15.6%"><col style="width:15.6%"></colgroup><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
+    +'<p class="tt-hint">Classes: 10A, 10B, 11B, 12B \u00b7 \u201c=\u201d means the same class continues \u00b7 <span style=\"background:#dcf5e3;color:#1c6b3a;font-weight:700;padding:0 5px;border-radius:4px\">green</span> = supervision / duty \u00b7 edits are saved in this browser only.</p>'+'<div class="tt-fri">\uD83D\uDD52 <b>Friday timings</b> (shorter periods): P1 07:15\u201308:00 \u00b7 P2 08:05\u201308:50 \u00b7 <b class="tt-brk-lbl">Recess 08:50\u201309:05</b> \u00b7 P3 09:05\u201309:50 \u00b7 P4 09:50\u201310:35</div></details>';
 }
 function renderClasses(){
  stopTimer(); CUR.id=null;
