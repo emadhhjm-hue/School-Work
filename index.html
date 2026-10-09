@@ -502,6 +502,24 @@
   .fc-dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer}.fc-dots i.on{background:#FFC21A}
 </style>
 <style>@media print{.lp-menu,#menu,#timer,.nav-row,.back,.beebtn,.gl-ico,.gl-bank,.wk-plan{display:none!important}.lp-grid{display:block!important}.lp-body{width:100%!important}body{background:#fff!important}a[href]:after{content:""}}</style>
+
+<style id="icanBrand">
+body{background-color:#E9EEF5;background-image:radial-gradient(1200px 600px at 0% 0%,rgba(255,255,255,.75),transparent 60%),radial-gradient(900px 500px at 100% 100%,rgba(242,214,140,.18),transparent 65%),linear-gradient(180deg,#EDF1F7 0%,#E4EAF2 100%);background-attachment:fixed}
+.wrap{padding-bottom:104px}
+#icanCopy{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:9px 20px;text-align:center;background:rgba(14,32,72,.84);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-top:1px solid rgba(255,216,77,.35);box-shadow:0 -6px 20px rgba(10,20,50,.18);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.3;pointer-events:none;user-select:none}
+#icanCopy .c1,#icanCopy .c2{display:inline;background:linear-gradient(90deg,#E8A400 0%,#FFD84D 30%,#FFF4C2 50%,#FFD84D 70%,#E8A400 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:icanShine 4.5s linear infinite,icanGlow 2.2s ease-in-out infinite}
+#icanCopy .c1{font-weight:800;font-size:1rem;letter-spacing:.3px}
+#icanCopy .c1 small{font-size:.88rem}
+#icanCopy .sep{color:rgba(255,216,77,.6);margin:0 10px}
+#icanCopy .c2{font-style:italic;font-size:.95rem}
+#icanCopy .c3{display:block;margin-top:2px;font-size:.78rem;color:rgba(255,226,140,.88);font-weight:500;letter-spacing:.2px}
+@media (max-width:800px){#icanCopy .c3{font-size:.66rem;line-height:1.25}}
+@keyframes icanShine{0%{background-position:120% 0}100%{background-position:-120% 0}}
+@keyframes icanGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,216,77,0))}50%{filter:drop-shadow(0 0 5px rgba(255,216,77,.75))}}
+@media (prefers-reduced-motion:reduce){#icanCopy .c1,#icanCopy .c2{animation:none}}
+@media (max-width:800px){#icanCopy{padding:6px 10px}#icanCopy .c1{font-size:.8rem}#icanCopy .c2{font-size:.76rem}#icanCopy .sep{display:none}#icanCopy .c1,#icanCopy .c2{display:table;margin:0 auto}.ts{bottom:76px!important}.wrap{padding-bottom:120px}}
+@media print{#icanCopy{position:static;box-shadow:none;background:#0E2048;margin:12px 0 0}}
+</style>
 </head>
 <body>
 <div id="passGate" role="dialog" aria-label="Access code" style="position:fixed;inset:0;z-index:2147483647;background:linear-gradient(160deg,#0b1220,#0A5A62);display:flex;align-items:center;justify-content:center;font-family:system-ui,Segoe UI,Arial,sans-serif">
@@ -514,6 +532,7 @@
     <p id="passErr" style="color:#B44412;font-size:.85rem;margin:10px 0 0;display:none">Incorrect code — please try again.</p>
     <p style="color:#aab;font-size:.72rem;margin:14px 0 0">Authorised staff only.</p>
   </div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:9px 20px;text-align:center;background:rgba(14,32,72,.78);border-top:1px solid rgba(255,216,77,.35);color:#FFD84D;font-weight:800;font-size:1rem">© 2026 Emad Ali Mohamed, <small>Dr.</small><span style="color:rgba(255,216,77,.6);margin:0 10px">•</span><i style="font-weight:600">Developer and Owner of iCAN Academy</i><div style="font-size:.78rem;font-weight:500;color:rgba(255,226,140,.88);margin-top:2px">All rights reserved. iCAN content may not be copied, redistributed, or reused without prior permission from the Founder.</div></div>
 </div>
 <script>
 (function(){
@@ -532,6 +551,7 @@
 </script>
 
 <div class="wrap" id="app"></div>
+<div id="icanCopy" role="contentinfo" aria-label="Copyright"><span class="c1">© 2026 Emad Ali Mohamed, <small>Dr.</small></span><span class="sep">•</span><span class="c2">Developer and Owner of iCAN Academy</span><div class="c3">All rights reserved. iCAN content may not be copied, redistributed, or reused without prior permission from the Founder.</div></div>
 
 <!-- Spelling Bee pop-up -->
 <div class="bee-ov" id="beeOv" onclick="if(event.target===this)closeBee()">
