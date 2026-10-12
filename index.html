@@ -4936,6 +4936,7 @@ function renderEOT(d,courseId,course,weeks,ver,keyOnly){
   _eotModel(d,st,E.writing);
   st.y+=2; para(d,st,"Total: 100 marks  (Reading 30 · Vocabulary 15 · Grammar 15 · Writing 40).",{bold:true});
   if(keyOnly){ for(var kp=keyStart-1;kp>=1;kp--) d.deletePage(kp); }
+  else { for(var kq=d.getNumberOfPages();kq>=keyStart;kq--) d.deletePage(kq); }
   frameAll(d,RED);footer(d,course);return d;
 }
 var API={
