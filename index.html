@@ -971,7 +971,7 @@ body{background-color:#E9EEF5;background-image:radial-gradient(1200px 600px at 0
 .eox-parts{display:flex;gap:4px;background:#fff;padding:0 14px;border-bottom:1px solid #dde3ea;overflow-x:auto}
 .eox-parts button{border:0;background:none;padding:10px 14px;font:inherit;font-size:.86rem;font-weight:700;color:#5a6b78;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
 .eox-parts button.on{color:#1f6feb;border-bottom-color:#1f6feb}
-.eox-parts button small{font-weight:600;color:#8a97a5;margin-left:4px}
+.eox-parts button small{font-weight:800;color:#c0262d;margin-left:6px;font-size:.8em}
 .eox-split{flex:1;display:flex;min-height:0}
 .eox-l,.eox-r{overflow-y:auto;min-height:0}
 .eox-l{flex:1.15;background:#fff;border-right:1px solid #dde3ea}
@@ -1058,6 +1058,12 @@ body{background-color:#E9EEF5;background-image:radial-gradient(1200px 600px at 0
 .eox-rub table{border-collapse:collapse;font-size:.76rem;min-width:620px;width:100%}.eox-rub th{background:#141b3d;color:#fff;text-align:left;padding:6px}.eox-rub td{border:1px solid #dfe4ec;padding:6px;vertical-align:top;color:#333}
 .eox-rub td.lv{background:#ecebf7;font-weight:800;text-align:center}.eox-rub td.me{background:#fff2b8;box-shadow:inset 0 0 0 2px #e6b800;font-weight:600}
 .eox-ai{margin-top:10px;font-size:.8rem}.eox-ai a{color:#6a4fd0;cursor:pointer;text-decoration:underline}.eox-ai .wait{color:#6b7785;font-style:italic}
+.eot-sm{max-width:520px}
+.eot-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1.5px solid #f3c4c4;background:#fff7f7;border-radius:12px;padding:8px 12px;margin:8px 0}
+.eot-row b{color:#a80d0d;font-size:1rem;margin-right:auto;min-width:84px}
+.eot-row button{border:0;border-radius:9px;padding:7px 12px;font:inherit;font-weight:800;font-size:.84rem;cursor:pointer;white-space:nowrap}
+.eot-row .on{background:#d10f0f;color:#fff}.eot-row .pdf{background:#fff;border:1.5px solid #e9a3a3;color:#a80d0d}.eot-row .key{background:#1b2a3a;color:#ffd75e}
+.eot-row button:hover{filter:brightness(.93)}.eot-row button[disabled]{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
@@ -4888,40 +4894,38 @@ function _eotItems(courseId,weeks,ver){
   var gaps=M.gaps.map(function(g,k){ var sh=seedShuffle(g.opts.slice(),key+"m"+k).opts; return {opts:sh,ans:sh.indexOf(g.opts[0]),point:g.point,seen:g.seen}; });
   return {ver:ver,E:E,key:key,R:R,vocab:vocab,M:M,gaps:gaps};
 }
-function renderEOT(d,courseId,course,weeks,ver){
+function renderEOT(d,courseId,course,weeks,ver,keyOnly){
   var I=_eotItems(courseId,weeks,ver); ver=I.ver; var E=I.E, key=I.key, R=I.R, vocab=I.vocab, M=I.M, gaps=I.gaps, st={y:15}, no=0, RED=[200,30,30];
-  var marks={R:35,V:15,G:10,W:40}, total=100;
-  header(d,st,course,"END OF TERM EXAM · VERSION "+ver,RED,"End of Term 1 English Examination · "+course.chapter,"Reading 35 · Vocabulary 15 · Grammar 10 · Writing 40  =  100 marks  ·  Time: "+(courseId==="c5"?"90":"120")+" minutes");
+  var marks={R:30,V:15,G:15,W:40}, total=100;
+  header(d,st,course,"END OF TERM EXAM · VERSION "+ver,RED,"End of Term 1 English Examination · "+course.chapter,"Reading 30 · Vocabulary 15 · Grammar 15 · Writing 40  =  100 marks  ·  Time: "+(courseId==="c5"?"90":"120")+" minutes");
   catBadge(d,st,"END OF TERM 1 · 2026–2027 · VERSION "+ver,RED);
   compactFields(d,st);
   note(d,st,"Instructions: Answer ALL questions. Parts 1–3: circle the correct letter. Part 4: write your answer in paragraphs in the space provided. Check your spelling and punctuation before you finish.","amber");
-  var keys={R:[],V:[],G:[]}, crNo=0;
-  _tSec(d,st,"PART 1","Reading","three texts · 15 MCQs × 2 marks + 1 written answer (5 marks) · 35 marks");
+  var keys={R:[],V:[],G:[]};
+  _tSec(d,st,"PART 1","Reading  [mark 30]","three texts · 15 MCQs × 2 marks");
   E.reading.forEach(function(T,ti){ if(st.y>205){d.addPage();st.y=18;}
     d.setFont("helvetica","bold");d.setFontSize(10.4);tc(d,INK);d.text("Text "+(ti+1)+": "+T.title,L,st.y);st.y+=5.4;
     _tParas(d,st,T.paras);
-    R[ti].forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); keys.R.push(no+"-"+String.fromCharCode(65+q.ans)); });
-    if(ti===0){ if(st.y>240){d.addPage();st.y=18;} no++; crNo=no; para(d,st,no+".  In two or three sentences, explain in your own words the main idea of Text 1 and give ONE supporting detail from the text.  (5 marks)",{bold:true,size:9.2,lh:4.6}); writeLines(d,st,3); } });
+    R[ti].forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); keys.R.push(no+"-"+String.fromCharCode(65+q.ans)); }); });
   if(st.y>225){d.addPage();st.y=18;}
-  _tSec(d,st,"PART 2","Vocabulary","complete each sentence · circle the best word · 10 items × 1.5 · 15 marks");
+  _tSec(d,st,"PART 2","Vocabulary  [mark 15]","complete each sentence · circle the best word · 10 items × 1.5");
   vocab.forEach(function(q){ if(st.y>262){d.addPage();st.y=18;} no++; _tQ(d,st,no,q); keys.V.push(no+"-"+String.fromCharCode(65+q.ans)); });
   if(st.y>170){d.addPage();st.y=18;}
-  _tSec(d,st,"PART 3","Grammar maze","read the text · circle the correct option for each gap · 10 items × 1 · 10 marks");
+  _tSec(d,st,"PART 3","Grammar maze  [mark 15]","circle the correct option for each gap · 10 items × 1.5");
   var g0=no; var txt=M.text.replace(/\{(\d+)\}/g,function(m,n){ return "("+(g0+ +n)+") ________"; });
   d.setFont("helvetica","bold");d.setFontSize(10);tc(d,INK);d.text(M.title||"",L,st.y);st.y+=5;
   _tParas(d,st,[txt]);
   gaps.forEach(function(g,k){ if(st.y>270){d.addPage();st.y=18;} no++; d.setFont("helvetica","bold");d.setFontSize(9.2);tc(d,TEALD);d.text(no+".",L,st.y);
     d.setFont("helvetica","normal");tc(d,INK); var line=g.opts.map(function(o,j){return "("+"abc"[j]+")  "+o;}).join("        "); d.splitTextToSize(line,PW-12).forEach(function(ln){ d.text(ln,L+9,st.y); st.y+=4.4; }); st.y+=1.2; keys.G.push(no+"-"+"abc"[g.ans]); });
   d.addPage(); st.y=18;
-  _tSec(d,st,"PART 4","Writing","write at least "+E.writing.words+" words in paragraphs · 40 marks");
+  _tSec(d,st,"PART 4","Writing  [mark 40]","write at least "+E.writing.words+" words in paragraphs · MoE rubric");
   para(d,st,E.writing.task+"  Write about:  "+E.writing.points.map(function(x,j){return "("+(j+1)+") "+x;}).join("  ")+"  Write at least "+E.writing.words+" words in paragraphs.",{size:9.6,lh:4.9,bold:true});
   st.y+=1; writeTips(d,st,true);
   var nl=Math.floor((272-st.y)/7.5); writeLines(d,st,nl); d.addPage(); st.y=18; writeLines(d,st,Math.floor((272-st.y)/7.5));
-  keyTitle(d,st,"ANSWER KEY & MARKING · End of Term Exam · Version "+ver);
+  keyTitle(d,st,"ANSWER KEY & MARKING · End of Term Exam · Version "+ver); var keyStart=d.getNumberOfPages();
   para(d,st,"Part 1 · Reading (2 marks each):  "+keys.R.join("   "),{bold:true,lh:5.2});
-  (function(){ var mi=E.reading[0].qs.filter(function(q){return /main idea/i.test(q.type);})[0]; para(d,st,"Q"+crNo+" (written, 5 marks) — accept answers in the student\u2019s own words: main idea = "+(mi?mi.opts[0]:"the overall message of Text 1")+"; plus one accurate supporting detail. 3 marks main idea · 2 marks detail (deduct for copying whole sentences).",{size:8.8,lh:4.4}); })();
   para(d,st,"Part 2 · Vocabulary (1.5 marks each):  "+keys.V.join("   "),{bold:true,lh:5.2});
-  para(d,st,"Part 3 · Grammar maze (1 mark each):  "+keys.G.join("   "),{bold:true,lh:5.2}); st.y+=1;
+  para(d,st,"Part 3 · Grammar maze (1.5 marks each):  "+keys.G.join("   "),{bold:true,lh:5.2}); st.y+=1;
   var gs=gaps.filter(function(g){return g.seen;}).map(function(g){return g.point;}), gu=gaps.filter(function(g){return !g.seen;}).map(function(g){return g.point;});
   var uniq=function(a){return a.filter(function(x,i){return a.indexOf(x)===i;}).join(", ");};
   note(d,st,"Coverage (about 70% seen / 30% unseen). Reading: texts 1–2 on Term 1 themes, text 3 on a new theme; main idea, detail, inference, reference (pronoun in context), vocabulary in context and comprehension. Vocabulary: vocabulary items: 7 taught Term 1 words (Weeks 1–"+weeks.length+"), 3 unseen. Grammar maze: SEEN — "+uniq(gs)+". UNSEEN — "+uniq(gu)+". Writing: a Term 1 theme.","");
@@ -4930,7 +4934,8 @@ function renderEOT(d,courseId,course,weeks,ver){
   if(st.y>230){d.addPage();st.y=18;}
   para(d,st,"Model essay (MoE-aligned \u00b7 for teacher reference)",{bold:true,color:TEALD});
   _eotModel(d,st,E.writing);
-  st.y+=2; para(d,st,"Total: 100 marks  (Reading 35 · Vocabulary 15 · Grammar 10 · Writing 40).",{bold:true});
+  st.y+=2; para(d,st,"Total: 100 marks  (Reading 30 · Vocabulary 15 · Grammar 15 · Writing 40).",{bold:true});
+  if(keyOnly){ for(var kp=keyStart-1;kp>=1;kp--) d.deletePage(kp); }
   frameAll(d,RED);footer(d,course);return d;
 }
 var API={
@@ -4941,7 +4946,7 @@ var API={
   makeWS:function(type,tier,courseId,course,week,ls){var d=_mkDoc({unit:"mm",format:"a4"});if(type==="write"){renderWritingWS(d,courseId,course,week,ls,tier);}else{renderLeveledWS(d,courseId,course,week,ls,tier);}var nm={t1:"Tier 1",t2:"Tier 2",t3:"Tier 3"}[tier]||"Tier 1";return {doc:d,name:"Week "+week.n+" "+(type==="write"?"Writing":"Reading")+" "+nm};},
   eotData:function(courseId,weeks,ver){ return _eotItems(courseId,weeks,ver); },
   eotMark:eotMark, writeTips:WRITE_TIPS, eotRubric:EOT_RUBRIC,
-  makeEOT:function(courseId,course,weeks,ver){var d=_mkDoc({unit:"mm",format:"a4"});renderEOT(d,courseId,course,weeks,ver);return {doc:d,name:"End of Term Exam · Version "+(ver||"A")};},
+  makeEOT:function(courseId,course,weeks,ver,keyOnly){var d=_mkDoc({unit:"mm",format:"a4"});renderEOT(d,courseId,course,weeks,ver,keyOnly);return {doc:d,name:(keyOnly?"Answer Key · ":"")+"End of Term Exam · Version "+(ver||"A")};},
   makeChk:function(courseId,course,week,ls,priorWeeks){var d=_mkDoc({unit:"mm",format:"a4"});renderCheckpoint(d,courseId,course,week,ls,priorWeeks);return {doc:d,name:"Week "+week.n+" Checkpoint"};},
   download:function(kind,courseId,course,week,ls){var d=this._build(kind,courseId,course,week,ls);
     var nm={card:"Study Card",worksheet:"Worksheet",checkpoint:"Checkpoint"}[kind];
@@ -5370,13 +5375,13 @@ function openCardPDF(id){ _icanGo("card",id); }
 function openSheetPDF(id){ _icanGo("worksheet",id); }
 function openEOT(){ var C=COURSES[CUR.cls]||{}, E=(typeof ICANPDF!=="undefined"&&ICANPDF.EOT2&&ICANPDF.EOT2[CUR.cls])||null;
   var o=document.getElementById("eotOv"); if(!o){ o=document.createElement("div"); o.id="eotOv"; document.body.appendChild(o); o.onclick=function(e){ if(e.target===o) o.classList.remove("open"); }; }
-  var vs=["A","B","C"].map(function(v){ var t=E&&E[v]?E[v].reading.map(function(p){return esc(p.title);}).join(" · "):"—"; var w=E&&E[v]?esc(E[v].writing.task):""; return '<div class="eot-v2"><b>Version '+v+'</b><span class="t">📖 '+t+'</span><span class="w">✍️ '+w+'</span><div class="acts"><button class="on" onclick="openEOX(\''+v+'\')">💻 Take it online</button><button class="pdf" onclick="buildEOT(\''+v+'\')">🖨 Print PDF</button></div></div>'; }).join("");
-  o.innerHTML='<div class="eot-box"><div class="eot-h"><span class="eot-dot">EoT</span><div><b>End of Term 1 English Exam</b><small>'+esc(C.name||"")+' · choose a version — each has different reading themes, grammar, vocabulary and writing</small></div><button class="eot-x" onclick="document.getElementById(\'eotOv\').classList.remove(\'open\')">✕</button></div>'+vs+'<p class="eot-n">100 marks: Reading 35 (3 texts ~250 · ~200 · ~150 words) · Vocabulary 15 · Grammar maze 10 · Writing 40 · about 70% seen Term 1 content, 30% unseen · answer key, rubric and model essay included · the online version shows the reading and the questions side by side, auto-marks Parts 1–3 and saves answers on this device.</p></div>';
+  var vs=["A","B","C"].map(function(v){ var ok=E&&E[v]; return '<div class="eot-row"><b>Version '+v+'</b><button class="on" '+(ok?'':'disabled ')+'onclick="openEOX(\''+v+'\')">💻 Online</button><button class="pdf" '+(ok?'':'disabled ')+'onclick="buildEOT(\''+v+'\')">🖨 PDF</button><button class="key" '+(ok?'':'disabled ')+'onclick="buildEOT(\''+v+'\',true)">🔑 Answer Key</button></div>'; }).join("");
+  o.innerHTML='<div class="eot-box eot-sm"><div class="eot-h"><span class="eot-dot">EoT</span><div><b>End of Term 1 English Exam</b><small>'+esc(C.name||"")+'</small></div><button class="eot-x" onclick="document.getElementById(\'eotOv\').classList.remove(\'open\')">✕</button></div>'+vs+'<p class="eot-n">100 marks · Reading 30 · Vocabulary 15 · Grammar 15 · Writing 40</p></div>';
   o.classList.add("open"); }
-function buildEOT(ver){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
+function buildEOT(ver,keyOnly){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var C=COURSES[CUR.cls]||{}; var weeks=[]; (WEEKS||[]).forEach(function(w){ var ls=(w.lessons||[]).map(function(x){return LESSONS[x];}).filter(Boolean); if(ls.length) weeks.push({week:{n:w.n},ls:ls}); });
   var course={chapter:(C.chapter||C.name||""), grade:(C.name||""), teacher:"Mr. Emad A. Mohamed"};
-  var r=ICANPDF.makeEOT(CUR.cls,course,weeks,ver); document.getElementById("eotOv").classList.remove("open"); openPdfModal(r.name+" · "+(C.name||""), r.doc); }catch(e){ alert("Could not build the exam: "+(e&&e.message?e.message:e)); } }
+  var r=ICANPDF.makeEOT(CUR.cls,course,weeks,ver,keyOnly); document.getElementById("eotOv").classList.remove("open"); openPdfModal(r.name+" · "+(C.name||""), r.doc); }catch(e){ alert("Could not build the exam: "+(e&&e.message?e.message:e)); } }
 function openChkPDF(id){ try{ if(typeof ICANPDF==="undefined"){ alert("The PDF engine is still loading - please try again in a moment."); return; }
   var c=_icanCtx(id); if(!c){ alert("This item is not part of a week yet."); return; }
   var prior=_priorWeeks(c.week.n); var r=ICANPDF.makeChk(c.courseId,c.course,c.week,c.lessons,prior); openPdfModal(r.name, r.doc); }catch(e){ alert("Could not build the checkpoint: "+(e&&e.message?e.message:e)); } }
@@ -10066,7 +10071,7 @@ function eoxAIBox(){ var k=eoxAIKey();
 function eoxAISet(){ var v=prompt("Teacher only — paste an Anthropic API key to enable detailed Claude feedback on this device (leave empty to switch it off). The key is stored in this browser only.",eoxAIKey()); if(v===null) return; try{ if(v.trim()) localStorage.setItem("eox_ai_key",v.trim()); else localStorage.removeItem("eox_ai_key"); }catch(e){} eoxPane(); }
 function eoxAskClaude(){ var out=document.getElementById("eoxAIOut"), Wt=EOX.I.E.writing, RUB=ICANPDF.eotRubric||[]; out.innerHTML='<p class="wait">Claude is reading the essay…</p>';
   var rub=["Task completion","Structure","Grammar","Vocabulary","Spelling & punctuation"].map(function(h,i){ return h+": "+RUB.map(function(r){return "L"+r[0]+" "+r[i+1];}).join(" | "); }).join("\n");
-  var prompt="You are an experienced UAE Ministry of Education EFL examiner. Mark this student's End of Term essay against the MoE writing rubric (5 criteria, Level 1-5 each).\n\nRUBRIC\n"+rub+"\n\nTASK: "+Wt.task+"\nPoints: "+Wt.points.join("; ")+"\nMinimum words: "+Wt.words+"\n\nSTUDENT ESSAY:\n"+(EOX.s.wr||"")+"\n\nSTUDENT'S SHORT ANSWER (main idea + one detail of the text \""+EOX.I.E.reading[0].title+"\"): "+(EOX.s.cr||"(none)")+"\n\nReply ONLY with JSON: {\"criteria\":[{\"name\":\"Task completion\",\"level\":1-5,\"strength\":\"...\",\"improve\":\"...\"} x5 in rubric order],\"overall\":\"2-3 encouraging sentences\",\"corrections\":[{\"wrong\":\"...\",\"right\":\"...\"}] (max 6),\"short_answer\":{\"score\":0-5,\"comment\":\"...\"}}. Write for a teenage EFL learner: short, clear, kind, specific.";
+  var prompt="You are an experienced UAE Ministry of Education EFL examiner. Mark this student's End of Term essay against the MoE writing rubric (5 criteria, Level 1-5 each).\n\nRUBRIC\n"+rub+"\n\nTASK: "+Wt.task+"\nPoints: "+Wt.points.join("; ")+"\nMinimum words: "+Wt.words+"\n\nSTUDENT ESSAY:\n"+(EOX.s.wr||"")+"\n\nReply ONLY with JSON: {\"criteria\":[{\"name\":\"Task completion\",\"level\":1-5,\"strength\":\"...\",\"improve\":\"...\"} x5 in rubric order],\"overall\":\"2-3 encouraging sentences\",\"corrections\":[{\"wrong\":\"...\",\"right\":\"...\"}] (max 6)}. Write for a teenage EFL learner: short, clear, kind, specific.";
   fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":eoxAIKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-5-5",max_tokens:1500,messages:[{role:"user",content:prompt}]})})
   .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error((j.error&&j.error.message)||("HTTP "+r.status)); return j; }); })
   .then(function(j){ var t=(j.content||[]).map(function(c){return c.text||"";}).join(""), m=t.match(/\{[\s\S]*\}/), J=JSON.parse(m?m[0]:t), sum=0;
@@ -10074,7 +10079,6 @@ function eoxAskClaude(){ var out=document.getElementById("eoxAIOut"), Wt=EOX.I.E
     (J.criteria||[]).forEach(function(c){ sum+=+c.level||0; h+='<div class="cr"><div class="ch"><span>'+esc(c.name)+'</span><span class="lvl l'+(+c.level||1)+'">Level '+esc(c.level)+'</span></div><ul class="gd"><li>'+esc(c.strength)+'</li></ul><ul class="fx"><li>'+esc(c.improve)+'</li></ul></div>'; });
     h+='<div class="est"><b>'+sum+' / 25</b> → <b>about '+Math.round(sum/25*40)+' / 40</b> <span>Teacher confirms the final mark.</span></div><p>'+esc(J.overall||"")+'</p>';
     if(J.corrections&&J.corrections.length) h+='<p><b>Corrections:</b><br>'+J.corrections.map(function(c){return '<s>'+esc(c.wrong)+'</s> → <b>'+esc(c.right)+'</b>';}).join("<br>")+'</p>';
-    if(J.short_answer) h+='<p><b>Short answer (Q'+EOX.Q.filter(function(q){return q.cr;})[0].n+'):</b> '+esc(J.short_answer.score)+' / 5 — '+esc(J.short_answer.comment)+'</p>';
     out.innerHTML=h+'</div>'; })
   .catch(function(e){ out.innerHTML='<p class="wait">Claude feedback is not available right now ('+esc(e.message||e)+'). The built-in feedback above still applies.</p>'; }); }
 </script>
@@ -10088,9 +10092,9 @@ function _eoxLoad(k){ try{ return JSON.parse(localStorage.getItem(k)||"null"); }
 function eoxBuild(I){ var Q=[], n=0;
   I.E.reading.forEach(function(T,ti){
     I.R[ti].forEach(function(q){ n++; Q.push({n:n,p:"R",t:ti,q:q.q,ty:q._t||"",opts:q.opts,ans:q.ans,mk:2}); });
-    if(ti===0){ n++; Q.push({n:n,p:"R",t:0,cr:1,mk:5,q:"In two or three sentences, explain in your own words the main idea of Text 1 and give ONE supporting detail from the text."}); } });
+ });
   I.vocab.forEach(function(q){ n++; Q.push({n:n,p:"V",q:q.q,opts:q.opts,ans:q.ans,mk:1.5,seen:q._s}); });
-  I.gaps.forEach(function(g,k){ n++; Q.push({n:n,p:"G",g:k+1,q:"Gap "+(k+1),opts:g.opts,ans:g.ans,mk:1,point:g.point}); });
+  I.gaps.forEach(function(g,k){ n++; Q.push({n:n,p:"G",g:k+1,q:"Gap "+(k+1),opts:g.opts,ans:g.ans,mk:1.5,point:g.point}); });
   return Q; }
 function openEOX(ver){ try{
   if(typeof ICANPDF==="undefined"||!ICANPDF.eotData){ alert("The exam engine is still loading - please try again in a moment."); return; }
@@ -10111,7 +10115,7 @@ function eoxTick(){ if(!EOX) return; var el=document.getElementById("eoxTime"); 
   if(left<=0) eoxSubmit(true); }
 function eoxAnswered(){ var k=0; EOX.Q.forEach(function(q){ if(q.cr){ if((EOX.s.cr||"").trim()) k++; } else if(EOX.s.a[q.n]!=null) k++; }); return k; }
 function eoxProg(){ var el=document.getElementById("eoxProg"); if(el) el.textContent=eoxAnswered()+" / "+EOX.Q.length+" answered"+((EOX.s.wr||"").trim()?" · essay ✔":""); }
-var EOX_PARTS=[["R","Part 1 · Reading","35"],["V","Part 2 · Vocabulary","15"],["G","Part 3 · Grammar","10"],["W","Part 4 · Writing","40"]];
+var EOX_PARTS=[["R","Part 1 · Reading","[mark 30]"],["V","Part 2 · Vocabulary","[mark 15]"],["G","Part 3 · Grammar","[mark 15]"],["W","Part 4 · Writing","[mark 40]"]];
 function eoxRender(){
   var o=document.getElementById("eoxOv"); if(!o){ o=document.createElement("div"); o.id="eoxOv"; document.body.appendChild(o); }
   var parts=EOX_PARTS.map(function(p){ return '<button class="'+(EOX.part===p[0]?'on':'')+'" onclick="eoxPart(\''+p[0]+'\')">'+p[1]+'<small>'+p[2]+'</small></button>'; }).join("")
@@ -10172,11 +10176,11 @@ function eoxPane(){ var sp=document.getElementById("eoxSplit"); if(!sp) return; 
     var txt=esc(EOX.I.M.text).replace(/\{(\d+)\}/g,function(m,k){ var q=byG[+k]; if(!q) return m; var v=EOX.s.a[q.n];
       return '<span class="eox-gap'+(v==null?' e':'')+'" id="eoxGap'+q.n+'" onclick="eoxGo('+q.n+')"><small>'+q.n+'</small>'+(v==null?'________':esc(q.opts[v]))+'</span>'; });
     L='<div class="eox-tabs"><button class="on">Grammar maze</button><span class="sp"></span><button onclick="eoxFont(-1)">A−</button><button onclick="eoxFont(1)">A+</button></div><div class="eox-pass"><span class="eox-genre">maze</span><h2>'+esc(EOX.I.M.title||"Grammar maze")+'</h2>'
-     +'<div class="eox-info" style="font-size:.84rem">Read the text. For each numbered gap, choose the correct option on the right — your choice appears in the text. <b>10 × 1 mark.</b></div>'
+     +'<div class="eox-info" style="font-size:.84rem">Read the text. For each numbered gap, choose the correct option on the right — your choice appears in the text. <b>10 × 1.5 marks = 15 marks.</b></div>'
      +'<div class="eox-maze p" style="padding-left:0">'+txt.split(/\n+/).join('</div><div class="eox-maze p" style="padding-left:0">')+'</div></div>';
     R='<div class="eox-tabs"><button class="on">Options</button></div><div class="eox-qs">'+qs.map(eoxQ).join("")+eoxNextBtn()+'</div>'; }
   else if(P==="W"){ var Wt=E.writing, tips=(ICANPDF.writeTips||[]);
-    L='<div class="eox-tabs"><button class="on">Writing task</button></div><div class="eox-pass"><span class="eox-genre">essay · 40 marks</span><h2>Part 4 · Writing</h2>'
+    L='<div class="eox-tabs"><button class="on">Writing task</button></div><div class="eox-pass"><span class="eox-genre">essay · [mark 40]</span><h2>Part 4 · Writing</h2>'
      +'<div class="eox-info" style="font-size:.95rem"><b>'+esc(Wt.task)+'</b><br><br>Write about:<ol style="margin:4px 0 6px 18px;padding:0">'+Wt.points.map(function(p){return '<li>'+esc(p)+'</li>';}).join("")+'</ol>Write at least <b>'+Wt.words+' words</b> in paragraphs: an introduction, body paragraphs and a conclusion with your view.</div>'
      +'<div class="eox-info eox-chk"><h3>✔ Self-review checklist</h3>'+tips.map(function(t,i){ return '<label><input type="checkbox" '+(EOX.s.chk[i]?'checked':'')+' onchange="EOX.s.chk['+i+']=this.checked;_eoxSave()"/><span>'+esc(t[0])+'<small>'+esc(t[1])+'</small></span></label>'; }).join("")+'</div></div>';
     var wr=EOX.s.wr||"";
@@ -10208,16 +10212,16 @@ function eoxSubmit(auto){ if(!EOX||EOX.s.done) return;
     if(!confirm((miss?miss+" question"+(miss===1?" is":"s are")+" not answered. ":"All questions answered. ")+(wr?"":"Your essay is empty. ")+"Submit your exam now? You cannot change your answers afterwards.")) return; }
   eoxHush(); EOX.s.done=true; EOX.s.t1=Date.now(); _eoxSave(); EOX.part="S"; eoxRender(); if(auto) alert("⏰ Time is up — your exam has been submitted."); }
 function eoxScore(){ var r={R:0,V:0,G:0,nR:0,nV:0,nG:0,cR:0,cV:0,cG:0}; EOX.Q.forEach(function(q){ if(q.cr) return; r["n"+q.p]++; if(EOX.s.a[q.n]===q.ans){ r[q.p]+=q.mk; r["c"+q.p]++; } }); r.auto=r.R+r.V+r.G; return r; }
-function eoxResults(){ var S=eoxScore(), pct=Math.round(S.auto/55*100), col=pct>=85?"#2fbf71":pct>=60?"#F5B400":"#e4583e";
+function eoxResults(){ var S=eoxScore(), pct=Math.round(S.auto/60*100), col=pct>=85?"#2fbf71":pct>=60?"#F5B400":"#e4583e";
   var tm=EOX.s.t1?Math.round((EOX.s.t1-EOX.s.t0)/60000):0;
-  return '<div class="eox-res"><div class="eox-score"><div class="eox-ring" style="background:conic-gradient('+col+' '+pct+'%,#e8edf3 0)"><div style="width:86px;height:86px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><b>'+(+S.auto.toFixed(1))+'</b><small>of 55 auto</small></div></div>'
-   +'<div style="flex:1;min-width:240px"><div style="font-weight:800;font-size:1.1rem;color:#1b2a3a">'+esc(EOX.s.name||"Student")+' · Version '+EOX.ver+'</div><div style="color:#5a6b78;font-size:.86rem;margin:2px 0 10px">Submitted'+(tm?' after '+tm+' min':'')+'. Parts 1–3 are marked automatically; the written answer (5) and the essay (40) are marked by your teacher with the rubric.</div>'
-   +'<div class="eox-break"><div>Reading MCQs<b>'+S.R+' / 30</b>'+S.cR+' of '+S.nR+' correct</div><div>Vocabulary<b>'+(+S.V.toFixed(1))+' / 15</b>'+S.cV+' of '+S.nV+' correct</div><div>Grammar maze<b>'+S.G+' / 10</b>'+S.cG+' of '+S.nG+' correct</div><div>Written answer<b>— / 5</b>teacher</div><div>Essay<b>— / 40</b>teacher · '+(((EOX.s.wr||"").trim().split(/\s+/).filter(Boolean)).length)+' words</div></div></div></div>'
+  return '<div class="eox-res"><div class="eox-score"><div class="eox-ring" style="background:conic-gradient('+col+' '+pct+'%,#e8edf3 0)"><div style="width:86px;height:86px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><b>'+(+S.auto.toFixed(1))+'</b><small>of 60 auto</small></div></div>'
+   +'<div style="flex:1;min-width:240px"><div style="font-weight:800;font-size:1.1rem;color:#1b2a3a">'+esc(EOX.s.name||"Student")+' · Version '+EOX.ver+'</div><div style="color:#5a6b78;font-size:.86rem;margin:2px 0 10px">Submitted'+(tm?' after '+tm+' min':'')+'. Parts 1–3 (60 marks) are marked automatically; the essay (40) is marked by your teacher with the MoE rubric.</div>'
+   +'<div class="eox-break"><div>Reading MCQs<b>'+S.R+' / 30</b>'+S.cR+' of '+S.nR+' correct</div><div>Vocabulary<b>'+(+S.V.toFixed(1))+' / 15</b>'+S.cV+' of '+S.nV+' correct</div><div>Grammar maze<b>'+(+S.G.toFixed(1))+' / 15</b>'+S.cG+' of '+S.nG+' correct</div><div>Essay<b>— / 40</b>teacher · '+(((EOX.s.wr||"").trim().split(/\s+/).filter(Boolean)).length)+' words</div></div></div></div>'
    +eoxEstHTML(S)+'<div class="eox-info"><h3>Review your answers</h3>Open each part above: <b style="color:#1d9a57">green</b> = correct answer, <b style="color:#d0432a">red</b> = your wrong choice, with a 💡 feedback note (tip + evidence from the text). The Writing tab shows AI-assisted rubric feedback on your essay and a model essay.</div>'
    +'<div class="eox-next" style="justify-content:flex-start;flex-wrap:wrap"><button class="eox-btn pri" onclick="eoxPart(\'R\')">Review Part 1 ›</button><button class="eox-btn" onclick="eoxPart(\'W\')">🤖 Essay feedback &amp; model</button><button class="eox-btn" onclick="eoxSaveTxt()">⬇ Save my answers</button><button class="eox-btn" onclick="eoxRetry()">↺ Start again</button></div></div>'; }
-function eoxEstHTML(S){ var A=eoxAnalyze(EOX.s.wr||"",EOX.I.E.writing), R=eoxCR(EOX.s.cr||""), w=A.empty?0:A.of40, tot=S.auto+R.score+w;
-  return '<div class="eox-info"><h3>🤖 AI-assisted estimate</h3>Written answer ≈ <b>'+R.score+' / 5</b> · Essay ≈ <b>'+w+' / 40</b> (MoE rubric '+(A.empty?0:A.sum)+' / 25) → estimated total <b>'+(+tot.toFixed(1))+' / 100</b>. <span style="color:#5a6b78">These estimates come from an automatic analysis of your writing against the MoE rubric; your teacher confirms the final mark.</span></div>'; }
-function eoxSaveTxt(){ var S=eoxScore(), out=["iCAN Academy · End of Term 1 English Exam · Version "+EOX.ver,EOX.cname,"Student: "+(EOX.s.name||""),"Date: "+new Date(EOX.s.t1||Date.now()).toLocaleString("en-GB"),"Auto-marked: "+S.auto+" / 55  (Reading "+S.R+"/30 · Vocabulary "+S.V+"/15 · Grammar "+S.G+"/10)",""];
+function eoxEstHTML(S){ var A=eoxAnalyze(EOX.s.wr||"",EOX.I.E.writing), w=A.empty?0:A.of40, tot=S.auto+w;
+  return '<div class="eox-info"><h3>🤖 AI-assisted estimate</h3>Parts 1–3 = <b>'+(+S.auto.toFixed(1))+' / 60</b> · Essay ≈ <b>'+w+' / 40</b> (MoE rubric '+(A.empty?0:A.sum)+' / 25) → estimated total <b>'+(+tot.toFixed(1))+' / 100</b>. <span style="color:#5a6b78">These estimates come from an automatic analysis of your writing against the MoE rubric; your teacher confirms the final mark.</span></div>'; }
+function eoxSaveTxt(){ var S=eoxScore(), out=["iCAN Academy · End of Term 1 English Exam · Version "+EOX.ver,EOX.cname,"Student: "+(EOX.s.name||""),"Date: "+new Date(EOX.s.t1||Date.now()).toLocaleString("en-GB"),"Auto-marked: "+S.auto+" / 60  (Reading "+S.R+"/30 · Vocabulary "+S.V+"/15 · Grammar "+S.G+"/15)",""];
   EOX.Q.forEach(function(q){ if(q.cr){ out.push(q.n+". [written] "+(EOX.s.cr||"").trim()); return; } var v=EOX.s.a[q.n], L=q.p==="G"?"abc":"ABCD"; out.push(q.n+". "+(v==null?"—":L[v]+" "+q.opts[v])+(v===q.ans?"  ✔":"  ✘ (correct: "+L[q.ans]+" "+q.opts[q.ans]+")")); });
   out.push("","ESSAY:",(EOX.s.wr||"").trim());
   var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+out.join("\n")],{type:"text/plain"})); a.download="EoT_Version"+EOX.ver+"_"+(EOX.s.name||"student").replace(/\s+/g,"_")+".txt"; document.body.appendChild(a); a.click(); setTimeout(function(){ document.body.removeChild(a); },100); }
