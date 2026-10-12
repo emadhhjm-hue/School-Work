@@ -565,6 +565,10 @@ details.bkpg>summary{cursor:pointer;font-weight:700;color:#2B5FA6;font-size:.92r
 @media (prefers-reduced-motion:reduce){.hero-logo .hl-t,.hero-logo .hl-s{animation:none}}
 </style>
 <style id="wcCSS">
+#icanCopy{z-index:2147483000!important}
+.wc-pdf,#eotOv,#pdfOv,#bpZ{padding-bottom:78px!important;box-sizing:border-box}
+.wc-pdf .box{max-height:calc(100vh - 100px)}
+
 .wcx{max-width:980px;margin:0 auto}
 .wcx-top{display:flex;justify-content:space-between;color:#5a6b78;font-size:.92rem;margin:0 2px 8px}
 .wcx-top a{color:#119a55;font-weight:700;font-size:.82rem;cursor:pointer}
@@ -9339,7 +9343,7 @@ function wcBee(w,h){ w=w||58; h=h||46;
   +'<circle cx="14" cy="30" r="9" fill="#3a2a00"/><circle cx="11.5" cy="28" r="2.6" fill="#fff"/><circle cx="11" cy="28.3" r="1.2" fill="#3a2a00"/>'
   +'<path d="M10 22c-3-6-6-7-8-7M15 21c0-6 2-9 4-10" stroke="#3a2a00" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="2" cy="15" r="1.8" fill="#3a2a00"/><circle cx="19" cy="11" r="1.8" fill="#3a2a00"/>'
   +'<path d="M9 34c2 2 5 2 7 0" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>'; }
-function wcOrbHTML(){ return '<button class="wc-orb" title="Word Club — spelling bee & writer competition" onclick="openWordClub()"><span class="wo-bee">'+wcBee(58,46)+'</span><span class="wo-title">WORD CLUB</span><span class="wo-sub">say · spell · say</span></button>'; }
+function wcOrbHTML(){ return '<button class="wc-orb" title="Word Club — spelling bee & writer competition" onclick="openWordClub()"><span class="wo-bee">'+wcBee(58,46)+'</span><span class="wo-title">WORD CLUB</span></button>'; }
 /* ---------- progress (per viewer, best effort) ---------- */
 var WCP=null;
 function wcLoad(){ if(WCP) return WCP; try{ WCP=JSON.parse(localStorage.getItem("wc_prog")||"{}")||{}; }catch(e){ WCP={}; } WCP.r=WCP.r||{}; WCP.m=WCP.m||{}; WCP.pts=WCP.pts||0; WCP.best=WCP.best||0; return WCP; }
@@ -9661,7 +9665,7 @@ var WCL={band:-1,q:""};
 function wcList(){ var o=document.getElementById("wcListOv"); if(!o){ o=document.createElement("div"); o.id="wcListOv"; o.className="wc-pdf"; document.body.appendChild(o); }
  o.innerHTML='<div class="box"><div class="bar">📋 Word Study List <span style="font-weight:400;opacity:.85;font-size:.82rem" id="wclCount"></span><span class="sp"></span><button class="wc-btn sm" onclick="wcListCSV()">⬇ Export CSV</button><button class="wc-btn sm" onclick="wcListAdd()">➕ Add a word</button><button class="wc-btn sm" onclick="document.getElementById(\'wcListOv\').classList.remove(\'open\');wcStop()">✕ Close</button></div>'
   +'<div class="wcl-tools"><input id="wclQ" placeholder="🔎 Search a word or meaning…" oninput="WCL.q=this.value;wcListDraw()"/><div class="wcl-bands" id="wclBands"></div></div>'
-  +'<div class="wcl-note">Ordered by difficulty (Band 1 → Band 7), not alphabetically. Tap 🔊 to hear the word. <b>Editable:</b> click any word, class, definition or sentence to change it — your edits are saved on this device and used in the bee rounds.</div>'
+  +'<div class="wcl-note">Ordered by difficulty (Band 1 → Band 9), not alphabetically. Tap 🔊 to hear the word. <b>Editable:</b> click any word, class, definition or sentence to change it — your edits are saved on this device and used in the bee rounds.</div>'
   +'<div class="wcl-scroll"><table class="wcl"><thead><tr><th>#</th><th>Word <span style="opacity:.8;font-weight:600;text-transform:none;letter-spacing:0">(H = homonym)</span></th><th>🔊</th><th>Class</th><th>Definition</th><th>In context</th></tr></thead><tbody id="wclBody"></tbody></table></div></div>';
  o.classList.add("open"); wcListDraw(); }
 function wcListDraw(){ var rows=wcListRows(), q=WCL.q.trim().toLowerCase(), cnt={};
