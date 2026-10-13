@@ -1080,9 +1080,9 @@ body{background-color:#E9EEF5;background-image:radial-gradient(1200px 600px at 0
 .eox-parts button[disabled]{opacity:.38;cursor:not-allowed}
 .eox-rq{display:flex;flex-direction:column}
 .eon-bar{display:flex;gap:6px;align-items:center;padding:12px 16px;overflow-x:auto;background:#fff;border-bottom:1px solid #e3e8ee;flex:none;scrollbar-width:thin}
-.eon{flex:none;width:36px;height:36px;border-radius:50%;border:2px solid #cfd8e3;background:#fff;color:#4a5562;font:inherit;font-weight:800;font-size:.82rem;cursor:pointer;transition:transform .15s}
+.eon{flex:none;min-width:46px;height:34px;padding:0 8px;border-radius:17px;white-space:nowrap;border:2px solid #cfd8e3;background:#fff;color:#4a5562;font:inherit;font-weight:800;font-size:.82rem;cursor:pointer;transition:transform .15s}
 .eon:hover{transform:scale(1.08)}.eon.a{background:#1f6feb;border-color:#1f6feb;color:#fff}.eon.cur{box-shadow:0 0 0 3px #fff,0 0 0 5px #1b2a3a;transform:scale(1.1)}
-.eon.pV{border-style:dashed}.eon.pG{border-radius:10px}.eon.ok{background:#2fbf71;border-color:#2fbf71;color:#fff}.eon.no{background:#e4583e;border-color:#e4583e;color:#fff}
+.eon.pV{border-style:dashed}.eon.pG{border-radius:8px}.eon.ok{background:#2fbf71;border-color:#2fbf71;color:#fff}.eon.no{background:#e4583e;border-color:#e4583e;color:#fff}
 .eon-sep{flex:none;width:2px;height:26px;background:#d5dde6;margin:0 4px;border-radius:2px}
 .eoq-box{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 20px 30px}
 .eoq{max-width:720px}.eoq.in-r{animation:eoqR .32s ease}.eoq.in-l{animation:eoqL .32s ease}
@@ -10157,6 +10157,7 @@ function eoxBuild(I){ var Q=[], n=0;
   I.E.reading.forEach(function(T,ti){ I.R[ti].forEach(function(q){ n++; var ty=String(q._t||"comprehension").toLowerCase(); Q.push({n:n,p:"R",t:ti,q:q.q,ty:q._t||"",lo:"Reading · "+(EOX_LO[ty]||EOX_LO.comprehension),opts:q.opts,ans:q.ans,mk:2}); }); });
   I.vocab.forEach(function(q){ n++; Q.push({n:n,p:"V",q:q.q,ty:"vocabulary",lo:"Vocabulary · "+(q._s?"Use Term 1 vocabulary accurately in context":"Use context clues to choose an unfamiliar word"),opts:q.opts,ans:q.ans,mk:1.5,seen:q._s}); });
   I.gaps.forEach(function(g,k){ n++; Q.push({n:n,p:"G",g:k+1,q:"Gap "+(k+1),ty:"grammar",lo:"Grammar · Use "+String(g.point).replace(/^([A-Z])(?=[a-z])/,function(c){return c.toLowerCase();})+" accurately in context",opts:g.opts,ans:g.ans,mk:1.5,point:g.point}); });
+  var k={R:0,V:0,G:0}; Q.forEach(function(q){ k[q.p]++; q.lab={R:"1",V:"2",G:"3"}[q.p]+"-"+k[q.p]; q.k=k[q.p]; });
   return Q; }
 function _eoxShuf(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 function eoxMakePerms(){ var P={}, by={4:[],3:[]}; EOX.Q.forEach(function(q){ (by[q.opts.length]=by[q.opts.length]||[]).push(q); });
@@ -10172,21 +10173,21 @@ function openEOX(ver){ try{
   EOX={cls:CUR.cls,ver:I.ver,cname:C.name||"",I:I,Q:null,fs:2,live:false};
   EOX.Q=eoxBuild(I);
   var sv=_eoxLoad("eox2_"+EOX.cls+"_"+EOX.ver);
-  EOX.s=sv&&sv.a?sv:{a:{},wr:"",name:"",grade:C.name||"",phase:"new",cur:0,tq:{},chk:{},log:[],done:false};
+  EOX.s=(sv&&sv.a&&sv.done)?sv:eoxFresh(sv);
+  if(sv&&sv.a&&!sv.done&&(sv.phase==="A"||sv.phase==="B")) EOX.msg="Your last attempt was interrupted (the page was closed or refreshed), so it was cleared. Start again when you are ready.";
   var o=document.getElementById("eotOv"); if(o) o.classList.remove("open");
-  if(EOX.s.done){ EOX.part="S"; eoxRender(); } else eoxFront();
+  if(EOX.s.done){ EOX.part="S"; eoxRender(); } else { _eoxSave(); eoxFront(EOX.msg); EOX.msg=null; }
  }catch(e){ alert("Could not open the online exam: "+(e&&e.message?e.message:e)); } }
+function eoxFresh(old){ return {a:{},wr:"",name:(old&&old.name)||"",grade:(old&&old.grade)||(COURSES[CUR.cls]||{}).name||"",phase:"new",cur:0,tq:{},chk:{},log:[],done:false,tries:((old&&old.tries)||0)}; }
 function eoxShell(){ var o=document.getElementById("eoxOv"); if(!o){ o=document.createElement("div"); o.id="eoxOv"; document.body.appendChild(o); } o.className="open eox-fs"+(EOX?EOX.fs:2); return o; }
 function eoxFront(msg){ eoxStopLive(); var o=eoxShell(), s=EOX.s, resume=s.phase==="A"||s.phase==="B";
   o.innerHTML='<div class="eox"><div class="eox-top"><span class="eox-badge">EoT</span><div class="eox-tt"><b>End of Term 1 English Exam · Version '+EOX.ver+'</b><small>'+esc(EOX.cname)+' · online</small></div><button class="eox-x" onclick="eoxClose()">✕</button></div>'
    +'<div class="eof"><div class="eof-card eof-in">'+(msg?'<div class="eof-alert">⛔ '+esc(msg)+'</div>':'')
-   +'<h2>'+(resume?'Sign in again to continue':'Sign in to start the exam')+'</h2>'
+   +'<h2>Practice exam · enter your details</h2>'
    +'<label>Full name<input id="eofName" value="'+esc(s.name||"")+'" placeholder="e.g. Jana Emad Ali" autocomplete="off"/></label>'
-   +'<label>Grade / class<input id="eofGrade" value="'+esc(s.grade||"")+'" placeholder="e.g. Grade 8 · 8A" autocomplete="off"/></label>'
-   +'<label>Sign-in code <small>(from your teacher · each code works once)</small><input id="eofCode" placeholder="ABC-123" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px" onkeydown="if(event.key===\'Enter\')eoxSignIn()"/></label>'
-   +'<div class="eof-err" id="eofErr"></div><button class="eox-sub eof-go" onclick="eoxSignIn()">'+(resume?'▶ Continue my exam':'▶ Start the exam')+'</button>'
-   +(resume?'<p class="eof-note">Your answers are saved. The exam clock kept running while the exam was closed.</p>':'')
-   +'<p class="eof-note" style="margin-top:14px"><a onclick="eoxShowCodes()">Teacher: show sign-in codes</a></p></div>'
+   +'<label>Grade / class<input id="eofGrade" value="'+esc(s.grade||"")+'" placeholder="e.g. Grade 8 · 8A" autocomplete="off" onkeydown="if(event.key===\'Enter\')eoxSignIn()"/></label>'
+   +'<div class="eof-err" id="eofErr"></div><button class="eox-sub eof-go" onclick="eoxSignIn()">▶ '+(msg?'Start again':'Start the exam')+'</button>'
+   +'<p class="eof-note">This is a practice exam — no code is needed. If the exam closes, you start again from the beginning with a new order of answers.</p></div>'
    +'<div class="eof-card eof-tips"><h3>📋 The exam</h3><table><tr><th>Section</th><th>Items</th><th>Marks</th><th>Suggested time</th></tr>'
    +'<tr><td>Part 1 · Reading (3 texts)</td><td>15 MCQs</td><td>30</td><td>45 min · about 3 min per question</td></tr>'
    +'<tr><td>Part 2 · Vocabulary</td><td>10 MCQs</td><td>15</td><td>15 min · about 1½ min each</td></tr>'
@@ -10194,27 +10195,29 @@ function eoxFront(msg){ eoxStopLive(); var o=eoxShell(), s=EOX.s, resume=s.phase
    +'<tr class="tot"><td colspan="3">Section A clock (Parts 1–3)</td><td><b>80 minutes</b></td></tr>'
    +'<tr><td>Part 4 · Writing (essay)</td><td>1 task</td><td>40</td><td>plan 5 · write 30 · check 5</td></tr>'
    +'<tr class="tot"><td colspan="3">Section B clock (Part 4)</td><td><b>40 minutes</b></td></tr></table>'
-   +'<h3>⏱ Time management</h3><ul><li>Read the questions first, then read the text to find the answers.</li><li>Each question has its own small timer. When it turns <b style="color:#d0432a">red</b>, choose your best answer and move on.</li><li>Stuck? Click another number to skip — come back later. Grey numbers are still unanswered.</li><li>Keep the last 5 minutes of Section A to check every number is blue.</li><li>When you move to Writing, Parts 1–3 are closed. In Writing, plan before you write and keep 5 minutes to check.</li></ul>'
-   +'<h3>✅ Exam behaviour</h3><ul><li>Work alone and silently. Do not open other tabs or apps.</li><li><b>Copy, paste or right-click closes the exam.</b></li><li><b>No activity for 5 minutes closes the exam.</b></li><li>Closing or refreshing the page also closes it. You will need a <b>new sign-in code</b> from your teacher to continue.</li><li>Your answers are saved automatically.</li></ul></div></div></div>';
+   +'<h3>⏱ Time management</h3><ul><li>Read the questions first, then read the text to find the answers.</li><li>Each question has its own small timer. When it turns <b style="color:#d0432a">red</b>, choose your best answer and move on.</li><li>Stuck? Click another number to skip — come back later. White numbers are still unanswered.</li><li>Keep the last 5 minutes of Section A to check every number is blue.</li><li>When you move to Writing, Parts 1–3 are closed. In Writing, plan before you write and keep 5 minutes to check.</li></ul>'
+   +'<h3>✅ Exam behaviour</h3><ul><li>Work alone and silently. Stay on this page until you submit.</li><li><b>Copy, paste or right-click closes the exam.</b></li><li><b>No activity for 5 minutes closes the exam.</b></li><li><b>Switching to another tab, minimising the window or opening another app closes the exam.</b></li><li>Closing or refreshing the page also ends the attempt.</li><li>If the exam closes, your answers are cleared and you start again from Question 1-1.</li></ul></div></div></div>';
   setTimeout(function(){ var f=document.getElementById(s.name?"eofCode":"eofName"); if(f) f.focus(); },60); }
 function eoxSignIn(){ var nm=document.getElementById("eofName").value.trim(), gr=document.getElementById("eofGrade").value.trim(), err=document.getElementById("eofErr");
   if(nm.split(/\s+/).length<2){ err.textContent="Please write your full name (first name and family name)."; return; }
   if(!gr){ err.textContent="Please write your grade / class."; return; }
-  var r=eoxCheckCode(document.getElementById("eofCode").value); if(!r.ok){ err.textContent=r.msg; return; }
-  _eoxUse(r.code); var s=EOX.s; s.name=nm; s.grade=gr; s.codes=(s.codes||[]).concat([r.code]);
-  if(s.phase==="new"){ s.phase="A"; s.tA=Date.now(); s.cur=0; s.perm=eoxMakePerms(); eoxLog("Signed in and started ("+r.code+")"); }
-  else eoxLog("Signed in again ("+r.code+")");
-  s.locked=false; _eoxSave(); EOX.part=s.phase==="B"?"W":EOX.Q[s.cur].p; eoxStartLive(); eoxRender(); }
+  var old=EOX.s, s=EOX.s=eoxFresh(old); s.name=nm; s.grade=gr; s.tries=(old.tries||0)+1; s.log=[];
+  s.phase="A"; s.tA=Date.now(); s.cur=0; s.perm=eoxMakePerms(); eoxLog("Started attempt "+s.tries);
+  _eoxSave(); EOX.part="R"; eoxStartLive(); eoxRender(); }
 /* ---- live session: clocks + proctoring ---- */
 function eoxStartLive(){ EOX.live=true; EOX.last=Date.now(); clearInterval(EOX_T); EOX_T=setInterval(eoxTick,1000);
   if(!window.__eoxBound){ window.__eoxBound=1;
     ["mousemove","mousedown","keydown","touchstart","wheel","scroll","input"].forEach(function(ev){ document.addEventListener(ev,function(){ if(EOX&&EOX.live){ EOX.last=Date.now(); var w=document.getElementById("eoxIdle"); if(w) w.style.display="none"; } },true); });
     ["copy","cut","paste","contextmenu","drop"].forEach(function(ev){ document.addEventListener(ev,function(e){ if(EOX&&EOX.live){ e.preventDefault(); eoxLock(ev==="contextmenu"?"Right-click was used during the exam.":(ev==="drop"?"Text was dragged into the exam.":"Copy / paste ("+ev+") was detected during the exam.")); } },true); });
-    document.addEventListener("visibilitychange",function(){ if(EOX&&EOX.live&&document.hidden) eoxLog("Left the exam window"); });
-    window.addEventListener("beforeunload",function(){ if(EOX&&EOX.live){ EOX.s.locked=true; eoxLog("Page closed or refreshed"); } }); } }
+    document.addEventListener("visibilitychange",function(){ if(EOX&&EOX.live&&!EOX.dlg&&document.hidden) eoxLock("You switched to another tab or minimised the window."); });
+    window.addEventListener("blur",function(){ if(!EOX||!EOX.live||EOX.dlg) return; clearTimeout(EOX.blurT); EOX.blurT=setTimeout(function(){ if(EOX&&EOX.live&&!EOX.dlg&&!document.hasFocus()) eoxLock("You left the exam window for another app or window."); },1500); });
+    window.addEventListener("focus",function(){ if(EOX) clearTimeout(EOX.blurT); });
+  } }
+function eoxAsk(m){ EOX.dlg=true; var r=confirm(m); setTimeout(function(){ if(EOX){ EOX.dlg=false; EOX.last=Date.now(); } },400); return r; }
+function eoxTell(m){ if(EOX) EOX.dlg=true; alert(m); setTimeout(function(){ if(EOX) EOX.dlg=false; },400); }
 function eoxStopLive(){ if(EOX) EOX.live=false; clearInterval(EOX_T); eoxHush(); }
-function eoxLock(reason){ if(!EOX||!EOX.live) return; EOX.s.locked=true; eoxLog("CLOSED: "+reason); eoxStopLive(); eoxFront("The exam was closed. "+reason+" Ask your teacher for a new sign-in code to continue."); }
-function eoxClose(){ if(EOX&&EOX.live&&!EOX.s.done){ if(!confirm("Leave the exam? It will be closed and you will need a new sign-in code to continue.")) return; EOX.s.locked=true; eoxLog("Left the exam (closed by student)"); }
+function eoxLock(reason){ if(!EOX||!EOX.live) return; eoxStopLive(); var old=EOX.s; EOX.s=eoxFresh(old); EOX.s.lastClose=reason; _eoxSave(); eoxFront("The exam was closed: "+reason+" Your answers have been cleared — you can start again from the beginning."); }
+function eoxClose(){ if(EOX&&EOX.live&&!EOX.s.done){ if(!eoxAsk("Leave the exam? Your answers will be cleared and you will need to start again.")) return; EOX.live=false; EOX.s=eoxFresh(EOX.s); _eoxSave(); }
   eoxStopLive(); var o=document.getElementById("eoxOv"); if(o) o.classList.remove("open"); }
 function _eoxLeft(sec){ var s=EOX.s; if(s.phase==="A") return Math.round(EOX_SEC.A-(Date.now()-s.tA)/1000); if(s.phase==="B") return Math.round(EOX_SEC.B-(Date.now()-s.tB)/1000); return 0; }
 function _eoxFmt(t){ var neg=t<0; t=Math.abs(t); var m=Math.floor(t/60), x=t%60; return (neg?"+":"")+m+":"+(x<10?"0":"")+x; }
@@ -10247,14 +10250,14 @@ function eoxGoQ(i,dir){ if(i<0||i>=EOX.Q.length) return; var old=EOX.s.cur; eoxH
 function eoxFont(dl){ EOX.fs=Math.max(1,Math.min(3,EOX.fs+dl)); document.getElementById("eoxOv").className="open eox-fs"+EOX.fs; }
 /* number bar */
 function eoxNumsHTML(){ return EOX.Q.map(function(q,i){ var a=EOX.s.a[q.n]!=null, c="eon p"+q.p+(a?" a":"")+(i===EOX.s.cur?" cur":"");
-  if(EOX.s.done) c+=(EOX.s.a[q.n]===q.ans?" ok":" no"); return (i>0&&EOX.Q[i-1].p!==q.p?'<i class="eon-sep"></i>':'')+'<button class="'+c+'" onclick="eoxGoQ('+i+')" title="'+(q.p==="R"?"Reading":q.p==="V"?"Vocabulary":"Grammar")+'">'+q.n+'</button>'; }).join(""); }
+  if(EOX.s.done) c+=(EOX.s.a[q.n]===q.ans?" ok":" no"); return (i>0&&EOX.Q[i-1].p!==q.p?'<i class="eon-sep"></i>':'')+'<button class="'+c+'" onclick="eoxGoQ('+i+')" title="'+(q.p==="R"?"Part 1 · Reading":q.p==="V"?"Part 2 · Vocabulary":"Part 3 · Grammar")+'">'+q.lab+'</button>'; }).join(""); }
 function eoxNums(){ var el=document.getElementById("eoxNums"); if(el){ el.innerHTML=eoxNumsHTML(); var c=el.querySelector(".cur"); if(c&&c.scrollIntoView) c.scrollIntoView({block:"nearest",inline:"center"}); } }
 /* one question card */
 function eoxCard(q,dir){ var s=EOX.s, v=s.a[q.n], dn=s.done, perm=(s.perm&&s.perm[q.n])||q.opts.map(function(o,i){return i;}), L=q.p==="G"?"abc":"ABCD";
   var lab={R:"Reading",V:"Vocabulary",G:"Grammar"}[q.p];
-  var h='<div class="eoq'+(dir>0?' in-r':dir<0?' in-l':'')+'"><div class="eoq-h"><span class="eoq-of">QUESTION '+q.n+' OF '+EOX.Q.length+'</span><span class="eoq-ty">'+esc(q.p==="R"?(q.ty||"reading").replace(/\b\w/g,function(c){return c.toUpperCase();}):lab)+'</span><span class="eoq-mk">'+q.mk+' marks</span>'+(dn?'':'<span class="eoq-t" id="eoxQT"></span>')+'</div>'
+  var h='<div class="eoq'+(dir>0?' in-r':dir<0?' in-l':'')+'"><div class="eoq-h"><span class="eoq-of">QUESTION '+q.lab+' · '+q.k+' OF '+EOX.Q.filter(function(x){return x.p===q.p;}).length+' IN PART '+q.lab.charAt(0)+'</span><span class="eoq-ty">'+esc(q.p==="R"?(q.ty||"reading").replace(/\b\w/g,function(c){return c.toUpperCase();}):lab)+'</span><span class="eoq-mk">'+q.mk+' marks</span>'+(dn?'':'<span class="eoq-t" id="eoxQT"></span>')+'</div>'
    +'<div class="eoq-lo">🎯 <b>Learning objective:</b> '+esc(q.lo)+'</div>'
-   +'<div class="eoq-q"><b>'+q.n+'.</b> '+(q.p==="G"?'Choose the correct option for gap <b>('+q.n+')</b> in the text.':esc(q.q))+'</div>';
+   +'<div class="eoq-q"><b>'+q.lab+'.</b> '+(q.p==="G"?'Choose the correct option for gap <b>('+q.lab+')</b> in the text.':esc(q.q))+'</div>';
   perm.forEach(function(oi,di){ var c="eox-op"+(v===oi?" sel":""); if(dn){ if(oi===q.ans) c+=" right"; else if(v===oi) c+=" wrong"; }
     h+='<button class="'+c+'" onclick="eoxPick('+q.n+','+oi+')"'+(dn?' disabled':'')+'><span class="c">'+L[di]+'</span><span>'+esc(q.opts[oi])+'</span></button>'; });
   if(dn&&v!==q.ans) h+=eoxQFb(q);
@@ -10264,11 +10267,11 @@ function eoxCard(q,dir){ var s=EOX.s, v=s.a[q.n], dn=s.done, perm=(s.perm&&s.per
   return h; }
 function eoxPick(n,oi){ if(EOX.s.done||!EOX.live) return; EOX.s.a[n]=oi; _eoxSave(); var q=EOX.Q.filter(function(x){return x.n===n;})[0];
   document.getElementById("eoxQBox").innerHTML=eoxCard(q,0); eoxNums(); eoxProg(); eoxQClock();
-  if(q.p==="G"){ var gp=document.getElementById("eoxGap"+n); if(gp){ gp.className="eox-gap cur"; gp.innerHTML='<small>'+n+'</small>'+esc(q.opts[oi]); } } }
+  if(q.p==="G"){ var gp=document.getElementById("eoxGap"+n); if(gp){ gp.className="eox-gap cur"; gp.innerHTML='<small>'+q.lab+'</small>'+esc(q.opts[oi]); } } }
 function eoxLeftFocus(){ var q=EOX.Q[EOX.s.cur]; document.querySelectorAll("#eoxOv .eox-gap.cur").forEach(function(x){x.classList.remove("cur");});
   if(q.p==="G"){ var g=document.getElementById("eoxGap"+q.n); if(g){ g.classList.add("cur"); g.scrollIntoView({block:"center",behavior:"smooth"}); } }
   var m=document.getElementById("eoxVQ"); if(m&&q.p==="V") m.innerHTML=eoxVocabLeft(q); }
-function eoxVocabLeft(q){ return '<div class="eox-info"><h3>Question '+q.n+'</h3><div style="font-size:1.05rem;line-height:1.7">'+esc(q.q)+'</div></div>'; }
+function eoxVocabLeft(q){ return '<div class="eox-info"><h3>Question '+q.lab+'</h3><div style="font-size:1.05rem;line-height:1.7">'+esc(q.q)+'</div></div>'; }
 /* panes */
 function eoxPane(){ var sp=document.getElementById("eoxSplit"); if(!sp) return; var P=EOX.part, E=EOX.I.E, s=EOX.s, L="", R="";
   if(P==="S"){ sp.innerHTML='<div class="eox-r" style="flex:1">'+eoxResults()+'</div>'; return; }
@@ -10288,7 +10291,7 @@ function eoxPane(){ var sp=document.getElementById("eoxSplit"); if(!sp) return; 
      +T.paras.map(function(p,i){ return '<p class="p" id="eoxP'+i+'"><i>'+(i+1)+'</i>'+esc(p)+'</p>'; }).join("")+'</div>'; }
   else if(P==="V"){ L='<div class="eox-tabs"><button class="on">Part 2 · Vocabulary</button></div><div class="eox-pass"><div class="eox-info"><h3>Instructions</h3>Read each sentence carefully and choose the word that best completes it. <b>10 items × 1.5 marks = 15 marks.</b> Most words are from Term 1; a few are new — use the context.</div><div id="eoxVQ">'+eoxVocabLeft(q)+'</div></div>'; }
   else { var byG={}; EOX.Q.forEach(function(x){ if(x.p==="G") byG[x.g]=x; });
-    var txt=esc(EOX.I.M.text).replace(/\{(\d+)\}/g,function(m,k){ var g=byG[+k]; if(!g) return m; var v=s.a[g.n]; return '<span class="eox-gap'+(v==null?' e':'')+(g===q?' cur':'')+'" id="eoxGap'+g.n+'" onclick="eoxGoQ('+EOX.Q.indexOf(g)+')"><small>'+g.n+'</small>'+(v==null?'________':esc(g.opts[v]))+'</span>'; });
+    var txt=esc(EOX.I.M.text).replace(/\{(\d+)\}/g,function(m,k){ var g=byG[+k]; if(!g) return m; var v=s.a[g.n]; return '<span class="eox-gap'+(v==null?' e':'')+(g===q?' cur':'')+'" id="eoxGap'+g.n+'" onclick="eoxGoQ('+EOX.Q.indexOf(g)+')"><small>'+g.lab+'</small>'+(v==null?'________':esc(g.opts[v]))+'</span>'; });
     L='<div class="eox-tabs"><button class="on">Grammar maze</button><span class="sp"></span><button onclick="eoxFont(-1)">A−</button><button onclick="eoxFont(1)">A+</button></div><div class="eox-pass"><span class="eox-genre">maze</span><h2>'+esc(EOX.I.M.title||"Grammar maze")+'</h2><div class="eox-info" style="font-size:.84rem">Choose the correct option for each numbered gap — your choice appears in the text. <b>10 × 1.5 marks.</b></div><div class="eox-maze">'+txt.split(/\n+/).join('</div><div class="eox-maze">')+'</div></div>'; }
   R='<div class="eon-bar" id="eoxNums">'+eoxNumsHTML()+'</div><div class="eoq-box" id="eoxQBox">'+eoxCard(q,0)+'</div>';
   sp.innerHTML='<section class="eox-l" id="eoxL">'+L+'</section><section class="eox-r eox-rq" id="eoxR">'+R+'</section>';
@@ -10298,11 +10301,11 @@ function eoxWords(){ var el=document.getElementById("eoxWc"); if(!el) return; va
   el.innerHTML='<span>Paragraphs: <b>'+p+'</b></span><span>Words: <b class="'+(n>=tg?'ok':'')+'">'+n+'</b> / '+tg+'</span>'; eoxProg(); }
 /* section change & submit */
 function eoxToWriting(auto){ var s=EOX.s; if(s.phase!=="A") return;
-  if(!auto){ var miss=EOX.Q.length-eoxAnswered(); if(!confirm((miss?miss+" question"+(miss===1?" is":"s are")+" not answered. ":"")+"Move to Part 4 · Writing? Parts 1–3 will be closed and the 40-minute writing clock starts.")) return; }
-  s.phase="B"; s.tB=Date.now(); eoxLog(auto?"Moved to Writing (Section A time up)":"Moved to Writing"); _eoxSave(); EOX.part="W"; eoxRender(); if(auto) setTimeout(function(){ alert("⏰ Section A time is up. Parts 1–3 are closed — you now have 40 minutes for Writing."); },50); }
+  if(!auto){ var miss=EOX.Q.length-eoxAnswered(); if(!eoxAsk((miss?miss+" question"+(miss===1?" is":"s are")+" not answered. ":"")+"Move to Part 4 · Writing? Parts 1–3 will be closed and the 40-minute writing clock starts.")) return; }
+  s.phase="B"; s.tB=Date.now(); eoxLog(auto?"Moved to Writing (Section A time up)":"Moved to Writing"); _eoxSave(); EOX.part="W"; eoxRender(); if(auto) setTimeout(function(){ eoxTell("⏰ Section A time is up. Parts 1–3 are closed — you now have 40 minutes for Writing."); },50); }
 function eoxSubmit(auto){ if(!EOX||EOX.s.done) return; if(EOX.s.phase==="A"&&!auto){ eoxToWriting(); return; }
-  if(!auto&&!confirm(((EOX.s.wr||"").trim()?"":"Your essay is empty. ")+"Submit your exam now? You cannot change your answers afterwards.")) return;
-  eoxStopLive(); EOX.s.done=true; EOX.s.phase="done"; EOX.s.t1=Date.now(); eoxLog(auto?"Submitted automatically (time up)":"Submitted"); _eoxSave(); EOX.part="S"; eoxRender(); if(auto) alert("⏰ Time is up — your exam has been submitted."); }
+  if(!auto&&!eoxAsk(((EOX.s.wr||"").trim()?"":"Your essay is empty. ")+"Submit your exam now? You cannot change your answers afterwards.")) return;
+  eoxStopLive(); EOX.s.done=true; EOX.s.phase="done"; EOX.s.t1=Date.now(); eoxLog(auto?"Submitted automatically (time up)":"Submitted"); _eoxSave(); EOX.part="S"; eoxRender(); if(auto) eoxTell("⏰ Time is up — your exam has been submitted."); }
 function eoxScore(){ var r={R:0,V:0,G:0,nR:0,nV:0,nG:0,cR:0,cV:0,cG:0}; EOX.Q.forEach(function(q){ r["n"+q.p]++; if(EOX.s.a[q.n]===q.ans){ r[q.p]+=q.mk; r["c"+q.p]++; } }); r.auto=r.R+r.V+r.G; return r; }
 function eoxResults(){ var S=eoxScore(), s=EOX.s, pct=Math.round(S.auto/60*100), col=pct>=85?"#2fbf71":pct>=60?"#F5B400":"#e4583e";
   var tm=s.t1&&s.tA?Math.round((s.t1-s.tA)/60000):0, closes=(s.log||[]).filter(function(l){return /^CLOSED/.test(l.e);}).length;
@@ -10312,16 +10315,16 @@ function eoxResults(){ var S=eoxScore(), s=EOX.s, pct=Math.round(S.auto/60*100),
    +eoxEstHTML(S)+eoxLOHTML()
    +'<div class="eox-info"><h3>Review your answers</h3>Open a part above and move through the numbers: <b style="color:#1d9a57">green</b> = correct, <b style="color:#d0432a">red</b> = your wrong choice, with a 💡 feedback note. The Writing tab shows rubric feedback and a model essay.</div>'
    +'<details class="eox-info"><summary><b>🕘 Exam log</b> ('+(s.log||[]).length+' events)</summary><ul style="margin:6px 0 0 18px;font-size:.84rem">'+(s.log||[]).map(function(l){ return '<li>'+new Date(l.t).toLocaleTimeString("en-GB")+' — '+esc(l.e)+'</li>'; }).join("")+'</ul></details>'
-   +'<div class="eox-next" style="justify-content:flex-start;flex-wrap:wrap"><button class="eox-btn pri" onclick="eoxPart(\'R\')">Review Part 1 ›</button><button class="eox-btn" onclick="eoxPart(\'W\')">🤖 Essay feedback &amp; model</button><button class="eox-btn" onclick="eoxSaveTxt()">⬇ Save my answers</button><button class="eox-btn" onclick="eoxRetry()">↺ Reset (teacher)</button></div></div>'; }
+   +'<div class="eox-next" style="justify-content:flex-start;flex-wrap:wrap"><button class="eox-btn pri" onclick="eoxPart(\'R\')">Review Part 1 ›</button><button class="eox-btn" onclick="eoxPart(\'W\')">🤖 Essay feedback &amp; model</button><button class="eox-btn" onclick="eoxSaveTxt()">⬇ Save my answers</button><button class="eox-btn" onclick="eoxRetry()">↺ Try again</button></div></div>'; }
 function eoxLOHTML(){ var M={}; EOX.Q.forEach(function(q){ var k=q.p==="G"?"Grammar · "+q.point:q.lo; M[k]=M[k]||{n:0,c:0}; M[k].n++; if(EOX.s.a[q.n]===q.ans) M[k].c++; });
   return '<details class="eox-info"><summary><b>🎯 Results by learning objective</b></summary><table class="eox-lot">'+Object.keys(M).map(function(k){ var m=M[k], p=Math.round(m.c/m.n*100); return '<tr><td>'+esc(k)+'</td><td>'+m.c+' / '+m.n+'</td><td><i style="width:'+p+'%;background:'+(p>=75?'#2fbf71':p>=50?'#F5B400':'#e4583e')+'"></i></td></tr>'; }).join("")+'</table></details>'; }
 function eoxEstHTML(S){ var A=eoxAnalyze(EOX.s.wr||"",EOX.I.E.writing), w=A.empty?0:A.of40, tot=S.auto+w;
   return '<div class="eox-info"><h3>🤖 AI-assisted estimate</h3>Parts 1–3 = <b>'+(+S.auto.toFixed(1))+' / 60</b> · Essay ≈ <b>'+w+' / 40</b> (MoE rubric '+(A.empty?0:A.sum)+' / 25) → estimated total <b>'+(+tot.toFixed(1))+' / 100</b>. <span style="color:#5a6b78">The essay estimate comes from an automatic analysis against the MoE rubric; your teacher confirms the final mark.</span></div>'; }
 function eoxSaveTxt(){ var S=eoxScore(), s=EOX.s, out=["iCAN Academy · End of Term 1 English Exam · Version "+EOX.ver,EOX.cname,"Student: "+(s.name||"")+" · "+(s.grade||""),"Submitted: "+new Date(s.t1||Date.now()).toLocaleString("en-GB"),"Auto-marked: "+S.auto+" / 60  (Reading "+S.R+"/30 · Vocabulary "+S.V+"/15 · Grammar "+S.G+"/15)",""];
-  EOX.Q.forEach(function(q){ var v=s.a[q.n]; out.push(q.n+". "+(v==null?"—":eoxLet(q,v)+" "+q.opts[v])+(v===q.ans?"  ✔":"  ✘ (correct: "+eoxLet(q,q.ans)+" "+q.opts[q.ans]+")")+"  · "+(s.tq[q.n]||0)+" s"); });
+  EOX.Q.forEach(function(q){ var v=s.a[q.n]; out.push(q.lab+". "+(v==null?"—":eoxLet(q,v)+" "+q.opts[v])+(v===q.ans?"  ✔":"  ✘ (correct: "+eoxLet(q,q.ans)+" "+q.opts[q.ans]+")")+"  · "+(s.tq[q.n]||0)+" s"); });
   out.push("","ESSAY:",(s.wr||"").trim(),"","EXAM LOG:"); (s.log||[]).forEach(function(l){ out.push(new Date(l.t).toLocaleString("en-GB")+" — "+l.e); });
   var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+out.join("\n")],{type:"text/plain"})); a.download="EoT_Version"+EOX.ver+"_"+(s.name||"student").replace(/\s+/g,"_")+".txt"; document.body.appendChild(a); a.click(); setTimeout(function(){ document.body.removeChild(a); },100); }
-function eoxRetry(){ if(!eoxTeacher()) return; if(!confirm("Delete this student's answers and reset this version on this device?")) return; try{ localStorage.removeItem(_eoxKey()); }catch(e){} openEOX(EOX.ver); }
+function eoxRetry(){ if(!eoxAsk("Start a new attempt? These results will be cleared from this device.")) return; EOX.s=eoxFresh(EOX.s); _eoxSave(); eoxFront(); }
 /* ---- read aloud ---- */
 var EOX_SAY={on:false,i:0,rate:1};
 function eoxVoice(){ var vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[]; return vs.filter(function(v){return /en-GB/i.test(v.lang);})[0]||vs.filter(function(v){return /^en/i.test(v.lang);})[0]||null; }
