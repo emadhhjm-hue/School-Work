@@ -10085,19 +10085,26 @@ function eoxGrammar(text){ var E=[], S=_eoxSents(text);
    [/\b(it|this|that)\s+(make|give|help|cause|mean|need|take|show)\s/gi,"Subject–verb agreement","it / this / that → makes / gives / helps …"]];
   R.forEach(function(r){ var m; r[0].lastIndex=0; var k=0; while((m=r[0].exec(T))&&k<3){ if(r[1]==="Repeated word"&&/^(that|had|very)$/i.test(m[1])) continue; add(r[1],m[0].trim(),r[2]); k++; } });
   return E; }
-function eoxMeaning(text,W){ var D=eoxDict(), ws=_eoxWords(text), n=ws.length; if(!n) return {zero:true,why:"No answer was written.",real:0,orig:0};
+function eoxMeaning(text,W){ var D=eoxDict(), all=_eoxWords(text), n=all.length; if(!n) return {zero:true,why:"No answer was written.",real:0,orig:0,p:1};
   var taskW={}; _eoxWords(W.task+" "+W.points.join(" ")).forEach(function(w){ taskW[w.toLowerCase()]=1; });
-  var LINK={introduction:1,conclusion:1,point:1,first:1,firstly:1,second:1,secondly:1,third:1,finally:1,however:1,therefore:1,moreover:1,furthermore:1,similarly:1,"in":1,on:1,the:1,other:1,hand:1,of:1,all:1,addition:1,to:1,sum:1,up:1,a:1,i:1,is:1,and:1,but:1,so:1,or:1,body:1,paragraph:1};
-  var real=0, orig=0;
-  ws.forEach(function(w){ var lw=w.toLowerCase().replace(/[’']s$/,""), ok=lw.length>1&&(D[lw]||D[lw.replace(/s$/,"")])||lw==="a"||lw==="i"; if(ok){ real++; if(!taskW[lw]&&!LINK[lw]) orig++; } });
-  var ratio=real/n, sents=_eoxSents(text).filter(function(x){ var w=_eoxWords(x); return w.length>=4&&w.filter(function(y){ var l=y.toLowerCase(); return D[l]&&!taskW[l]&&!LINK[l]; }).length>=3; }).length;
-  if(ratio<0.6) return {zero:true,why:"Most of the text is not real English words (random letters or nonsense), so it cannot be understood.",real:real,orig:orig};
-  if(orig<12||sents<2) return {zero:true,why:"There are no meaningful sentences of the student's own — only a few words, linking words or words copied from the prompt.",real:real,orig:orig};
-  return {zero:false,real:real,orig:orig,ratio:ratio}; }
+  var LINK={introduction:1,conclusion:1,point:1,first:1,firstly:1,second:1,secondly:1,third:1,thirdly:1,finally:1,however:1,therefore:1,moreover:1,furthermore:1,similarly:1,"in":1,on:1,the:1,other:1,hand:1,of:1,all:1,addition:1,to:1,sum:1,up:1,a:1,i:1,is:1,and:1,but:1,so:1,or:1,body:1,paragraph:1,thanks:1,thank:1,you:1,very:1,much:1,"for":1,listening:1};
+  function isReal(w){ var lw=w.toLowerCase().replace(/[’']s$/,""); return lw==="a"||lw==="i"||(lw.length>1&&!!(D[lw]||D[lw.replace(/s$/,"")])); }
+  var keepLines=[], realOwn=0, goodSent=0, badWords=0;
+  String(text).split(/\n/).forEach(function(line){ if(!line.trim()){ keepLines.push(""); return; }
+    var segs=line.split(/(?<=[.!?;])\s+/), kept=[];
+    segs.forEach(function(sg){ var ws=_eoxWords(sg); if(!ws.length) return; var r=ws.filter(isReal).length, ratio=r/ws.length;
+      var junk=(sg.match(/[;]{1,}[a-z]|[bcdfghjklmnpqrstvwxz]{5,}/gi)||[]).length;
+      if(ratio>=0.7&&r>=3&&junk<2){ kept.push(sg); var own=ws.filter(function(w){ var l=w.toLowerCase(); return isReal(w)&&!taskW[l]&&!LINK[l]; }).length; realOwn+=own; if(own>=3) goodSent++; }
+      else badWords+=ws.length; });
+    if(kept.length) keepLines.push(kept.join(" ")); });
+  var keep=keepLines.join("\n").replace(/\n{3,}/g,"\n\n").trim(), p=badWords/n;
+  if(realOwn<12||goodSent<2) return {zero:true,why:(p>0.4?"Most of the text is not real English words (random letters or nonsense), so it cannot be understood.":"There are no meaningful sentences of the student's own — only a few words, linking words or words copied from the prompt."),real:n-badWords,orig:realOwn,p:p};
+  return {zero:false,keep:keep,p:p,bad:badWords,n:n}; }
 function eoxAnalyze(text,W){
   text=String(text||""); var words=_eoxWords(text), n=words.length, tg=W.words||150, paras=_eoxParas(text), S=_eoxSents(text), cw=_eoxContent(text), lc=words.map(function(w){return w.toLowerCase();});
   var C=[], RUB=(typeof ICANPDF!=="undefined"&&ICANPDF.eotRubric)||[];
   var Mg=eoxMeaning(text,W);
+  if(!Mg.zero&&Mg.p>0.02){ text=Mg.keep; words=_eoxWords(text); n=words.length; paras=_eoxParas(text); S=_eoxSents(text); cw=_eoxContent(text); lc=words.map(function(w){return w.toLowerCase();}); }
   if(Mg.zero) return {n:n,tg:tg,zero:true,why:Mg.why,real:Mg.real,orig:Mg.orig,sum:0,of40:0,spell:[],empty:n<5,crit:["Task completion","Structure","Grammar","Vocabulary","Spelling & punctuation"].map(function(k){ return {k:k,lv:0,good:[],fix:[]}; })};
   function lv(x){ return Math.max(1,Math.min(5,x)); }
   /* 1 · task completion */
@@ -10127,7 +10134,7 @@ function eoxAnalyze(text,W){
   C.push({k:"Grammar",lv:lv(t3),good:g3,fix:f3});
   /* 4 · vocabulary */
   var ac={}, mdl={}; (W.academic||[]).forEach(function(p){ mdl[p[0].toLowerCase()]=1; });
-  cw.forEach(function(w){ if(w.length<5) return; if(EOX_AWL.some(function(s){return w.indexOf(s)===0;})||Object.keys(mdl).some(function(m){return w.indexOf(_eoxStem(m))===0;})) ac[w]=1; });
+  var Dk=eoxDict(); cw.forEach(function(w){ if(w.length<5||!Dk[w]) return; if(EOX_AWL.some(function(s){return w.indexOf(s)===0;})||Object.keys(mdl).some(function(m){return w.indexOf(_eoxStem(m))===0;})) ac[w]=1; });
   var acN=Object.keys(ac).length, uniq={}; cw.forEach(function(w){uniq[w]=(uniq[w]||0)+1;}); var div=cw.length?Object.keys(uniq).length/cw.length:0;
   var taskW={}; _eoxContent(W.task+" "+W.points.join(" ")).forEach(function(w){taskW[w]=1;});
   var tSt=Object.keys(taskW).map(_eoxStem), rep=Object.keys(uniq).filter(function(w){ return uniq[w]>=5&&tSt.indexOf(_eoxStem(w))<0; }).sort(function(a,b){return uniq[b]-uniq[a];}).slice(0,5);
@@ -10148,8 +10155,12 @@ function eoxAnalyze(text,W){
   var g5=[], f5=[]; if(!SP.length) g5.push("No spelling mistakes were detected."); else f5.push("Check these spellings: "+SP.slice(0,12).map(function(x){return "“"+x.w+"”"+(x.sug?" → "+x.sug:"");}).join(", ")+".");
   if(!pe) g5.push("Capital letters and end punctuation look correct."); else f5.push(pe+" capital-letter / punctuation slip"+(pe>1?"s":"")+" (see Grammar).");
   C.push({k:"Spelling & punctuation",lv:lv(t5),good:g5,fix:f5});
+  var pen=null;
+  if(Mg.p>0.02){ var pc=Math.round(Mg.p*100), cap=Mg.p>0.5?2:Mg.p>0.25?3:Mg.p>0.1?4:5, scap=Mg.p>0.4?1:Mg.p>0.2?2:Mg.p>0.08?3:4;
+    C.forEach(function(c){ var lim=c.k==="Spelling & punctuation"?scap:cap; if(c.lv>lim){ c.lv=lim; c.fix.unshift("Capped at Level "+lim+" because about "+pc+"% of the writing is nonsense / not real English."); } });
+    pen={pct:pc,bad:Mg.bad,cap:cap}; }
   var sum=C.reduce(function(a,c){return a+c.lv;},0);
-  return {n:n,tg:tg,crit:C,sum:sum,of40:Math.round(sum/25*40),spell:SP,empty:n<5}; }
+  return {n:n,tg:tg,crit:C,sum:sum,of40:Math.round(sum/25*40),spell:SP,empty:n<5,pen:pen}; }
 /* constructed response (Text 1 main idea + detail) */
 function eoxCR(text){ var T=EOX.I.E.reading[0], mi=T.qs.filter(function(q){return /main idea/i.test(q.type);})[0], kw=_eoxContent(mi?mi.opts[0]:T.title).filter(function(k){return k.length>3;});
   var cw=_eoxContent(text), hit=kw.filter(function(k){return _eoxHas(cw,k);}), n=_eoxWords(text).length;
@@ -10181,6 +10192,7 @@ function eoxWritingFbHTML(){ var Wt=EOX.I.E.writing, A=eoxAnalyze(EOX.s.wr||"",W
   if(A.empty) return '<div class="eox-fbw"><h3>🤖 AI-assisted feedback</h3><p>No essay was written, so there is nothing to give feedback on.</p>'+eoxRubricHTML(A)+'</div>';
   if(A.zero) return '<div class="eox-fbw"><h3>🤖 AI-assisted feedback · MoE writing rubric</h3><div class="est"><b>0 / 25</b> rubric points → <b>0 / 40</b> <span>Level 0 · no meaningful response.</span></div><div class="cr"><ul class="fx"><li>'+esc(A.why)+'</li><li>In the MoE exam, writing that the examiner cannot read or understand, or that only repeats words from the task, receives 0 in every criterion.</li><li>Next time: plan 3–4 ideas, then write real sentences in your own words — an introduction, body paragraphs and a conclusion.</li></ul></div>'+eoxRubricHTML(A)+eoxAIBox()+'</div>';
   var h='<div class="eox-fbw"><h3>🤖 AI-assisted feedback · MoE writing rubric</h3><div class="est"><b>'+A.sum+' / 25</b> rubric points → <b>about '+A.of40+' / 40</b> <span>An automatic estimate. Your teacher confirms the final mark.</span></div>';
+  if(A.pen) h+='<div class="eox-aimsg err" style="margin:0 0 10px">⚠ About <b>'+A.pen.pct+'%</b> of your writing ('+A.pen.bad+' words) is nonsense or random letters. Only the meaningful sentences were marked, and the nonsense lowered your levels (maximum Level '+A.pen.cap+'). An examiner cannot give credit for writing they cannot read.</div>';
   A.crit.forEach(function(c){ h+='<div class="cr"><div class="ch"><span>'+esc(c.k)+'</span><span class="lvl l'+c.lv+'">Level '+c.lv+'</span></div>'
     +(c.good.length?'<ul class="gd">'+c.good.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul>':'')
     +(c.fix.length?'<ul class="fx">'+c.fix.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul>':'')+'</div>'; });
@@ -10199,7 +10211,7 @@ function eoxAskClaude(){ var out=document.getElementById("eoxAIOut"), btn=docume
   if(btn){ btn.disabled=true; btn.textContent="⏳ Claude is reading the essay…"; }
   out.innerHTML=eoxAIMsg("wait","⏳ Sending the essay to Claude — this usually takes 10–30 seconds…");
   var rub=["Task completion","Structure","Grammar","Vocabulary","Spelling & punctuation"].map(function(h,i){ return h+": "+RUB.map(function(r){return "L"+r[0]+" "+r[i+1];}).join(" | "); }).join("\n");
-  var prompt="You are an experienced UAE Ministry of Education EFL examiner. Mark this student's End of Term essay against the MoE writing rubric (5 criteria, Level 0-5 each).\nIMPORTANT: if the essay is blank, nonsense, random letters, undecipherable, off-topic, or only copies words from the prompt, give Level 0 in EVERY criterion.\n\nRUBRIC\n"+rub+"\n\nTASK: "+Wt.task+"\nPoints: "+Wt.points.join("; ")+"\nMinimum words: "+Wt.words+"\n\nSTUDENT ESSAY:\n"+(EOX.s.wr||"(blank)")+"\n\nReply ONLY with JSON: {\"criteria\":[{\"name\":\"Task completion\",\"level\":0-5,\"strength\":\"...\",\"improve\":\"...\"} x5 in rubric order],\"overall\":\"2-3 encouraging sentences\",\"corrections\":[{\"wrong\":\"...\",\"right\":\"...\"}] (max 6)}. Write for a teenage EFL learner: short, clear, kind, specific.";
+  var prompt="You are an experienced UAE Ministry of Education EFL examiner. Mark this student's End of Term essay against the MoE writing rubric (5 criteria, Level 0-5 each).\nIMPORTANT: if the essay is blank, nonsense, random letters, undecipherable, off-topic, or only copies words from the prompt, give Level 0 in EVERY criterion. If only PART of it is nonsense, mark the meaningful part against the rubric and lower the levels according to how much is nonsense (usually Level 2-3 at most).\n\nRUBRIC\n"+rub+"\n\nTASK: "+Wt.task+"\nPoints: "+Wt.points.join("; ")+"\nMinimum words: "+Wt.words+"\n\nSTUDENT ESSAY:\n"+(EOX.s.wr||"(blank)")+"\n\nReply ONLY with JSON: {\"criteria\":[{\"name\":\"Task completion\",\"level\":0-5,\"strength\":\"...\",\"improve\":\"...\"} x5 in rubric order],\"overall\":\"2-3 encouraging sentences\",\"corrections\":[{\"wrong\":\"...\",\"right\":\"...\"}] (max 6)}. Write for a teenage EFL learner: short, clear, kind, specific.";
   function done(){ if(btn){ btn.disabled=false; btn.textContent="✨ Ask Claude again"; } }
   function call(mi){ var ctl=window.AbortController?new AbortController():null, to=setTimeout(function(){ if(ctl) ctl.abort(); },60000);
     return fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal:ctl?ctl.signal:undefined,headers:{"content-type":"application/json","x-api-key":eoxAIKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:EOX_MODELS[mi],max_tokens:1500,messages:[{role:"user",content:prompt}]})})
