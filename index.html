@@ -1154,6 +1154,17 @@ body{background-color:#E9EEF5;background-image:radial-gradient(1200px 600px at 0
 .hero.hero-home:has(.hero-logo){min-height:212px!important}
 .hero-home .hero-logo .ican-logo{width:140px!important}
 .hero-home .hero-logo .hl-t{font-size:1.4rem!important;margin-top:0!important}
+.hero-titlerow{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin:6px 0 10px}
+.hero-titlerow h1{margin:0!important}
+.hero-titlerow .hero-scope{position:static!important;margin-left:34px;background:#fff8ee;border:1.5px solid #c99a72;color:#6b3f1f;backdrop-filter:none;padding:8px 16px!important;font-size:.95rem!important}
+.hero-titlerow .hero-scope:hover{background:#f6e7d4}
+.hero-titlerow .hero-eot2{position:static!important;flex:none;width:62px!important;height:62px!important}
+.hero.hero-home .back{color:#5a3a20!important;background:transparent;border-color:rgba(90,58,32,.35)}
+.hero.hero-home p{color:#3f2a18;opacity:1;max-width:640px}
+@media (max-width:700px){.hero-titlerow .hero-scope{margin-left:0}}
+.hero-titlerow h1{font-size:2.1rem!important}
+.hero-titlerow .hero-eot2{background:radial-gradient(circle at 35% 30%,#7fe0a4,#1f9d57 60%,#0f6b39)!important;border:3px solid #fff8ee!important;box-shadow:0 4px 12px rgba(15,90,50,.35)!important;animation:eotPulseG 4s ease-in-out infinite!important}
+@keyframes eotPulseG{0%,100%{box-shadow:0 4px 12px rgba(15,90,50,.35),0 0 0 0 rgba(47,191,113,.45)}50%{box-shadow:0 4px 12px rgba(15,90,50,.35),0 0 0 9px rgba(47,191,113,0)}}
 </style>
 </head>
 <body>
@@ -8629,14 +8640,15 @@ function printQR(){
 function copyQRUrl(){ var u=currentQRUrl(); try{ navigator.clipboard.writeText(u); note('Link copied.'); }catch(e){ note('Copy not available — select and copy the address manually.'); } }
 function note(m){ var n=document.getElementById('qrNote'); if(n){ n.textContent=m; setTimeout(function(){ if(n.textContent===m) n.textContent=''; },2500); } }
 
+function heroLogoHTML(){ return '<div class="hero-logo" aria-label="iCAN Academy"><div class="ican-logo"><div class="ican-logo-img"></div></div><div class="hl-t"><span class="hl-i">i</span>CAN ACADEMY</div><div class="hl-s">iCAN connect, author, and nurture the world</div></div>'; }
 function renderHub(){
  stopTimer();
  var c=COURSES[CUR.cls]||{name:'',chapter:'',blurb:''};
  var hasScope=(typeof SCOPE_TABLES!=="undefined"&&SCOPE_TABLES[CUR.cls])||(typeof SCOPES!=="undefined"&&SCOPES[CUR.cls]&&SCOPES[CUR.cls].url);
  var scopeTab=hasScope?'<button class="hero-scope" onclick="openScope(\''+CUR.cls+'\')">📘 Scope</button>':'<button class="hero-scope soon" onclick="openScope(\''+CUR.cls+'\')">📘 Scope</button>';
- var html='<div class="hero"><button class="back" onclick="go(\'classes\')">← All classes</button>'+scopeTab+'<button class="hero-eot2" onclick="openEOT()" title="End of Term Exam"><b>EoT</b><small>Exam</small></button>'
-   +'<div class="eyebrow">📘 School Work · 2026–2027 · '+esc(c.name)+'</div><h1>'+esc(c.name)+'</h1>'
-   +'<p>'+esc(c.chapter)+'. '+esc(c.blurb)+' Pick a lesson and move through the ten steps — each lesson runs on a 40-minute timed bar.</p></div>';
+ var html='<div class="hero hero-home"><button class="back" onclick="go(\'classes\')">← All classes</button>'+heroLogoHTML()
+   +'<div class="eyebrow">📘 School Work · 2026–2027 · '+esc(c.name)+'</div><div class="hero-titlerow"><h1>'+esc(c.name)+'</h1>'+scopeTab+'<button class="hero-eot2" onclick="openEOT()" title="End of Term Exam"><b>EoT</b><small>Exam</small></button></div>'
+   +'<p>'+esc(c.chapter)+'. '+esc(c.blurb)+'</p></div>';
  WEEKS.forEach(function(w){
    html+='<div class="week"><div class="week-head"><span class="wk-badge">Week '+w.n+'</span><span class="wk-skill '+w.cls+'">'+esc(w.skill)+'</span><span class="wk-dates">'+esc(w.dates)+'</span>'
      +(w.lessons.length?'<button class="wk-plan" onclick="openWeekPlan('+w.n+')">📋 Lesson Plan</button>':'')+(w.lessons.length?'<button class="wk-plan wk-chk" onclick="openWeekChk('+w.n+')">\ud83d\udcdd Checkpoint</button>':'')+'</div>';
