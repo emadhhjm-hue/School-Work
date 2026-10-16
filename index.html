@@ -10342,40 +10342,34 @@ function eoxWritingFbHTML(){ var Wt=EOX.I.E.writing, A=eoxAnalyze(EOX.s.wr||"",W
   return h+eoxRubricHTML(A)+eoxAIBox()+'</div>'; }
 function eoxCRFbHTML(){ var R=eoxCR(EOX.s.cr||""); if(R.empty) return '<div class="eox-fb"><b>💡 Feedback</b> · no answer written. '+esc(eoxMainIdea())+'</div>';
   return '<div class="eox-fb"><b>🤖 AI-assisted feedback</b> · estimated <b>'+R.score+' / 5</b> (teacher confirms)<br>'+R.fb.map(esc).join("<br>")+'<br><span class="ev">'+esc(eoxMainIdea())+'</span></div>'; }
-/* optional: deeper feedback from Claude (teacher adds an API key on this device) */
-function eoxAIKey(){ try{ return localStorage.getItem("eox_ai_key")||""; }catch(e){ return ""; } }
-function eoxAIBox(){ var k=eoxAIKey();
-  return '<div class="eox-ai" id="eoxAI">'+(k?'<button class="eox-btn pri" onclick="eoxAskClaude()">✨ Ask Claude for detailed feedback</button> <a onclick="eoxAISet()">AI settings</a>':'<a onclick="eoxAISet()">⚙ Teacher: switch on detailed Claude feedback (needs an API key)</a>')+'<div id="eoxAIOut"></div></div>'; }
-function eoxAISet(){ var v=prompt("Teacher only — paste an Anthropic API key to enable detailed Claude feedback on this device (leave empty to switch it off). The key is stored in this browser only.",eoxAIKey()); if(v===null) return; try{ if(v.trim()) localStorage.setItem("eox_ai_key",v.trim()); else localStorage.removeItem("eox_ai_key"); }catch(e){} eoxPane(); }
-var EOX_MODELS=["claude-sonnet-5-5","claude-sonnet-4-5","claude-3-5-sonnet-latest"];
+/* Gemini feedback for students — goes through the teacher's Google Apps Script proxy (no API key in this page) */
+var EOX_AI_URL="https://script.google.com/macros/s/AKfycbxXn62EDOnSaVWfo2_7xrf6nQBSCUIuDZvvVQCPwGkmQEvZ4MrpwV-J51hMjphblg8QlQ/exec";
+function eoxAIReady(){ return /^https:\/\/script\.google(usercontent)?\.com\//.test(EOX_AI_URL); }
+function eoxAIBox(){
+  return eoxAIReady()?'<div class="eox-ai" id="eoxAI"><button class="eox-btn pri" onclick="eoxAskGemini()">✨ Get detailed AI feedback (Gemini)</button><div id="eoxAIOut"></div></div>':''; }
 function eoxAIMsg(kind,html){ return '<div class="eox-aimsg '+kind+'">'+html+'</div>'; }
-function eoxAskClaude(){ var out=document.getElementById("eoxAIOut"), btn=document.querySelector("#eoxAI .eox-btn"), Wt=EOX.I.E.writing, RUB=ICANPDF.eotRubric||[];
-  if(!eoxAIKey()){ out.innerHTML=eoxAIMsg("err","No API key is set on this device. Click <b>AI settings</b> and paste a key from console.anthropic.com."); return; }
-  if(btn){ btn.disabled=true; btn.textContent="⏳ Claude is reading the essay…"; }
-  out.innerHTML=eoxAIMsg("wait","⏳ Sending the essay to Claude — this usually takes 10–30 seconds…");
+function eoxAskGemini(){ var out=document.getElementById("eoxAIOut"), btn=document.querySelector("#eoxAI .eox-btn"), Wt=EOX.I.E.writing, RUB=ICANPDF.eotRubric||[];
+  if(!(EOX.s.wr||"").trim()){ out.innerHTML=eoxAIMsg("err","No essay was written, so there is nothing to send."); return; }
+  if(btn){ btn.disabled=true; btn.textContent="⏳ Gemini is reading your essay…"; }
+  out.innerHTML=eoxAIMsg("wait","⏳ Sending your essay for AI feedback — this usually takes 10–30 seconds…");
   var rub=["Task completion","Structure","Grammar","Vocabulary","Spelling & punctuation"].map(function(h,i){ return h+": "+RUB.map(function(r){return "L"+r[0]+" "+r[i+1];}).join(" | "); }).join("\n");
-  var prompt="You are an experienced UAE Ministry of Education EFL examiner. Mark this student's End of Term essay against the MoE writing rubric (5 criteria, Level 0-5 each).\nIMPORTANT: if the essay is blank, nonsense, random letters, undecipherable, off-topic, or only copies words from the prompt, give Level 0 in EVERY criterion. If only PART of it is nonsense, mark the meaningful part against the rubric and lower the levels according to how much is nonsense (usually Level 2-3 at most).\n\nRUBRIC\n"+rub+"\n\nTASK: "+Wt.task+"\nPoints: "+Wt.points.join("; ")+"\nMinimum words: "+Wt.words+"\n\nSTUDENT ESSAY:\n"+(EOX.s.wr||"(blank)")+"\n\nReply ONLY with JSON: {\"criteria\":[{\"name\":\"Task completion\",\"level\":0-5,\"strength\":\"...\",\"improve\":\"...\"} x5 in rubric order],\"overall\":\"2-3 encouraging sentences\",\"corrections\":[{\"wrong\":\"...\",\"right\":\"...\"}] (max 6)}. Write for a teenage EFL learner: short, clear, kind, specific.";
-  function done(){ if(btn){ btn.disabled=false; btn.textContent="✨ Ask Claude again"; } }
-  function call(mi){ var ctl=window.AbortController?new AbortController():null, to=setTimeout(function(){ if(ctl) ctl.abort(); },60000);
-    return fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal:ctl?ctl.signal:undefined,headers:{"content-type":"application/json","x-api-key":eoxAIKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:EOX_MODELS[mi],max_tokens:1500,messages:[{role:"user",content:prompt}]})})
-    .then(function(r){ clearTimeout(to); return r.text().then(function(tx){ var j={}; try{ j=JSON.parse(tx); }catch(e){}
-      if(!r.ok){ var em=(j.error&&j.error.message)||("HTTP "+r.status), et=(j.error&&j.error.type)||"";
-        if((r.status===404||/model/i.test(em))&&mi+1<EOX_MODELS.length) return call(mi+1);
-        var e=new Error(em); e.status=r.status; e.type=et; throw e; } return j; }); }); }
-  call(0).then(function(j){ var t=(j.content||[]).map(function(c){return c.text||"";}).join(""), m=t.match(/\{[\s\S]*\}/), J=JSON.parse(m?m[0]:t), sum=0;
-    var h='<div class="eox-fbw" style="margin-top:10px;border-color:#c9b8ff;background:#faf8ff"><h3>✨ Claude’s feedback</h3>';
-    (J.criteria||[]).forEach(function(c){ var lv=Math.max(0,Math.min(5,+c.level||0)); sum+=lv; h+='<div class="cr"><div class="ch"><span>'+esc(c.name)+'</span><span class="lvl l'+Math.max(1,lv)+'">Level '+lv+'</span></div><ul class="gd"><li>'+esc(c.strength)+'</li></ul><ul class="fx"><li>'+esc(c.improve)+'</li></ul></div>'; });
+  function done(){ if(btn){ btn.disabled=false; btn.textContent="✨ Ask again"; } }
+  var ctl=window.AbortController?new AbortController():null, to=setTimeout(function(){ if(ctl) ctl.abort(); },90000);
+  fetch(EOX_AI_URL,{method:"POST",signal:ctl?ctl.signal:undefined,headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({task:Wt.task,points:Wt.points||[],words:Wt.words,rubric:rub,essay:EOX.s.wr||""})})
+  .then(function(r){ clearTimeout(to); return r.text().then(function(tx){ var j; try{ j=JSON.parse(tx); }catch(e){ var er=new Error("bad"); er.status=r.status||-1; throw er; } return j; }); })
+  .then(function(j){ if(j.error){ var er=new Error(j.error); er.server=true; throw er; }
+    var J=j.feedback||{}, sum=0;
+    var h='<div class="eox-fbw" style="margin-top:10px;border-color:#c9b8ff;background:#faf8ff"><h3>✨ Detailed AI feedback</h3>';
+    (J.criteria||[]).slice(0,5).forEach(function(c){ var lv=Math.max(0,Math.min(5,+c.level||0)); sum+=lv; h+='<div class="cr"><div class="ch"><span>'+esc(c.name)+'</span><span class="lvl l'+Math.max(1,lv)+'">Level '+lv+'</span></div><ul class="gd"><li>'+esc(c.strength)+'</li></ul><ul class="fx"><li>'+esc(c.improve)+'</li></ul></div>'; });
     h+='<div class="est"><b>'+sum+' / 25</b> → <b>about '+Math.round(sum/25*40)+' / 40</b> <span>Teacher confirms the final mark.</span></div><p>'+esc(J.overall||"")+'</p>';
-    if(J.corrections&&J.corrections.length) h+='<p><b>Corrections:</b><br>'+J.corrections.map(function(c){return '<s>'+esc(c.wrong)+'</s> → <b>'+esc(c.right)+'</b>';}).join("<br>")+'</p>';
+    if(J.corrections&&J.corrections.length) h+='<p><b>Corrections:</b><br>'+J.corrections.slice(0,6).map(function(c){return '<s>'+esc(c.wrong)+'</s> → <b>'+esc(c.right)+'</b>';}).join("<br>")+'</p>';
     out.innerHTML=h+'</div>'; done(); out.scrollIntoView({behavior:"smooth",block:"start"}); })
-  .catch(function(e){ var msg, s=e&&e.status;
-    if(e&&e.name==="AbortError") msg="Claude did not answer within 60 seconds. Please try again.";
-    else if(s===401||/api.key|authentication|x-api-key/i.test(e.message||"")) msg="The API key was rejected (invalid or deleted). Click <b>AI settings</b> and paste a valid key from console.anthropic.com.";
-    else if(s===403) msg="This API key is not allowed to use this feature (permission error). Check the key's workspace settings in the Anthropic console.";
-    else if(s===429) msg="Too many requests or the credit limit was reached. Wait a minute, or check the billing/credits in the Anthropic console.";
-    else if(s===400&&/credit|balance/i.test(e.message||"")) msg="The Anthropic account has no credit left. Add credit in the Anthropic console (Plans &amp; Billing).";
-    else if(!s) msg="This device or network could not reach Claude (api.anthropic.com). School networks and some LMS pages block outside connections — try at home or on another network.";
-    else msg="Claude returned an error: "+esc(e.message||String(e));
+  .catch(function(e){ clearTimeout(to); var msg;
+    if(e&&e.name==="AbortError") msg="The AI did not answer within 90 seconds. Please try again.";
+    else if(e&&e.server) msg=esc(e.message);
+    else if(e&&e.status) msg="The feedback server sent an unexpected reply. Please try again later.";
+    else msg="This device or network could not reach the feedback server. School networks and some LMS pages block outside connections — try again on another network.";
     out.innerHTML=eoxAIMsg("err","⚠ "+msg+"<br><small>The built-in rubric feedback above still applies.</small>"); done(); out.scrollIntoView({behavior:"smooth",block:"center"}); }); }
 </script>
 <script id="eoxJS">
