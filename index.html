@@ -9760,6 +9760,20 @@ var WC_LV={L1:["Level One","Standard","l1"],L2:["Level Two","Moderately challeng
 var WC_SEC_WORD=25, WC_SEC_SENT=35;
 function wcRounds(key,L){ return (WC_DATA[key]||{})[L]||[]; }
 var WC_BEE_N=0;
+/* fine-hair generator: draws many short strands inside ellipses (seeded, so every bee/bear looks the same) */
+function wcHairs(seed,regions,n,cols,len,ang,w){
+  var r=seed>>>0||1; function rnd(){ r^=r<<13; r^=r>>>17; r^=r<<5; return ((r>>>0)%100000)/100000; }
+  var bx0=1e9,by0=1e9,bx1=-1e9,by1=-1e9; regions.forEach(function(e){ bx0=Math.min(bx0,e[0]-e[2]); bx1=Math.max(bx1,e[0]+e[2]); by0=Math.min(by0,e[1]-e[3]); by1=Math.max(by1,e[1]+e[3]); });
+  var d=cols.map(function(){return '';}), got=0, guard=0;
+  while(got<n&&guard<n*30){ guard++; var x=bx0+rnd()*(bx1-bx0), y=by0+rnd()*(by1-by0), hit=null;
+    for(var i=0;i<regions.length;i++){ var e=regions[i], u=(x-e[0])/e[2], v=(y-e[1])/e[3]; if(u*u+v*v<=1){ hit=e; break; } }
+    if(!hit) continue; got++;
+    var t=ang(x,y,hit,rnd)+(rnd()-.5)*0.5, L=len*(0.6+rnd()*0.8), c=Math.floor(rnd()*cols.length);
+    var ci=cols.length>2? Math.min(cols.length-1,Math.max(0, Math.round(((y-by0)/(by1-by0))*(cols.length-1)+(rnd()-.5)*1.6))) : c;
+    d[ci]+='M'+x.toFixed(1)+' '+y.toFixed(1)+'l'+(Math.cos(t)*L).toFixed(1)+' '+(Math.sin(t)*L).toFixed(1);
+  }
+  return d.map(function(p,i){ return p?'<path d="'+p+'" stroke="'+cols[i]+'" stroke-width="'+(w||.35)+'" stroke-linecap="round" fill="none"/>':''; }).join('');
+}
 function wcBee(w,h){ w=w||58; h=h||46; var k='wb'+(++WC_BEE_N);
  return '<svg class="wc-bee" width="'+w+'" height="'+h+'" viewBox="0 0 64 52" aria-hidden="true">'
   +'<defs>'
@@ -9780,10 +9794,10 @@ function wcBee(w,h){ w=w||58; h=h||46; var k='wb'+(++WC_BEE_N);
   +'<g clip-path="url(#'+k+'cl)" fill="#2b1806" opacity=".88">'
   +'<path d="M34 19c-2.5 4-2.5 20 0 24h4c-2.5-4-2.5-20 0-24z"/><path d="M42 19c-2.5 4-2.5 20 0 24h3.6c-2.5-4-2.5-20 0-24z"/><path d="M49.5 19c-2.2 4-2.2 20 0 24h3c-2.2-4-2.2-20 0-24z"/></g>'
   +'<ellipse cx="38" cy="26" rx="8" ry="2.6" fill="#fff" opacity=".22"/>'
-  +'<g stroke="#f7d27a" stroke-width=".35" opacity=".55" stroke-linecap="round"><path d="M30 22l-.6-1.6M33 21l-.2-1.7M37 20.5v-1.7M41 20.4l.3-1.7M45 20.8l.5-1.6M49 21.8l.8-1.5M53 24l1-1.3"/></g>'
+  +'<g stroke="#f7d27a" stroke-width=".55" opacity=".7" stroke-linecap="round"><path d="M30 22l-.6-1.6M33 21l-.2-1.7M37 20.5v-1.7M41 20.4l.3-1.7M45 20.8l.5-1.6M49 21.8l.8-1.5M53 24l1-1.3"/></g>'
   /* thorax (fuzzy) */
   +'<circle cx="24" cy="29" r="8.6" fill="url(#'+k+'th)"/>'
-  +'<g stroke="#e8b85c" stroke-width=".4" opacity=".7" stroke-linecap="round"><path d="M16.5 26l-1.4-.8M17 23l-1.2-1.1M19.5 20.8l-.8-1.4M22.5 20l-.3-1.6M26 20.1l.3-1.6M29 21.2l.9-1.3M31.5 23.6l1.3-.9M32.6 27l1.6-.3M32.4 30.5l1.6.3M17 32l-1.5.5M18.5 35l-1.1 1.1"/></g>'
+  +'<g stroke="#e8b85c" stroke-width=".6" opacity=".85" stroke-linecap="round"><path d="M16.5 26l-1.4-.8M17 23l-1.2-1.1M19.5 20.8l-.8-1.4M22.5 20l-.3-1.6M26 20.1l.3-1.6M29 21.2l.9-1.3M31.5 23.6l1.3-.9M32.6 27l1.6-.3M32.4 30.5l1.6.3M17 32l-1.5.5M18.5 35l-1.1 1.1"/></g>'
   /* head with compound eye, antennae and mouth parts */
   +'<ellipse cx="11.5" cy="30" rx="7" ry="7.6" fill="url(#'+k+'hd)"/>'
   +'<ellipse cx="12.6" cy="27.2" rx="4.1" ry="5.4" fill="url(#'+k+'ey)"/>'
@@ -10714,14 +10728,14 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
   function box(el){ if(!el) return null; var r=el.getBoundingClientRect(); if(r.width<4||r.bottom<0||r.top>innerHeight||r.right<0||r.left>innerWidth) return null; return r; }
   function blocked(){ return document.hidden || document.querySelector('#wcOv.open,#eotOv.open,#eoxOv.open,#eoxCodesOv.open,.bee-ov.open,#pdfOv.open,.lpm-ov.open'); }
   function later(ms){ clearTimeout(timer); timer=setTimeout(beeFly,ms); }
-  function beeFly(){
-    if(busy) return;
-    if(blocked()){ later(5000); return; }
-    try{ if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
+  function beeFly(opts){
+    if(busy) return false;
+    if(blocked()){ if(!opts) later(5000); return false; }
+    try{ if(matchMedia('(prefers-reduced-motion: reduce)').matches) return false; }catch(e){}
     var orb=document.querySelector('.orb-pair .wc-orb')||document.querySelector('.wc-orb'),
         home=orb&&orb.querySelector('.wo-bee'),
         logo=document.querySelector('.hero-logo .ican-logo')||document.querySelector('.hero-logo');
-    var a=box(home), o=box(orb), b=box(logo); if(!a||!o||!b||!home.animate){ later(5000); return; }
+    var a=box(home), o=box(orb), b=box(logo); if(!a||!o||!b||!home.animate){ if(!opts) later(5000); return false; }
     busy=true;
     var sx=scrollX, sy=scrollY, w=a.width, h=a.height, minY=sy+6;
     function C(r,fx,fy){ return [r.left+sx+r.width*fx, r.top+sy+r.height*fy]; }
@@ -10732,7 +10746,7 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
       cards.forEach(function(c){ var d=ang(c.p)-a0; while(d<0) d+=2*Math.PI; c.k=d; }); cards.sort(function(x,y){ return x.k-y.k; }); }
     var K=[], t=0, cur=P0.slice(), sc=1, face=-1, touches=[], L=null;
     function T(x,y,s,f,r){ return 'translate('+(x-w/2).toFixed(1)+'px,'+(Math.max(minY,y-h/2)).toFixed(1)+'px) scale('+s.toFixed(3)+') scaleX('+f+') rotate('+(r||0).toFixed(1)+'deg)'; }
-    function key(x,y,s,f,r){ if(L&&L.f!==f) K.push({t:Math.min(t,L.t+1),transform:T(L.x,L.y,L.s,f,L.r)});
+    function key(x,y,s,f,r){ if(L&&L.f!==f) K.push({t:Math.min(t,L.t+1),transform:T(L.x,L.y,L.s,f,L.r)});   /* turn around instantly, no squash */
       K.push({t:t,transform:T(x,y,s,f,r)}); L={t:t,x:x,y:y,s:s,f:f,r:r||0}; }
     function fly(to,ms,s1,bend){ var n=Math.max(5,Math.round(ms/80)), x0=cur[0],y0=cur[1], s0=sc, dx=to[0]-x0, dy=to[1]-y0, d=Math.hypot(dx,dy)||1;
       var mx=(x0+to[0])/2-dy/d*d*bend, my=(y0+to[1])/2+dx/d*d*bend;
@@ -10758,11 +10772,12 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
     /* 3 · fast dash to each class card */
     cards.forEach(function(c,i){ fly([c.p[0],c.p[1]-h*.55],520,ZOOM,i%2?.18:-.18); land(c); });
     /* 4 · to the logo, buzzing there for 10 seconds */
-    fly(LOGO,900,ZOOM,.25);
+    fly(LOGO,900,ZOOM,.25); var LOGO_AT=t;
     hover(10000,16,true);
     /* 5 · the journey home, shrinking back to normal size */
     fly([OC[0],OC[1]-o.height*.85],2200,1.15,-.3);
     fly(P0,900,1,0);
+    face=-1; t+=600; key(P0[0],P0[1],1,face,0);   /* settles facing its usual way */
     var tot=t; K.forEach(function(k){ k.offset=Math.min(1,k.t/tot); delete k.t; }); K[0].offset=0; K[K.length-1].offset=1;
     var f=document.createElement('div');
     f.className='bee-flyer front'; f.setAttribute('aria-hidden','true');
@@ -10774,18 +10789,192 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
     if(drips) drips.innerHTML=[18,47,74].map(function(x,i){ return '<i style="left:'+x+'%;animation-delay:'+(2.2+i*.35).toFixed(2)+'s"></i>'; }).join('');
     orb.classList.add('bee-away');
     document.body.appendChild(f); home.style.visibility='hidden';
-    var timers=[setTimeout(function(){ f.classList.remove('front'); }, FRONT_END)];
+    var timers=[setTimeout(function(){ f.classList.remove('front'); },FRONT_END)];
     touches.forEach(function(x){ timers.push(setTimeout(function(){ x.el.classList.add('bee-touched'); setTimeout(function(){ x.el.classList.remove('bee-touched'); },500); }, x.at-120)); });
     var anim=f.animate(K,{duration:tot,easing:'linear',fill:'forwards'});
     function done(){ timers.forEach(clearTimeout); try{ f.remove(); }catch(e){} home.style.visibility='';
       var c=document.querySelector('.wc-orb .wo-bee'); if(c) c.style.visibility='';
       [].forEach.call(document.querySelectorAll('.wc-orb.bee-away'),function(x){x.classList.remove('bee-away');});
       [].forEach.call(document.querySelectorAll('.bee-touched'),function(x){x.classList.remove('bee-touched');});
-      busy=false; later(GAP); }                       /* next flight 50 s after landing */
+      busy=false; if(opts&&opts.onLand) opts.onLand(); else later(GAP); }
     anim.onfinish=done; anim.oncancel=done;
+    if(opts&&opts.onStart) opts.onStart(tot,LOGO_AT);
+    if(opts&&opts.onLogo) timers.push(setTimeout(function(){ opts.onLogo(tot-LOGO_AT); },LOGO_AT));   /* bee perches on the logo */
+    return true;
   }
-  window.beeFly=beeFly;
-  later(3000);                                        /* first flight shortly after the page opens */
+
+  /* ===================== the honey bears =====================
+     10 s before take-off a wooden jungle door grows on the bubble's row (to its right) and swings open.
+     A mother bear walks out, her cub toddling behind, and both waddle to the Word Club bubble and sniff it.
+     When the bee escapes, both eat the honey cell by cell; when the bee lands home the honey refills,
+     the bears hurry back through the door, and the door sinks into the wall. */
+  /* a simple cartoon brown bear seen from the side, facing left (same illustrated style as the bee) */
+  function bearSVG(){ var O='#5e3417';
+    return '<svg viewBox="0 0 130 100" width="100%" height="100%" aria-hidden="true" style="overflow:visible"><defs>'
+    +'<linearGradient id="tbB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d98e48"/><stop offset=".6" stop-color="#b8692c"/><stop offset="1" stop-color="#94511f"/></linearGradient>'
+    +'<linearGradient id="tbF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a95e26"/><stop offset="1" stop-color="#7c4318"/></linearGradient>'
+    +'<radialGradient id="tbH" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#e6a05a"/><stop offset=".7" stop-color="#c0722f"/><stop offset="1" stop-color="#9c5722"/></radialGradient></defs>'
+    +'<ellipse cx="72" cy="97" rx="48" ry="3.4" fill="rgba(60,30,0,.22)"/>'
+    /* far legs (darker) */
+    +'<g class="lg b" stroke="'+O+'" stroke-width="1.6"><rect x="40" y="62" width="15" height="33" rx="7" fill="url(#tbF)"/></g>'
+    +'<g class="lg a" stroke="'+O+'" stroke-width="1.6"><rect x="95" y="62" width="15" height="33" rx="7" fill="url(#tbF)"/></g>'
+    /* tail + body */
+    +'<circle cx="119" cy="52" r="6" fill="url(#tbB)" stroke="'+O+'" stroke-width="1.6"/>'
+    +'<ellipse cx="80" cy="58" rx="40" ry="25" fill="url(#tbB)" stroke="'+O+'" stroke-width="2"/>'
+    +'<ellipse cx="74" cy="70" rx="24" ry="9" fill="#f3d3a0" opacity=".85"/>'
+    +'<path d="M62 40c8-4 22-5 34-2" stroke="#e8a764" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>'
+    /* near legs with paw pads */
+    +'<g class="lg a" stroke="'+O+'" stroke-width="1.8"><rect x="48" y="64" width="16" height="33" rx="8" fill="url(#tbB)"/><ellipse cx="56" cy="94" rx="6" ry="2.2" fill="#f0c28a" stroke="none"/></g>'
+    +'<g class="lg b" stroke="'+O+'" stroke-width="1.8"><rect x="102" y="62" width="16" height="35" rx="8" fill="url(#tbB)"/><ellipse cx="110" cy="94" rx="6" ry="2.2" fill="#f0c28a" stroke="none"/></g>'
+    /* head (bends down to eat) */
+    +'<g class="hd">'
+    +'<circle cx="44" cy="22" r="8" fill="url(#tbB)" stroke="'+O+'" stroke-width="1.8"/><circle cx="44" cy="22" r="4.2" fill="#e88f7a"/>'
+    +'<circle cx="34" cy="38" r="21" fill="url(#tbH)" stroke="'+O+'" stroke-width="2"/>'
+    +'<ellipse cx="17" cy="46" rx="12" ry="9" fill="#f6dcb0" stroke="'+O+'" stroke-width="1.6"/>'
+    +'<ellipse cx="8.5" cy="42.5" rx="4.6" ry="3.6" fill="#2a1a10"/><ellipse cx="7.4" cy="41.4" rx="1.4" ry=".9" fill="#fff" opacity=".8"/>'
+    +'<path d="M9 47c2 4 8 5 12 2" stroke="'+O+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>'
+    +'<path class="tg" d="M11 49c1 4 5 5 7 2z" fill="#e5605a"/>'
+    +'<circle cx="26" cy="32" r="3.6" fill="#1b120c"/><circle cx="25" cy="30.8" r="1.2" fill="#fff"/>'
+    +'<ellipse cx="31" cy="44" rx="4" ry="2.6" fill="#f19a8a" opacity=".6"/>'
+    +'<path d="M22 26c2-2 5-2.6 8-2" stroke="'+O+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>'
+    +'</g></svg>'; }
+  function doorSVG(){ var leaves='', vine=[[6,44,-30],[10,30,-50],[17,19,-70],[26,11,-95],[36,7,-110],[46,7,70],[56,11,95],[64,19,60],[71,30,40],[75,44,25],[4,58,-10],[77,60,15],[3,72,-20],[78,76,10]];
+    vine.forEach(function(v,i){ var c=i%3?'#3f8a35':(i%2?'#2f6e2a':'#58a442'); leaves+='<ellipse cx="'+v[0]+'" cy="'+v[1]+'" rx="6" ry="2.8" fill="'+c+'" transform="rotate('+v[2]+' '+v[0]+' '+v[1]+')"/>'; });
+    return '<svg viewBox="0 0 80 124" width="100%" height="100%" aria-hidden="true" style="overflow:visible"><defs>'
+    +'<linearGradient id="dwp" x1="0" x2="1"><stop offset="0" stop-color="#8a5a2c"/><stop offset=".5" stop-color="#a06a35"/><stop offset="1" stop-color="#7a4b22"/></linearGradient>'
+    +'<linearGradient id="dwf" x1="0" x2="1"><stop offset="0" stop-color="#5a3518"/><stop offset=".5" stop-color="#7a4a22"/><stop offset="1" stop-color="#4a2a12"/></linearGradient>'
+    +'<radialGradient id="dwin" cx="50%" cy="75%" r="70%"><stop offset="0" stop-color="#2b1a0c"/><stop offset="1" stop-color="#070402"/></radialGradient>'
+    +'<clipPath id="dwc"><path d="M15 120V46a25 25 0 0 1 50 0v74z"/></clipPath></defs>'
+    +'<ellipse cx="40" cy="121" rx="38" ry="3.4" fill="rgba(0,0,0,.28)"/>'
+    /* log frame */
+    +'<path d="M6 121V45a34 34 0 0 1 68 0v76h-9V46a25 25 0 0 0-50 0v75z" fill="url(#dwf)" stroke="#3a210d" stroke-width="1"/>'
+    +'<path d="M9 118V48M71 118V48M12 40c3-14 14-24 28-25M68 40c-3-14-14-24-28-25" stroke="#3a210d" stroke-width=".7" fill="none" opacity=".7" stroke-dasharray="6 3 2 4"/>'
+    /* dark doorway */
+    +'<path d="M15 120V46a25 25 0 0 1 50 0v74z" fill="url(#dwin)"/>'
+    /* the door leaf: planks, grain, iron straps, ring handle */
+    +'<g class="leaf"><g clip-path="url(#dwc)"><rect x="15" y="20" width="50" height="100" fill="url(#dwp)"/>'
+    +'<path d="M27.5 20v100M40 20v100M52.5 20v100" stroke="#4a2a12" stroke-width="1.2"/>'
+    +'<path d="M20 30c1 20-1 40 1 60s-1 22 0 30M33 26c-1 18 2 36 0 54s1 26 0 40M46 26c1 22-1 40 1 62s-1 20 0 32M59 30c-1 20 1 40-1 60s1 20 0 30" stroke="#6a4019" stroke-width=".55" fill="none" opacity=".8"/>'
+    +'<ellipse cx="34" cy="70" rx="1.8" ry="3" fill="#5a3416" opacity=".8"/><ellipse cx="57" cy="96" rx="1.5" ry="2.4" fill="#5a3416" opacity=".8"/>'
+    +'<rect x="15" y="50" width="50" height="5" fill="#2e2a26"/><rect x="15" y="98" width="50" height="5" fill="#2e2a26"/>'
+    +'<g fill="#7d766c"><circle cx="20" cy="52.5" r="1"/><circle cx="31" cy="52.5" r="1"/><circle cx="49" cy="52.5" r="1"/><circle cx="60" cy="52.5" r="1"/><circle cx="20" cy="100.5" r="1"/><circle cx="31" cy="100.5" r="1"/><circle cx="49" cy="100.5" r="1"/><circle cx="60" cy="100.5" r="1"/></g></g>'
+    +'<circle cx="57" cy="78" r="4" fill="none" stroke="#2e2a26" stroke-width="1.6"/><circle cx="57" cy="74" r="1.5" fill="#2e2a26"/></g>'
+    /* jungle vine and leaves over the frame, grass at the foot */
+    +'<path d="M4 76C2 60 6 44 12 32 20 16 32 8 40 7s20 8 28 22c6 12 9 28 8 48" stroke="#2f5e22" stroke-width="1.4" fill="none"/>'+leaves
+    +'<path d="M2 121c2-6 3-8 4-12 1 4 1 7 2 12 1-5 3-8 5-11 0 4-1 8 0 11M66 121c1-5 2-8 4-11 0 4 0 7 1 11 1-5 3-9 5-12 0 5-1 9 0 12" stroke="#3f8a35" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+    +'</svg>'; }
+  function bearCss(){ if(document.getElementById('bearCss')) return; var st=document.createElement('style'); st.id='bearCss';
+    st.textContent='.bee-door,.honey-bear{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}'
+     +'.bee-door{z-index:8300;transform-origin:50% 100%}.bee-door .leaf{transform-box:fill-box;transform-origin:0% 50%;transition:transform .8s ease-in-out}'
+     +'.bee-door.open .leaf{transform:perspective(180px) rotateY(-78deg)}'
+     +'.honey-bear{z-index:8400;transform-origin:50% 100%;filter:drop-shadow(0 4px 3px rgba(60,30,0,.25))}'
+     +'.honey-bear.cub{z-index:8410}'
+     +'.honey-bear .bw{width:100%;height:100%}.honey-bear svg{display:block;width:100%;height:100%}'
+     +'.honey-bear .lg{transform-box:fill-box;transform-origin:50% 10%}'
+     +'.honey-bear.walk .lg.a{animation:brLegA .6s ease-in-out infinite alternate}.honey-bear.walk .lg.b{animation:brLegB .6s ease-in-out infinite alternate}'
+     +'.honey-bear.cub.walk .lg.a,.honey-bear.cub.walk .lg.b{animation-duration:.42s}'
+     +'.honey-bear.run .lg.a{animation:brLegA .24s linear infinite alternate}.honey-bear.run .lg.b{animation:brLegB .24s linear infinite alternate}'
+     +'@keyframes brLegA{from{transform:rotate(-22deg)}to{transform:rotate(22deg)}}@keyframes brLegB{from{transform:rotate(22deg)}to{transform:rotate(-22deg)}}'
+     +'.honey-bear.walk .bw,.honey-bear.run .bw{animation:brBob .3s ease-in-out infinite alternate}.honey-bear.run .bw{animation-duration:.12s}.honey-bear.cub.walk .bw{animation-duration:.21s}'
+     +'@keyframes brBob{from{transform:translateY(0)}to{transform:translateY(-3%)}}'
+     +'.honey-bear .hd{transform-box:fill-box;transform-origin:90% 75%}.honey-bear .tg{opacity:0}'
+     +'.honey-bear.sniff .hd{animation:brSniff 1s ease-in-out infinite}'
+     +'@keyframes brSniff{0%,100%{transform:rotate(0)}30%{transform:rotate(-10deg) translateX(-4%)}60%{transform:rotate(-3deg)}}'
+     +'.honey-bear.eat .hd{animation:brEat .45s ease-in-out infinite alternate}.honey-bear.cub.eat .hd{animation-duration:.34s}.honey-bear.eat .tg{opacity:1}'
+     +'@keyframes brEat{from{transform:rotate(-6deg) translateX(-4%)}to{transform:rotate(-18deg) translateX(-9%) translateY(4%)}}'
+     +'.wc-orb.shake{animation:orbShake .5s ease-in-out 3}@keyframes orbShake{0%,100%{transform:none}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}'
+     +'.wc-orb .comb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}'
+     +'.wc-orb .comb path{fill:rgba(255,200,40,0);stroke:rgba(255,255,255,.0);transition:fill .45s ease,stroke .45s ease}'
+     +'.wc-orb .comb path.empty{fill:#fbf1d2;stroke:#d9b45c;stroke-width:1.1}'
+     +'.wc-orb .comb path.refill{fill:rgba(255,190,30,.95);stroke:rgba(255,255,255,0)}';
+    document.head.appendChild(st); }
+  function comb(orb){ var W=orb.offsetWidth||118, r=8.2, hw=Math.sqrt(3)*r, cells=[];
+    var svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.setAttribute('class','comb'); svg.setAttribute('viewBox','0 0 '+W+' '+W);
+    for(var row=-1, y=-r; y<W+r; row++, y+=r*1.5){ for(var x=(row%2?hw/2:0)-hw; x<W+hw; x+=hw){
+      var pts=[]; for(var k=0;k<6;k++){ var a=Math.PI/180*(60*k-30); pts.push((x+r*Math.cos(a)).toFixed(1)+','+(y+r*Math.sin(a)).toFixed(1)); }
+      var pth=document.createElementNS('http://www.w3.org/2000/svg','path'); pth.setAttribute('d','M'+pts.join('L')+'Z'); svg.appendChild(pth); cells.push({el:pth,x:x,y:y}); } }
+    orb.insertBefore(svg,orb.firstChild); return {svg:svg,cells:cells,W:W}; }
+  var GAPS=50000, SCENE=null;
+  function sceneLater(ms){ clearTimeout(SCENE); SCENE=setTimeout(bearScene,ms); }
+  function bearScene(){
+    if(busy||blocked()){ sceneLater(5000); return; }
+    try{ if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
+    var orb=document.querySelector('.orb-pair .wc-orb')||document.querySelector('.wc-orb'), o=box(orb);
+    if(!o||!document.body.animate){ sceneLater(5000); return; }
+    bearCss(); busy=true;
+    var sx=scrollX, sy=scrollY, OW=o.width;
+    var DH=Math.round(OW*.62), DW=Math.round(DH*80/124);                           /* a small door: the bears grow as they come out */
+    var MW=Math.round(OW*1.05), MH=Math.round(MW*100/130), CW=Math.round(MW*.62), CH=Math.round(CW*100/130);
+    var base=sy+o.bottom-OW*.2;                                                    /* ground line: a little above the bubble's foot, clear of the page bottom */
+    var gap=Math.min(Math.max(MW*2.4, 200), Math.max(MW*1.4, innerWidth-o.right-DW-30));
+    var dx=sx+o.right+gap, dy=base-DH;                                             /* door: same row, right of the bubble */
+    var door=document.createElement('div'); door.className='bee-door'; door.innerHTML=doorSVG();
+    door.style.cssText+='width:'+DW+'px;height:'+DH+'px;transform:translate('+dx+'px,'+dy+'px) scale(.05);opacity:0';
+    function mk(cls,W,H){ var b=document.createElement('div'); b.className='honey-bear '+cls; b.innerHTML='<div class="bw">'+bearSVG()+'</div>';
+      b.style.cssText+='width:'+W+'px;height:'+H+'px;opacity:0'; return b; }
+    var mom=mk('mom',MW,MH), cub=mk('cub',CW,CH);
+    var D={ mom:{el:mom,W:MW,H:MH}, cub:{el:cub,W:CW,H:CH} };
+    D.mom.x0=dx+DW/2-MW/2; D.mom.y0=base-MH;  D.cub.x0=dx+DW/2-CW/2; D.cub.y0=base-CH;  /* scale origin is the feet, see CSS */     /* in the doorway */
+    D.mom.x1=sx+o.right-MW*.1; D.mom.y1=base-MH-OW*.16;                                         /* at the bubble's right side */
+    D.cub.x1=sx+o.right-CW*.16; D.cub.y1=base-CH+2;                                    /* cub in front of mother, nose on the bubble */
+    document.body.appendChild(door); document.body.appendChild(mom); document.body.appendChild(cub);
+    var T=[]; function at(ms,fn){ T.push(setTimeout(fn,ms)); }
+    function move(el,frames,ms,ease){ return el.animate(frames,{duration:ms,easing:ease||'linear',fill:'forwards'}); }
+    function tr(x,y,s,f,r){ return 'translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) scale('+s+') scaleX('+(f==null?1:f)+') rotate('+(r||0)+'deg)'; }
+    /* like the bee: a gently wavy path, leaning into the direction of travel */
+    function path(xa,ya,sa,xb,yb,sb,f,n,o0,o1,lean){ var fr=[]; for(var i=0;i<=n;i++){ var u=i/n; fr.push({offset:o0+(o1-o0)*u,opacity:1,transform:tr(xa+(xb-xa)*u,ya+(yb-ya)*u-Math.sin(u*Math.PI*4)*3*(i%n?1:0),sa+(sb-sa)*u,f,lean)}); } return fr; }
+    function walkIn(b,ms){ b.el.classList.add('walk');
+      move(b.el,[{offset:0,opacity:0,transform:tr(b.x0,b.y0,.22,1,0)}].concat(path(b.x0-b.W*.15,b.y0,.38,b.x0-b.W*.9,b.y0,1,1,4,.08,.4,-1),path(b.x0-b.W*.9+1,b.y0,1,b.x1,b.y1,1,1,10,.41,.97,-1),[{offset:1,opacity:1,transform:tr(b.x1,b.y1,1,1,0)}]),ms,'linear')
+        .onfinish=function(){ b.el.classList.remove('walk'); b.el.classList.add('sniff'); }; }
+    /* 0.0 s door grows out of the ground beside the bubble; 0.9 s it swings open */
+    move(door,[{opacity:0,transform:'translate('+dx+'px,'+dy+'px) scale(.05)'},{opacity:1,transform:'translate('+dx+'px,'+dy+'px) scale(1)'}],700,'cubic-bezier(.2,1.3,.5,1)');
+    at(900,function(){ door.classList.add('open'); });
+    /* 1.6 s mother steps out and walks to the bubble (6 s); the cub follows 1.3 s behind */
+    at(1600,function(){ walkIn(D.mom,6000); });
+    at(2900,function(){ walkIn(D.cub,5200); });
+    at(4600,function(){ door.classList.remove('open'); });
+    at(8200,function(){ orb.classList.add('shake'); });
+    at(9700,function(){ orb.classList.remove('shake'); });
+    /* 10 s the bee escapes; both bears eat the honey cell by cell */
+    var C=null, ateT=null;
+    at(10000,function(){
+      busy=false;
+      var ok=beeFly({onStart:function(tot,lg){
+          [mom,cub].forEach(function(b){ b.classList.remove('sniff','walk'); b.classList.add('eat'); });
+          C=comb(orb); var ex=o.width, ey=o.height*.8;                           /* start eating at the bears' side */
+          C.cells.sort(function(p,q){ return Math.hypot(p.x-ex,p.y-ey)-Math.hypot(q.x-ex,q.y-ey); });
+          var n=C.cells.length, span=Math.max(4000,(lg||tot)-1200), i=0;   /* honey nearly gone by the time the bee reaches the logo */
+          ateT=setInterval(function(){ if(i<n){ C.cells[i++].el.classList.add('empty'); if(i<n&&Math.random()<.5) C.cells[i++].el.classList.add('empty'); } }, span/n*1.45);
+        },
+        onLogo:function(ms){ goHome(ms,'walk'); },                       /* bee at the logo: bears stroll home, gone as it lands */
+        onLand:function(){ busy=true; landed(); } });
+      if(!ok){ goHome(3000,'run'); setTimeout(function(){ landed(true); },3000); }
+    });
+    var home=false;
+    function goHome(ms,gait){ if(home) return; home=true; clearInterval(ateT);
+      var left=2;
+      setTimeout(function(){ door.classList.add('open'); }, Math.max(0,ms-2600));          /* door opens as they near it */
+      function walkHome(b,ms){
+        var cur=getComputedStyle(b.el).transform; b.el.classList.remove('eat','sniff','walk','run'); b.el.classList.add(gait);
+        move(b.el,[{offset:0,opacity:1,transform:cur==='none'?tr(b.x1,b.y1,1):cur},{offset:.03,opacity:1,transform:tr(b.x1+2,b.y1,1,.08,0)},{offset:.06,opacity:1,transform:tr(b.x1+4,b.y1,1,-1,-1)}]   /* turns round, like the bee */
+          .concat(path(b.x1+5,b.y1,1,b.x0-b.W*.9,b.y0,1,-1,14,.07,.72,-1),path(b.x0-b.W*.9+1,b.y0,1,b.x0,b.y0,.34,-1,5,.73,.95,-1),[{offset:1,opacity:0,transform:tr(b.x0,b.y0,.2,-1,0)}]),ms)
+          .onfinish=function(){ b.el.remove(); if(--left===0) door.classList.remove('open'); }; }
+      walkHome(D.cub,Math.max(1500,ms-500));     /* the cub slips in just ahead of mother */
+      walkHome(D.mom,ms);
+    }
+    function landed(skip){
+      /* the bears are gone: the door sinks away, then the honey fills the bubble again */
+      setTimeout(function(){ door.classList.remove('open');
+        var g=move(door,[{opacity:1,transform:'translate('+dx+'px,'+dy+'px) scale(1)'},{opacity:0,transform:'translate('+dx+'px,'+dy+'px) scale(.05)'}],600,'ease-in');
+        g.onfinish=function(){ door.remove(); }; },250);
+      var n=C?C.cells.length:0;
+      if(C){ C.cells.slice().reverse().forEach(function(c,k){ setTimeout(function(){ c.el.classList.remove('empty'); c.el.classList.add('refill'); }, 700+k*22); });
+        setTimeout(function(){ try{ C.svg.remove(); }catch(e){} }, 700+n*22+900); }
+      setTimeout(function(){ busy=false; sceneLater(skip?20000:GAPS-10000); }, 700+n*22+900);
+    }
+  }
+  window.beeFly=beeFly; window.bearScene=bearScene;
+  sceneLater(3000);                                   /* door appears 3 s after the page opens; the bee takes off 10 s later */
 })();
 </script>
 </body>
