@@ -10663,70 +10663,129 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
 
 <style id="beeFlightCss">
 .classcard.bee-touched{transform:translateY(-3px) scale(1.025)!important;box-shadow:0 0 0 3px rgba(255,201,40,.9),0 10px 24px rgba(185,122,6,.35)!important;transition:transform .25s ease,box-shadow .25s ease}
+/* WORD CLUB title: rises to the centre, grows, and honey pours down over the letters while the bee is away */
+.wc-orb .wo-title{transition:transform .7s cubic-bezier(.3,1.4,.5,1)}
+.wc-orb.bee-away .wo-title{transform:translateY(-16px) scale(1.18);max-width:74px;white-space:normal;line-height:1.02;text-align:center;color:transparent;-webkit-text-fill-color:transparent;
+ background-image:linear-gradient(180deg,#d07a00 0%,#a65300 30%,#7a3b00 50%,#0b6b3a 50%,#0b6b3a 100%);background-size:100% 200%;
+ -webkit-background-clip:text;background-clip:text;animation:woHoney 2.6s ease-in .35s forwards;background-position:0 100%;
+ text-shadow:none;filter:drop-shadow(0 0 1px #fff6d8) drop-shadow(0 0 1px #fff6d8) drop-shadow(0 2px 3px rgba(120,60,0,.45))}
+@keyframes woHoney{from{background-position:0 100%}to{background-position:0 0}}
+.wc-orb .wo-title .wo-drips{display:none}
+.wc-orb.bee-away .wo-title .wo-drips{display:block;position:absolute;left:0;right:0;top:calc(100% - 3px);height:0;pointer-events:none;-webkit-text-fill-color:initial}
+.wo-drips i{position:absolute;top:0;width:3px;height:0;border-radius:0 0 3px 3px;background:linear-gradient(180deg,#c06a00,#8a4600);
+ box-shadow:inset 1px 0 1px rgba(255,255,255,.6);animation:woDrip 2s ease-in forwards}
+.wo-drips i:after{content:"";position:absolute;left:-1.5px;bottom:-4px;width:6px;height:7px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#9a5000;opacity:0;animation:woDrop 2s ease-in forwards;animation-delay:inherit}
+@keyframes woDrop{0%,45%{opacity:0}70%,100%{opacity:1}}
+@keyframes woDrip{0%{height:0}70%{height:8px}100%{height:13px}}
+.bee-flyer .bf-front{display:none;position:absolute;inset:0}
+.bee-flyer.front .bf-front{display:block;animation:bfTurn .3s ease-out}
+.bee-flyer.front .bf-side{visibility:hidden}
+.bee-flyer .bf-side{position:absolute;inset:0}
+@keyframes bfTurn{from{transform:scaleX(.15)}to{transform:scaleX(1)}}
+.bf-front .fw{transform-box:fill-box;animation:fwL .12s linear infinite alternate}
+.bf-front .fw.r{transform-origin:0% 100%;animation-name:fwR}
+.bf-front .fw.l{transform-origin:100% 100%}
+@keyframes fwL{from{transform:rotate(8deg)}to{transform:rotate(-28deg)}}
+@keyframes fwR{from{transform:rotate(-8deg)}to{transform:rotate(28deg)}}
 </style>
 <script id="beeFlight">
-/* Word Club bee tour: leaves its bubble -> hovers 3 s above it -> zooms in a little -> circles the page, landing on each class card
-   -> buzzes at the iCAN logo for 6 s -> flies home, shrinking back to normal size, and settles in the bubble. */
+/* Word Club bee tour (every 50 s after it lands):
+   title rises & fills with honey -> bee turns to face you -> flies out to the right -> circles the bubble
+   -> darts to each class card -> 10 s at the iCAN logo -> flies home and settles at normal size. */
 (function(){
-  var busy=false, ZOOM=1.5;
+  var busy=false, ZOOM=1.35, GAP=50000, timer=null;
+  function frontBee(){ return '<svg viewBox="0 0 64 52" width="100%" height="100%" aria-hidden="true"><defs>'
+    +'<radialGradient id="bfab" cx="45%" cy="35%" r="70%"><stop offset="0" stop-color="#ffe08a"/><stop offset=".5" stop-color="#f0b429"/><stop offset="1" stop-color="#8a540a"/></radialGradient>'
+    +'<radialGradient id="bfhd" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#5a3a1a"/><stop offset="1" stop-color="#1c1208"/></radialGradient>'
+    +'<radialGradient id="bfey" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#6b5a4a"/><stop offset=".4" stop-color="#2a201a"/><stop offset="1" stop-color="#0a0605"/></radialGradient>'
+    +'<linearGradient id="bfwg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".8"/><stop offset="1" stop-color="#c6e2f7" stop-opacity=".35"/></linearGradient>'
+    +'<clipPath id="bfcl"><ellipse cx="32" cy="38" rx="10" ry="12"/></clipPath></defs>'
+    +'<path class="fw l" d="M24 24C14 22 5 15 6 8c1-4 6-4 10 0 5 5 8 11 8 16z" fill="url(#bfwg)" stroke="#7d93a8" stroke-width=".6"/>'
+    +'<path class="fw r" d="M40 24c10-2 19-9 18-16-1-4-6-4-10 0-5 5-8 11-8 16z" fill="url(#bfwg)" stroke="#7d93a8" stroke-width=".6"/>'
+    +'<g stroke="#2a1a0a" stroke-width="1.1" fill="none" stroke-linecap="round"><path d="M24 32l-6 4-3 5"/><path d="M40 32l6 4 3 5"/><path d="M25 36l-4 7"/><path d="M39 36l4 7"/></g>'
+    +'<ellipse cx="32" cy="38" rx="10" ry="12" fill="url(#bfab)"/>'
+    +'<g clip-path="url(#bfcl)" fill="#2b1806" opacity=".88"><rect x="20" y="33" width="24" height="3.2" rx="1.6"/><rect x="20" y="39.5" width="24" height="3" rx="1.5"/><rect x="20" y="45.5" width="24" height="2.8" rx="1.4"/></g>'
+    +'<circle cx="32" cy="25" r="8" fill="#9b5f17"/>'
+    +'<ellipse cx="32" cy="19" rx="8.5" ry="7.5" fill="url(#bfhd)"/>'
+    +'<ellipse cx="27.2" cy="18.5" rx="3.6" ry="5" fill="url(#bfey)"/><ellipse cx="36.8" cy="18.5" rx="3.6" ry="5" fill="url(#bfey)"/>'
+    +'<ellipse cx="26.2" cy="16.6" rx="1.1" ry="1.5" fill="#fff" opacity=".6"/><ellipse cx="35.8" cy="16.6" rx="1.1" ry="1.5" fill="#fff" opacity=".6"/>'
+    +'<path d="M30 12.5c-1.5-4-4-6-7-6.5M34 12.5c1.5-4 4-6 7-6.5" stroke="#1c1208" stroke-width="1.05" fill="none" stroke-linecap="round"/>'
+    +'<path d="M31 24.5l-.6 2.6M33 24.5l.6 2.6" stroke="#3a240c" stroke-width=".9" stroke-linecap="round"/></svg>'; }
   function box(el){ if(!el) return null; var r=el.getBoundingClientRect(); if(r.width<4||r.bottom<0||r.top>innerHeight||r.right<0||r.left>innerWidth) return null; return r; }
   function blocked(){ return document.hidden || document.querySelector('#wcOv.open,#eotOv.open,#eoxOv.open,#eoxCodesOv.open,.bee-ov.open,#pdfOv.open,.lpm-ov.open'); }
+  function later(ms){ clearTimeout(timer); timer=setTimeout(beeFly,ms); }
   function beeFly(){
-    if(busy||blocked()) return;
+    if(busy) return;
+    if(blocked()){ later(5000); return; }
     try{ if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; }catch(e){}
-    var home=document.querySelector('.orb-pair .wc-orb .wo-bee')||document.querySelector('.wc-orb .wo-bee'),
+    var orb=document.querySelector('.orb-pair .wc-orb')||document.querySelector('.wc-orb'),
+        home=orb&&orb.querySelector('.wo-bee'),
         logo=document.querySelector('.hero-logo .ican-logo')||document.querySelector('.hero-logo');
-    var a=box(home), b=box(logo); if(!a||!b||!home.animate) return;
+    var a=box(home), o=box(orb), b=box(logo); if(!a||!o||!b||!home.animate){ later(5000); return; }
     busy=true;
     var sx=scrollX, sy=scrollY, w=a.width, h=a.height, minY=sy+6;
-    function C(r,fx,fy){ return [r.left+sx+r.width*fx, r.top+sy+r.height*fy]; }      /* page point of a box */
-    var P0=C(a,.5,.5), above=[P0[0],P0[1]-h*1.6], LOGO=C(b,.72,.12);
-    /* class cards on screen, visited in a circular (clockwise) tour that ends near the logo */
+    function C(r,fx,fy){ return [r.left+sx+r.width*fx, r.top+sy+r.height*fy]; }
+    var P0=C(a,.5,.5), OC=C(o,.5,.5), R=o.width*.5+w*.35, LOGO=C(b,.72,.12);
     var cards=[].slice.call(document.querySelectorAll('.classcard')).map(function(el){ var r=box(el); return r?{el:el,p:C(r,.82,.02)}:null; }).filter(Boolean);
     if(cards.length){ var cx=0,cy=0; cards.forEach(function(c){cx+=c.p[0];cy+=c.p[1];}); cx/=cards.length; cy/=cards.length;
-      var ang=function(p){ return Math.atan2(p[1]-cy,p[0]-cx); }, a0=ang(above), aL=ang(LOGO);
-      cards.forEach(function(c){ var d=ang(c.p)-a0; while(d<0) d+=2*Math.PI; c.k=d; });
-      cards.sort(function(x,y){ return x.k-y.k; }); }
-    /* build the route */
-    var K=[], t=0, cur=P0.slice(), sc=1, face=-1, touches=[];
+      var ang=function(p){ return Math.atan2(p[1]-cy,p[0]-cx); }, a0=ang(OC);
+      cards.forEach(function(c){ var d=ang(c.p)-a0; while(d<0) d+=2*Math.PI; c.k=d; }); cards.sort(function(x,y){ return x.k-y.k; }); }
+    var K=[], t=0, cur=P0.slice(), sc=1, face=-1, touches=[], L=null;
     function T(x,y,s,f,r){ return 'translate('+(x-w/2).toFixed(1)+'px,'+(Math.max(minY,y-h/2)).toFixed(1)+'px) scale('+s.toFixed(3)+') scaleX('+f+') rotate('+(r||0).toFixed(1)+'deg)'; }
-    var L=null;
-    function key(x,y,s,f,r){ if(L&&L.f!==f) K.push({t:Math.min(t,L.t+1),transform:T(L.x,L.y,L.s,f,L.r)});   /* turn around instantly, no squash */
+    function key(x,y,s,f,r){ if(L&&L.f!==f) K.push({t:Math.min(t,L.t+1),transform:T(L.x,L.y,L.s,f,L.r)});
       K.push({t:t,transform:T(x,y,s,f,r)}); L={t:t,x:x,y:y,s:s,f:f,r:r||0}; }
-    function fly(to,ms,s1,bend){ var n=Math.max(6,Math.round(ms/90)), x0=cur[0],y0=cur[1], s0=sc, dx=to[0]-x0, dy=to[1]-y0, d=Math.hypot(dx,dy)||1;
-      var mx=(x0+to[0])/2-dy/d*d*bend, my=(y0+to[1])/2+dx/d*d*bend;              /* curved (circular) flight */
-      if(Math.abs(dx)>4) face=dx>0?-1:1;                                           /* head points left: flip when flying right */
+    function fly(to,ms,s1,bend){ var n=Math.max(5,Math.round(ms/80)), x0=cur[0],y0=cur[1], s0=sc, dx=to[0]-x0, dy=to[1]-y0, d=Math.hypot(dx,dy)||1;
+      var mx=(x0+to[0])/2-dy/d*d*bend, my=(y0+to[1])/2+dx/d*d*bend;
+      if(Math.abs(dx)>4) face=dx>0?-1:1;
       for(var i=1;i<=n;i++){ var u=i/n, e=u*u*(3-2*u), x=(1-e)*(1-e)*x0+2*(1-e)*e*mx+e*e*to[0], y=(1-e)*(1-e)*y0+2*(1-e)*e*my+e*e*to[1];
-        t+=ms/n; key(x, y+Math.sin(u*Math.PI*3)*4, s0+(s1-s0)*e, face, i<n?-10*face:0); }
+        t+=ms/n; key(x, y+Math.sin(u*Math.PI*3)*3, s0+(s1-s0)*e, face, i<n?-10*face:0); }
       cur=[to[0],to[1]]; sc=s1; }
     function hover(ms,amp,turn){ var n=Math.max(6,Math.round(ms/250));
       for(var i=1;i<=n;i++){ var q=i/n*Math.PI*2*(ms/2000); t+=ms/n; var f=(turn&&Math.sin(q/2)<0)?-face:face;
         key(cur[0]+Math.sin(q)*amp, cur[1]+Math.sin(q*2)*amp*.45, sc, f, Math.sin(q*3)*5); } }
-    function land(card){ t+=180; key(cur[0],cur[1]+5,sc,face,0); touches.push({el:card.el,at:t}); t+=420; key(cur[0],cur[1]+6,sc,face,0); t+=200; key(cur[0],cur[1]-4,sc,face,0); }
+    function orbit(ms,turns){ var n=Math.round(ms/70);
+      for(var i=1;i<=n;i++){ var th=-i/n*Math.PI*2*turns, x=OC[0]+Math.cos(th)*R, y=OC[1]+Math.sin(th)*R*.9;   /* anticlockwise: up first */
+        var tx=Math.sin(th);  /* horizontal direction of travel */ face=tx>0?-1:1; t+=ms/n; key(x,y,sc,face,Math.cos(th)*12*face); }
+      cur=[OC[0]+R,OC[1]]; }
+    function land(card){ t+=120; key(cur[0],cur[1]+5,sc,face,0); touches.push({el:card.el,at:t}); t+=260; key(cur[0],cur[1]+6,sc,face,0); t+=120; key(cur[0],cur[1]-3,sc,face,0); }
+    /* 1 · take-off: the bee lifts a little and turns to face you (front view) */
     key(P0[0],P0[1],1,face,0);
-    fly(above,800,1,0);                 /* out of the bubble */
-    hover(3000,7,true);                 /* hovers over the bubble for 3 seconds */
-    t+=600; key(cur[0],cur[1]-6,ZOOM,face,0); sc=ZOOM;   /* zooms in a little */
-    cards.forEach(function(c,i){ fly([c.p[0],c.p[1]-h*.55],1100,ZOOM,i%2?.22:-.22); land(c); });   /* circular tour touching every class */
-    fly(LOGO,1500,ZOOM,.28);            /* to the logo */
-    hover(6000,16,true);                /* buzzes at the logo for 6 seconds */
-    fly(above,2400,1.15,-.3);           /* flies home, shrinking */
-    fly(P0,900,1,0);                    /* settles back in the bubble at normal size */
+    t+=500; key(P0[0],P0[1]-4,1.15,face,0);
+    t+=900; key(P0[0],P0[1]-6,1.2,face,0); var FRONT_END=t;
+    /* 2 · out of the bubble to the right, then a loop around it */
+    fly([OC[0]+R,OC[1]],700,ZOOM,.15);
+    orbit(2800,1);
+    /* 3 · fast dash to each class card */
+    cards.forEach(function(c,i){ fly([c.p[0],c.p[1]-h*.55],520,ZOOM,i%2?.18:-.18); land(c); });
+    /* 4 · to the logo, buzzing there for 10 seconds */
+    fly(LOGO,900,ZOOM,.25);
+    hover(10000,16,true);
+    /* 5 · the journey home, shrinking back to normal size */
+    fly([OC[0],OC[1]-o.height*.85],2200,1.15,-.3);
+    fly(P0,900,1,0);
     var tot=t; K.forEach(function(k){ k.offset=Math.min(1,k.t/tot); delete k.t; }); K[0].offset=0; K[K.length-1].offset=1;
     var f=document.createElement('div');
-    f.className='bee-flyer'; f.setAttribute('aria-hidden','true'); f.innerHTML=home.innerHTML;
+    f.className='bee-flyer front'; f.setAttribute('aria-hidden','true');
+    f.innerHTML='<div class="bf-side">'+home.innerHTML+'</div><div class="bf-front">'+frontBee()+'</div>';
     f.style.cssText='position:absolute;left:0;top:0;width:'+w+'px;height:'+h+'px;z-index:8500;pointer-events:none;will-change:transform;transform-origin:50% 50%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))';
-    var svg=f.querySelector('svg'); if(svg){ svg.style.width='100%'; svg.style.height='100%'; }
+    var svg=f.querySelector('.bf-side svg'); if(svg){ svg.style.width='100%'; svg.style.height='100%'; }
+    /* honey title */
+    var ttl=orb.querySelector('.wo-title'), drips=ttl&&ttl.querySelector('.wo-drips'); if(ttl&&!drips){ drips=document.createElement('span'); drips.className='wo-drips'; ttl.appendChild(drips); }
+    if(drips) drips.innerHTML=[18,47,74].map(function(x,i){ return '<i style="left:'+x+'%;animation-delay:'+(2.2+i*.35).toFixed(2)+'s"></i>'; }).join('');
+    orb.classList.add('bee-away');
     document.body.appendChild(f); home.style.visibility='hidden';
-    var timers=touches.map(function(x){ return setTimeout(function(){ x.el.classList.add('bee-touched'); setTimeout(function(){ x.el.classList.remove('bee-touched'); },650); }, x.at-200); });
+    var timers=[setTimeout(function(){ f.classList.remove('front'); }, FRONT_END)];
+    touches.forEach(function(x){ timers.push(setTimeout(function(){ x.el.classList.add('bee-touched'); setTimeout(function(){ x.el.classList.remove('bee-touched'); },500); }, x.at-120)); });
     var anim=f.animate(K,{duration:tot,easing:'linear',fill:'forwards'});
-    function done(){ timers.forEach(clearTimeout); try{ f.remove(); }catch(e){} home.style.visibility=''; var c=document.querySelector('.wc-orb .wo-bee'); if(c) c.style.visibility='';
-      [].forEach.call(document.querySelectorAll('.bee-touched'),function(x){x.classList.remove('bee-touched');}); busy=false; }
+    function done(){ timers.forEach(clearTimeout); try{ f.remove(); }catch(e){} home.style.visibility='';
+      var c=document.querySelector('.wc-orb .wo-bee'); if(c) c.style.visibility='';
+      [].forEach.call(document.querySelectorAll('.wc-orb.bee-away'),function(x){x.classList.remove('bee-away');});
+      [].forEach.call(document.querySelectorAll('.bee-touched'),function(x){x.classList.remove('bee-touched');});
+      busy=false; later(GAP); }                       /* next flight 50 s after landing */
     anim.onfinish=done; anim.oncancel=done;
   }
   window.beeFly=beeFly;
-  setTimeout(beeFly,3000);            /* first tour shortly after the page opens */
-  setInterval(beeFly,45000);          /* then again every 45 seconds while the home page is showing */
+  later(3000);                                        /* first flight shortly after the page opens */
 })();
 </script>
 </body>
