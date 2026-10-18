@@ -873,6 +873,7 @@ table.wcl tr.wcl-band span{font-family:"Segoe UI",sans-serif;font-weight:700;fon
 .wc-chip.ch{background:#efe7ff;color:#5b2fb0;border-color:#d8c7fb}
 .wc-rounds{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
 .wc-round{background:#fff;border:1px solid #d6eedd;border-radius:18px;padding:12px 14px;box-shadow:0 6px 16px rgba(11,107,58,.06)}
+.wcrl-btn{border:1.5px solid #9fd8b4;background:#f3fbf6;color:#0b6b3a;font:800 .74rem/1 inherit;font-family:inherit;border-radius:999px;padding:5px 10px;cursor:pointer;margin:0 6px}.wcrl-btn:hover{background:#119a55;color:#fff;border-color:#119a55}.wcrl-box{height:auto!important;max-height:min(92vh,1100px)}.wcrl-pdf b{display:inline-block;margin-left:2px;font-size:1.05em}
 .wc-round h4{margin:0 0 8px;font-size:.98rem;color:#123f2c;display:flex;justify-content:space-between;align-items:center}
 .wc-hexrow{display:flex;gap:8px;justify-content:center}
 .wc-hex{max-width:110px}
@@ -9861,6 +9862,53 @@ function wcHome(){ wcStop(); WC_SSS++; var p=wcLoad(), mastered=Object.keys(p.m)
   +'<div class="wc-ref" style="cursor:default"><span class="ic">📜</span><span><b>Rules of the Bee</b><span>Listen, then say · spell · say. Two attempts per item.</span></span></div></div>');
 }
 function wcStars(pct){ if(pct==null) return ""; return pct>=90?"★★★":pct>=70?"★★☆":pct>=50?"★☆☆":"☆☆☆"; }
+/* ---------- round word list (pop-up + printable PDF) — Middle & High School rounds ---------- */
+function wcRoundRows(k,ri){ var tk=WC_TRACKS[k], out=[]; tk.levels.forEach(function(L){ (wcRounds(k,L)[ri]||[]).forEach(function(r){ out.push({L:L,r:r}); }); }); return out; }
+function wcRoundList(k,ri){ var tk=WC_TRACKS[k], rows=wcRoundRows(k,ri), o=document.getElementById("wcRlOv");
+ if(!o){ o=document.createElement("div"); o.id="wcRlOv"; o.className="wc-pdf"; o.onclick=function(e){ if(e.target===o){ o.classList.remove("open"); wcStop(); } }; document.body.appendChild(o); }
+ var h="", last="";
+ rows.forEach(function(x,i){ var r=x.r, v=WC_LV[x.L];
+  if(x.L!==last){ last=x.L; h+='<tr class="wcl-band"><td colspan="6">Level '+x.L.slice(1)+' <span>'+esc(v[0])+' · '+esc(v[1])+'</span></td></tr>'; }
+  h+='<tr><td class="n">'+(i+1)+'</td><td class="w"><span class="ww">'+esc(r[0])+'</span>'+(r[5]?'<button class="wcl-h" title="Homonym — tap to see the sound-alike word" onclick="this.nextSibling.hidden=!this.nextSibling.hidden">H</button><span class="wcl-hom" hidden>🔁 sounds like: '+esc(r[5])+'</span>':'')+'</td>'
+   +'<td><button class="wcl-say" onclick="wcSpeak('+JSON.stringify(r[0]).replace(/"/g,"&quot;")+',.8)" title="Hear it">🔊</button></td>'
+   +'<td class="p" title="'+esc(r[1])+'">'+esc(wcPosAb(r[1]))+'</td><td>'+esc(r[2])+'</td><td class="x">'+esc(r[3])+'</td></tr>'; });
+ o.innerHTML='<div class="box wcrl-box"><div class="bar">📋 '+esc(tk.title)+' · Round '+(ri+1)+' <span style="font-weight:400;opacity:.85;font-size:.82rem">· '+rows.length+' words</span><span class="sp"></span>'
+  +'<button class="wc-btn sm wcrl-pdf" onclick="wcRoundPDF(\''+k+'\','+ri+')" title="Download a printable PDF">PDF <b>⬇</b></button>'
+  +'<button class="wc-btn sm" onclick="document.getElementById(\'wcRlOv\').classList.remove(\'open\');wcStop()">✕ Close</button></div>'
+  +'<div class="wcl-note">All the words assessed in this round (Levels 1–3). Tap 🔊 to hear a word; tap <b>H</b> to see the word it sounds like.</div>'
+  +'<div class="wcl-scroll"><table class="wcl"><thead><tr><th>#</th><th>Word <span style="opacity:.8;font-weight:600;text-transform:none;letter-spacing:0">(H = homonym)</span></th><th>🔊</th><th>Class</th><th>Definition</th><th>In context</th></tr></thead><tbody>'+h+'</tbody></table></div></div>';
+ o.classList.add("open"); }
+function wcRoundPDF(k,ri){ var J=window.jspdf&&window.jspdf.jsPDF; if(!J){ alert("PDF maker is not available."); return; }
+ var tk=WC_TRACKS[k], rows=wcRoundRows(k,ri), doc=new J({unit:"mm",format:"a4"}), W=210, M=12, y=0, page=1;
+ var C=[{k:"n",w:9,t:"#"},{k:"w",w:34,t:"Word"},{k:"p",w:15,t:"Class"},{k:"d",w:60,t:"Definition"},{k:"x",w:68,t:"In context"}];
+ function clean(s){ return String(s||"").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/—/g," - ").replace(/–/g,"-").replace(/…/g,"..."); }
+ function head(){ doc.setFillColor(11,107,58); doc.rect(0,0,W,20,"F"); doc.setTextColor(255,255,255);
+   doc.setFont("helvetica","bold"); doc.setFontSize(14); doc.text(clean("Word Club - "+tk.title+" - Round "+(ri+1)),M,9);
+   doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.text(rows.length+" words - Levels 1-3   |   H = homonym (sounds like another word)",M,15);
+   doc.text("Name: ______________________   Class: ________",W-M,15,{align:"right"});
+   y=26; doc.setFillColor(227,243,232); doc.rect(M,y-4.5,W-2*M,7,"F"); doc.setTextColor(11,107,58); doc.setFont("helvetica","bold"); doc.setFontSize(8.5);
+   var x=M; C.forEach(function(c){ doc.text(c.t.toUpperCase(),x+1.5,y); x+=c.w; }); y+=6; }
+ function foot(){ doc.setFont("helvetica","italic"); doc.setFontSize(7.5); doc.setTextColor(120,140,130);
+   doc.text(clean("© iCAN Academy - Emad Ali Mohamed, Dr. - for personal study"),M,290); doc.text("Page "+page,W-M,290,{align:"right"}); }
+ head(); var last="", n=0;
+ rows.forEach(function(x){ var r=x.r;
+  if(x.L!==last){ last=x.L; if(y>270){ foot(); doc.addPage(); page++; head(); }
+    doc.setFillColor(255,246,214); doc.rect(M,y-1,W-2*M,7,"F"); doc.setTextColor(122,79,0); doc.setFont("helvetica","bold"); doc.setFontSize(10.5);
+    doc.text(clean("Level "+x.L.slice(1)+" - "+WC_LV[x.L][0]+" - "+WC_LV[x.L][1]),M+2,y+4); y+=10; }
+  n++; doc.setFontSize(9);
+  var cells={n:[String(n)], w:doc.splitTextToSize(clean(r[0])+(r[5]?"  (H)":""),C[1].w-3), p:doc.splitTextToSize(clean(wcPosAb(r[1])),C[2].w-2),
+    d:doc.splitTextToSize(clean(r[2]),C[3].w-3), x:doc.splitTextToSize(clean(r[3]),C[4].w-3)};
+  if(r[5]) cells.w=cells.w.concat(doc.splitTextToSize("sounds like: "+clean(r[5]),C[1].w-3));
+  var lines=Math.max(cells.w.length,cells.d.length,cells.x.length,cells.p.length), hgt=lines*4+3;
+  if(y+hgt>282){ foot(); doc.addPage(); page++; head(); }
+  var xx=M; C.forEach(function(c){ var t=cells[c.k];
+    if(c.k==="w"){ doc.setFont("helvetica","bold"); doc.setTextColor(11,107,58); doc.text(t.slice(0,t.length-(r[5]?doc.splitTextToSize("sounds like: "+clean(r[5]),C[1].w-3).length:0)),xx+1.5,y+3);
+      if(r[5]){ var k2=t.length-doc.splitTextToSize("sounds like: "+clean(r[5]),C[1].w-3).length; doc.setFont("helvetica","italic"); doc.setFontSize(7.5); doc.setTextColor(74,35,160); doc.text(t.slice(k2),xx+1.5,y+3+k2*4); doc.setFontSize(9); } }
+    else { doc.setFont("helvetica",c.k==="x"||c.k==="p"?"italic":"normal"); doc.setTextColor(c.k==="n"?130:c.k==="p"?138:40, c.k==="n"?150:c.k==="p"?90:50, c.k==="n"?140:c.k==="p"?0:45); doc.text(t,xx+1.5,y+3); }
+    xx+=c.w; });
+  y+=hgt; doc.setDrawColor(225,238,230); doc.line(M,y-1,W-M,y-1); });
+ foot();
+ doc.save("WordClub_"+(k==="ms"?"MiddleSchool":k==="hs"?"HighSchool":k)+"_Round"+(ri+1)+"_words.pdf"); }
 function wcTrack(key){ wcStop(); WC_SSS++; var t=WC_TRACKS[key], parts=t.parts||[key], p=wcLoad(), html="";
  html+='<p class="wc-secsub" style="font-size:.95rem">'+esc(t.desc||"")+'</p>';
  parts.forEach(function(k){ var tk=WC_TRACKS[k], R=wcRounds(k,tk.levels[0]);
@@ -9868,7 +9916,7 @@ function wcTrack(key){ wcStop(); WC_SSS++; var t=WC_TRACKS[key], parts=t.parts||
   html+='<div class="wc-lvkey">'+tk.levels.map(function(L){var v=WC_LV[L];return '<span class="wc-chip '+v[2]+'">'+v[0]+' · '+v[1]+'</span>';}).join("")
    +'<span class="wc-chip">'+(tk.type==="s"?"10 sentences · "+((k==="chs")?"40":"35–40")+" s · 2 attempts":"15 words · "+WC_SEC_WORD+" s · 2 attempts")+'</span></div><div class="wc-rounds">';
   for(var ri=0;ri<R.length;ri++){
-   html+='<div class="wc-round"><h4>Round '+(ri+1)+'<span style="font-size:.72rem;color:#4d7a64">'+(tk.type==="s"?(tk.levels.length*10)+" sentences":(tk.levels.length*15)+" words")+'</span></h4><div class="wc-hexrow">'
+   html+='<div class="wc-round"><h4>Round '+(ri+1)+((k==="ms"||k==="hs")&&tk.type!=="s"?'<button class="wcrl-btn" onclick="wcRoundList(\''+k+'\','+ri+')" title="See, hear and print the words in this round">📋 list</button>':'')+'<span style="font-size:.72rem;color:#4d7a64">'+(tk.type==="s"?(tk.levels.length*10)+" sentences":(tk.levels.length*15)+" words")+'</span></h4><div class="wc-hexrow">'
     +tk.levels.map(function(L){ var v=WC_LV[L], best=p.r[wcRK(k,L,ri)]; return '<button class="wc-hex '+v[2]+'" onclick="wcStart(\''+k+'\',\''+L+'\','+ri+')" title="'+v[0]+' — '+v[1]+'">'+(L==="CH"?"Go!":"Level "+L.slice(1))+'<span class="sc">'+(best!=null?best+"%":"start")+'</span><span class="st">'+wcStars(best)+'</span></button>'; }).join("")
     +'</div></div>';
   }
