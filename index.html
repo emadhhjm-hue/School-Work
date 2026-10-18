@@ -8685,7 +8685,7 @@ function timetableHTML(){
     return "<tr"+(brk?' class="tt-break"':"")+">"+cells+"</tr>";
   }).join("");
   return '<details class="tt-wrap">'
-    +'<summary class="tt-summary">\uD83D\uDCC5 My weekly timetable <span class="tt-caret">\u25be</span><span class="tt-sub">tap to show / hide</span></summary>'
+    +'<summary class="tt-summary">\uD83D\uDCC5 My weekly timetable <span class="tt-caret">\u25be</span><span class="tt-sub">tap to show / hide</span><button type="button" class="lion-btn" title="Watch: Lion Spirit" onclick="event.preventDefault();event.stopPropagation();lionOpen()"><span class="lp"><i></i></span><span class="lt"><small>I lead with a lion\u2019s heart</small><b>Lion Spirit</b></span></button></summary>'
     +'<div class="tt-bar" onclick="event.stopPropagation()">'
     +'<span style="flex:1"></span>'
     +'<button id="ttEditBtn" class="btn sm" onclick="ttToggleEdit()">\u270e Edit timetable</button>'
@@ -11108,5 +11108,72 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
   sceneLater(3000);                                   /* door appears 3 s after the page opens; the bee takes off 10 s later */
 })();
 </script>
+<style id="lionCss">
+.tt-summary .lion-btn{margin-left:auto}
+.lion-btn{display:inline-flex;align-items:center;gap:9px;border:0;cursor:pointer;font-family:inherit;padding:6px 14px 6px 8px;border-radius:14px;
+ background:linear-gradient(180deg,#fbeec3 0%,#f0d27c 38%,#d9ad45 70%,#c4922b 100%);color:#5a3900;
+ box-shadow:inset 0 2px 1px rgba(255,255,255,.85),inset 0 -3px 4px rgba(120,70,0,.35),0 0 0 1px #b78424,0 3px 8px rgba(150,100,10,.35),0 0 14px rgba(255,196,60,.45);
+ transition:transform .15s,box-shadow .15s}
+.lion-btn:hover{transform:translateY(-1px) scale(1.03)}
+.lion-btn .lp{flex:none;width:34px;height:24px;border-radius:8px;display:grid;place-items:center;
+ background:linear-gradient(180deg,#a8741a,#7a4f08);box-shadow:inset 0 1px 1px rgba(255,235,170,.7),inset 0 -2px 2px rgba(0,0,0,.35)}
+.lion-btn .lp i{width:0;height:0;border-left:10px solid #fde9a8;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:3px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.35))}
+.lion-btn .lt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05;text-shadow:0 1px 0 rgba(255,250,225,.9)}
+.lion-btn .lt small{font-size:.62rem;font-weight:700;font-style:italic;letter-spacing:.2px;opacity:.85}
+.lion-btn .lt b{font-size:.98rem;font-weight:900;letter-spacing:.4px;font-family:Georgia,serif}
+#lionOv{position:fixed;inset:0;z-index:9400;display:none;background:rgba(14,10,2,.62);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
+#lionOv.open{display:block}
+#lionBox{position:fixed;pointer-events:none}
+#lionBox .vid,#lionBox .lx,#lionBox .lyt a{pointer-events:auto}
+/* soft, still, realistic golden light around the playing video (like the logo halo on the hub) */
+@property --lionA{syntax:"<angle>";inherits:false;initial-value:0deg}
+#lionBox .vid{position:absolute;border-radius:14px;background:#000;isolation:isolate;
+ box-shadow:0 0 0 1px rgba(255,246,214,.9),0 0 26px 6px rgba(255,214,130,.35),0 0 90px 30px rgba(255,196,90,.16)}
+/* a ribbon of white-gold light travelling anticlockwise around the frame */
+#lionBox .vid .ring,#lionBox .vid .aura,#lionBox .vid .aura2{position:absolute;pointer-events:none;z-index:-1;--lionA:0deg;
+ background:conic-gradient(from var(--lionA),
+   rgba(255,255,255,0) 0deg, rgba(255,250,232,.95) 22deg, rgba(255,214,110,.95) 52deg, rgba(232,168,40,.75) 84deg, rgba(255,200,90,0) 120deg,
+   rgba(255,200,90,0) 168deg, rgba(255,255,255,.9) 196deg, rgba(255,222,140,.95) 226deg, rgba(214,150,30,.7) 262deg, rgba(255,200,90,0) 300deg, rgba(255,255,255,0) 360deg);
+ animation:lionTurn 9s linear infinite}
+#lionBox .vid .ring{inset:-3px;border-radius:17px;filter:blur(2px)}
+#lionBox .vid .aura{inset:-22px;border-radius:34px;filter:blur(22px);opacity:.95}
+#lionBox .vid .aura2{inset:-60px;border-radius:80px;filter:blur(55px);opacity:.55;animation-duration:14s}
+@keyframes lionTurn{from{--lionA:360deg}to{--lionA:0deg}}
+@media (prefers-reduced-motion: reduce){#lionBox .vid .ring,#lionBox .vid .aura,#lionBox .vid .aura2{animation:none}}
+#lionBox iframe{position:relative;z-index:1;width:100%;height:100%;border:0;display:block;border-radius:14px;background:#000}
+#lionBox .lhead{position:absolute;text-align:center;color:#fff3cf;text-shadow:0 0 6px rgba(255,214,120,.9),0 0 18px rgba(255,190,70,.6),0 1px 2px rgba(0,0,0,.5)}
+#lionBox .lhead small{display:block;font-style:italic;font-size:.76rem;opacity:.95}
+#lionBox .lhead b{font-family:Georgia,serif;font-size:1.3rem;letter-spacing:.6px}
+#lionBox .lx{position:absolute;z-index:2;border:0;border-radius:999px;padding:5px 12px;font-weight:800;cursor:pointer;background:linear-gradient(180deg,#fdf1cc,#e2b956);color:#5a3900;box-shadow:inset 0 1px 1px #fff,0 0 12px rgba(255,206,110,.7)}
+#lionBox .lyt{position:absolute;text-align:center;font-size:.76rem}
+#lionBox .lyt a{color:#ffe7a8;text-shadow:0 0 8px rgba(255,200,90,.8)}
+.lion-btn .lt small,.lion-btn .lt b{white-space:nowrap}
+@media (max-width:560px){.tt-summary .tt-sub{display:none}.lion-btn{padding:5px 10px 5px 6px;gap:6px}.lion-btn .lp{width:28px;height:20px}}
+</style>
+<script id="lionJs">
+var LION_ID="-ZV46RPMTNQ";
+function lionLayout(){ var b=document.getElementById("lionBox"); if(!b) return;
+ var hero=document.querySelector(".hero-home")||document.querySelector(".hero"), r=hero?hero.getBoundingClientRect():{left:16,width:innerWidth-32,bottom:0};
+ var foot=document.getElementById("icanCopy"), fh=0; try{ var fr=foot&&foot.getBoundingClientRect(); if(fr&&fr.top<innerHeight) fh=innerHeight-fr.top; }catch(e){}
+ var top=Math.max(8,r.bottom+10), left=Math.max(6,r.left), W=Math.min(innerWidth-12,r.width||innerWidth-24), H=innerHeight-fh-top-8;
+ if(H<300){ top=8; H=innerHeight-fh-16; }
+ b.style.cssText="left:"+left+"px;top:"+top+"px;width:"+W+"px;height:"+H+"px";
+ var padT=58, padB=34, av=H-padT-padB, side=W<600?24:90, vw=Math.min(W-side,av*2.2), vh=Math.min(av,W<600?vw*9/16:vw/1.9), vx=(W-vw)/2, vy=padT+(av-vh)/2;
+ b.querySelector(".vid").style.cssText="left:"+vx+"px;top:"+vy+"px;width:"+vw+"px;height:"+vh+"px";
+ b.querySelector(".lhead").style.cssText="left:0;right:0;top:"+Math.max(6,vy-52)+"px";
+ b.querySelector(".lx").style.cssText="left:"+(vx+vw-84)+"px;top:"+Math.max(6,vy-40)+"px";
+ b.querySelector(".lyt").style.cssText="left:0;right:0;top:"+(vy+vh+10)+"px"; }
+function lionOpen(){ var o=document.getElementById("lionOv");
+ if(!o){ o=document.createElement("div"); o.id="lionOv"; o.onclick=function(e){ if(e.target===o) lionClose(); }; document.body.appendChild(o); }
+ o.innerHTML='<div id="lionBox" role="dialog" aria-label="Lion Spirit video">'
+  +'<div class="lhead"><small>I lead with a lion’s heart</small><b>🦁 Lion Spirit</b></div><button class="lx" onclick="lionClose()">✕ Close</button>'
+  +'<div class="vid"><span class="aura2"></span><span class="aura"></span><span class="ring"></span><iframe src="https://www.youtube.com/embed/'+LION_ID+'?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="Lion Spirit" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+  +'<div class="lyt"><a href="https://www.youtube.com/watch?v='+LION_ID+'" target="_blank" rel="noopener">Open on YouTube ↗</a></div></div>';
+ o.classList.add("open"); lionLayout(); }
+function lionClose(){ var o=document.getElementById("lionOv"); if(o){ o.classList.remove("open"); o.innerHTML=""; } }
+addEventListener("resize",lionLayout); addEventListener("scroll",lionLayout,{passive:true});
+addEventListener("keydown",function(e){ if(e.key==="Escape") lionClose(); });
+</script>
+
 </body>
 </html>
