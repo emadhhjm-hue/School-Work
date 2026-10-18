@@ -8293,9 +8293,9 @@ var C5_WEEKS=[
 var COURSES={
  c1:{id:"c1", name:"11Advanced-12General", chapter:"Money… Talks! (Ch.1) · Nail That Job! (Ch.2)", blurb:"Reading, Writing, Listening & Speaking across Weeks 1–10.", lessons:C1_LESSONS, weeks:C1_WEEKS},
  c2:{id:"c2", name:"11General-10Advanced", chapter:"A Picture of Health (Ch.1) · Infotainment (Ch.2)", blurb:"Weeks 1–10 · Listening, Speaking, Reading & Writing.", lessons:C2_LESSONS, weeks:C2_WEEKS},
- c3:{id:"c3", name:"10General-9Advanced", chapter:"Meeting New People, Learning New Things (Ch.1)", blurb:"Term 1 · Chapter 1 (Weeks 1–5) · Chapter 2 Come Rain or Shine (Weeks 6–10).", lessons:C3_LESSONS, weeks:C3_WEEKS},
+ c3:{id:"c3", name:"10General-9Advanced", chapter:"Meeting New People, Learning New Things (Ch.1) · Come Rain or Shine (Ch.2)", blurb:"Term 1 · Chapter 1 (Weeks 1–5) · Chapter 2 Come Rain or Shine (Weeks 6–10).", lessons:C3_LESSONS, weeks:C3_WEEKS},
  c5:{id:"c5", name:"7Advanced-8General", chapter:"Units 1–4 · Term 1", blurb:"Cycle 2 · Coursebook + Workbook · Wk1–3: Unit 1 The Ocean · Wk3–5: Unit 2 Space · Wk6–8: Unit 3 Scientific Wonders · Wk8–10: Unit 4 Who Am I?", welcome:"Jana Emad", lessons:C5_LESSONS, weeks:C5_WEEKS},
- c4:{id:"c4", name:"12Advanced", chapter:"Pushing Boundaries (Unit 1)", blurb:"Wk1 L&S (Smart Homes) · Wk2 R&W (The Human Brain) · Wk3 L&S (Facial Recognition) · Wk4 R&W (Personality & Multitasking) · Ch.2 Rise to the Challenge!: Wk6–10.", lessons:C4_LESSONS, weeks:C4_WEEKS}
+ c4:{id:"c4", name:"12Advanced", chapter:"Pushing Boundaries (Unit 1) · Rise to the Challenge! (Ch.2)", blurb:"Wk1 L&S (Smart Homes) · Wk2 R&W (The Human Brain) · Wk3 L&S (Facial Recognition) · Wk4 R&W (Personality & Multitasking) · Ch.2 Rise to the Challenge!: Wk6–10.", lessons:C4_LESSONS, weeks:C4_WEEKS}
 };
 /* ---- Class rosters: differentiation groups (SEN / Tier 1 / Tier 2 / Tier 3) ----
    Keyed by grade label; each class maps to one or more grade rosters below. */
@@ -10807,6 +10807,28 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
 </script>
 
 <style id="beeFlightCss">
+.hero-logo .ican-logo{transition:filter .6s ease}
+.hero-logo .ican-logo.bee-shine{animation:lsLogo 1.4s ease-in-out infinite}
+@keyframes lsLogo{0%,100%{filter:brightness(1.1) drop-shadow(0 0 4px #fff) drop-shadow(0 0 12px rgba(255,255,255,.95)) drop-shadow(0 0 26px rgba(255,214,130,.75)) drop-shadow(0 0 48px rgba(255,200,90,.45))}
+ 50%{filter:brightness(1.3) drop-shadow(0 0 6px #fff) drop-shadow(0 0 18px #fff) drop-shadow(0 0 38px rgba(255,220,140,.95)) drop-shadow(0 0 70px rgba(255,200,90,.6))}}
+.logo-shine{position:absolute;z-index:8450;pointer-events:none;opacity:0;transition:opacity .5s ease}
+.logo-shine.on{opacity:1}
+.logo-shine i{position:absolute;display:block}
+.logo-shine .ls-bloom{width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;mix-blend-mode:screen;
+ background:radial-gradient(circle,#fff 0,rgba(255,255,255,.95) 10%,rgba(255,246,214,.7) 24%,rgba(255,220,140,.35) 42%,rgba(255,210,120,0) 68%);animation:lsBloom 1.4s ease-in-out infinite}
+@keyframes lsBloom{0%,100%{transform:scale(.7);opacity:.75}50%{transform:scale(1.2);opacity:1}}
+.logo-shine .ls-halo{transform:translate(-50%,-50%);border-radius:50%;
+ background:radial-gradient(ellipse,rgba(255,255,255,.55) 0,rgba(255,240,200,.35) 40%,rgba(255,214,130,.18) 58%,transparent 74%);animation:lsHalo 1.4s ease-in-out infinite}
+@keyframes lsHalo{0%,100%{opacity:.55}50%{opacity:1}}
+.logo-shine .ls-star{width:var(--s);height:var(--s);margin:calc(var(--s)/-2) 0 0 calc(var(--s)/-2);opacity:0;
+ filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px rgba(255,200,90,.95));animation:lsStar var(--d) ease-in-out var(--w) infinite}
+.logo-shine .ls-star:before,.logo-shine .ls-star:after{content:"";position:absolute;left:50%;top:50%;border-radius:50%;
+ background:radial-gradient(ellipse,#fff 0,#fff 30%,rgba(255,255,255,0) 72%)}
+.logo-shine .ls-star:before{width:100%;height:14%;margin:-7% 0 0 -50%}
+.logo-shine .ls-star:after{width:14%;height:100%;margin:-50% 0 0 -7%}
+@keyframes lsStar{0%,100%{opacity:0;transform:scale(.15) rotate(var(--r))}38%{opacity:1;transform:scale(1.1) rotate(calc(var(--r) + 20deg))}55%{opacity:.95;transform:scale(.85) rotate(calc(var(--r) + 30deg))}}
+@media (prefers-reduced-motion: reduce){.hero-logo .ican-logo.bee-shine,.logo-shine i{animation:none}}
+
 .classcard.bee-touched{transform:translateY(-3px) scale(1.025)!important;box-shadow:0 0 0 3px rgba(255,201,40,.9),0 10px 24px rgba(185,122,6,.35)!important;transition:transform .25s ease,box-shadow .25s ease}
 /* WORD CLUB title: rises to the centre, grows, and honey pours down over the letters while the bee is away */
 .wc-orb .wo-title{transition:transform .7s cubic-bezier(.3,1.4,.5,1)}
@@ -10856,6 +10878,22 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
     +'<ellipse cx="26.2" cy="16.6" rx="1.1" ry="1.5" fill="#fff" opacity=".6"/><ellipse cx="35.8" cy="16.6" rx="1.1" ry="1.5" fill="#fff" opacity=".6"/>'
     +'<path d="M30 12.5c-1.5-4-4-6-7-6.5M34 12.5c1.5-4 4-6 7-6.5" stroke="#1c1208" stroke-width="1.05" fill="none" stroke-linecap="round"/>'
     +'<path d="M31 24.5l-.6 2.6M33 24.5l.6 2.6" stroke="#3a240c" stroke-width=".9" stroke-linecap="round"/></svg>'; }
+  /* when the bee perches on the logo, the logo shines: a pulsing white bloom from the bee, star-like glints flashing around the logo */
+  function logoShine(logo,P){
+    var r=logo.getBoundingClientRect(), sx=scrollX, sy=scrollY, pad=Math.max(40,r.width*.35);
+    var o=document.createElement('div'); o.className='logo-shine';
+    o.style.cssText='left:'+(r.left+sx-pad)+'px;top:'+(r.top+sy-pad)+'px;width:'+(r.width+2*pad)+'px;height:'+(r.height+2*pad)+'px';
+    var bx=P[0]-(r.left+sx-pad), by=P[1]-(r.top+sy-pad), W=r.width+2*pad, H=r.height+2*pad, cx=W/2, cy=H/2, h='';
+    h+='<i class="ls-bloom" style="left:'+bx+'px;top:'+by+'px"></i><i class="ls-halo" style="left:'+cx+'px;top:'+cy+'px;width:'+(r.width*1.25)+'px;height:'+(r.height*1.25)+'px"></i>';
+    for(var k=0;k<18;k++){ var a=Math.random()*Math.PI*2, d=(k<4? Math.random()*14 : (r.width*.42+Math.random()*pad*.9)), ox=(k<4?bx:cx), oy=(k<4?by:cy);
+      var x=ox+Math.cos(a)*d, y=oy+Math.sin(a)*d*(k<4?1:r.height/r.width), sz=(k<4?40+Math.random()*24:22+Math.random()*34);
+      h+='<i class="ls-star" style="left:'+x.toFixed(1)+'px;top:'+y.toFixed(1)+'px;--s:'+sz.toFixed(0)+'px;--d:'+(0.9+Math.random()*1.3).toFixed(2)+'s;--w:'+(-Math.random()*2).toFixed(2)+'s;--r:'+(Math.random()*45).toFixed(0)+'deg"></i>'; }
+    o.innerHTML=h; document.body.appendChild(o);
+    logo.classList.add('bee-shine');
+    requestAnimationFrame(function(){ o.classList.add('on'); });
+    return function(){ logo.classList.remove('bee-shine'); o.classList.remove('on'); setTimeout(function(){ try{ o.remove(); }catch(e){} },700); };
+  }
+
   function box(el){ if(!el) return null; var r=el.getBoundingClientRect(); if(r.width<4||r.bottom<0||r.top>innerHeight||r.right<0||r.left>innerWidth) return null; return r; }
   function blocked(){ return document.hidden || document.querySelector('#wcOv.open,#eotOv.open,#eoxOv.open,#eoxCodesOv.open,.bee-ov.open,#pdfOv.open,.lpm-ov.open'); }
   function later(ms){ clearTimeout(timer); timer=setTimeout(beeFly,ms); }
@@ -10923,7 +10961,7 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
     var timers=[setTimeout(function(){ f.classList.remove('front'); },FRONT_END)];
     touches.forEach(function(x){ timers.push(setTimeout(function(){ x.el.classList.add('bee-touched'); setTimeout(function(){ x.el.classList.remove('bee-touched'); },500); }, x.at-120)); });
     var anim=f.animate(K,{duration:tot,easing:'linear',fill:'forwards'});
-    function done(){ timers.forEach(clearTimeout); try{ f.remove(); }catch(e){} home.style.visibility='';
+    function done(){ timers.forEach(clearTimeout); if(shineStop){ shineStop(); shineStop=null; } try{ f.remove(); }catch(e){} home.style.visibility='';
       var c=document.querySelector('.wc-orb .wo-bee'); if(c) c.style.visibility='';
       [].forEach.call(document.querySelectorAll('.wc-orb.bee-away'),function(x){x.classList.remove('bee-away');});
       [].forEach.call(document.querySelectorAll('.bee-touched'),function(x){x.classList.remove('bee-touched');});
@@ -10931,6 +10969,7 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
     anim.onfinish=done; anim.oncancel=done;
     if(opts&&opts.onStart) opts.onStart(tot,LOGO_AT);
     if(opts&&opts.onLogo) timers.push(setTimeout(function(){ opts.onLogo(tot-LOGO_AT); },LOGO_AT));   /* bee perches on the logo */
+    var shineStop=null; timers.push(setTimeout(function(){ try{ shineStop=logoShine(logo,LOGO); }catch(e){} },LOGO_AT)); timers.push(setTimeout(function(){ if(shineStop){ shineStop(); shineStop=null; } },LOGO_AT+10000));
     return true;
   }
 
