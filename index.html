@@ -11168,12 +11168,17 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
      +'@keyframes gbWglow{0%,100%{opacity:.85}50%{opacity:1}}'
      +'.giant-bee .gb-honey{mix-blend-mode:screen}'
      +'.giant-bee .gb-honey .h1{transform-box:fill-box;transform-origin:50% 50%;animation:gbHoney 1.1s ease-in-out infinite}'
-     +'.giant-bee .gb-honey .h2{transform-box:fill-box;transform-origin:50% 50%;animation:gbHoney2 1.1s ease-in-out infinite}'
+     +'.giant-bee .gb-honey .h2{transform-box:fill-box;transform-origin:50% 50%;animation:gbHoney2 1.4s ease-in-out infinite}'
      +'.giant-bee .gb-honey .h3{transform-box:fill-box;transform-origin:50% 50%;animation:gbBub 1.6s ease-in-out infinite}.giant-bee .gb-honey .h3.b{animation-delay:.8s}'
      +'@keyframes gbHoney{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:.8;transform:scale(1.05)}}'
      +'@keyframes gbHoney2{0%,100%{opacity:.35;transform:scale(.7)}45%{opacity:1;transform:scale(1.12)}}'
      +'@keyframes gbBub{0%{opacity:0;transform:translate(0,2px) scale(.4)}40%{opacity:.95}100%{opacity:0;transform:translate(1px,-4px) scale(1.1)}}'
-     +'@keyframes gbWing{from{transform:rotate(-14deg) scaleY(1)}to{transform:rotate(18deg) scaleY(.55)}}'
+     +'@keyframes gbWing{from{transform:rotate(-16deg) scale(1.9,1.75)}to{transform:rotate(16deg) scale(1.9,1.05)}}'
+     +'.wb-word{position:absolute;left:0;top:0;z-index:8700;pointer-events:none;white-space:nowrap;will-change:transform;font:900 1em/1.1 "Arial Black",Impact,system-ui,sans-serif;letter-spacing:.03em;'
+     +'-webkit-text-stroke:.6px rgba(40,20,0,.75);paint-order:stroke fill;text-shadow:0 0 3px #fff,0 0 6px rgba(255,255,255,.9),0 2px 3px rgba(0,0,0,.35)}'
+     +'.wb-word .sp{display:inline-block;width:.35em}'
+     +'.bee-trails{position:absolute;left:0;top:0;overflow:visible;pointer-events:none;z-index:8650}'
+     +'.bee-trails .bt{fill:none;stroke:#5a3a12;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.75;filter:drop-shadow(0 0 2px rgba(255,210,80,.9))}'
      +'.word-bomb,.word-boom{position:absolute;left:0;top:0;z-index:8700;pointer-events:none;will-change:transform;line-height:1}'
      +'.word-bomb{font:900 1em/1 "Arial Black",Impact,system-ui,sans-serif;color:#ffcf1f;-webkit-text-stroke:.7px rgba(40,20,0,.8);paint-order:stroke fill;letter-spacing:.02em;'
      +'text-shadow:0 1px 0 rgba(255,255,255,.55),0 -1px 0 rgba(0,0,0,.25),0 1px 0 rgba(0,0,0,.3),0 3px 4px rgba(0,0,0,.3);background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%);-webkit-background-clip:text;background-clip:text}'
@@ -11259,21 +11264,52 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
        1.7 s the bears panic and run · they dive through the door just in time and it slams shut ·
        the giant bee hovers like a helicopter (up and down, then in circles) for 6 s, flies back and hides in the comb ·
        at that moment the little bee leaves the logo and comes home. */
+    /* a friendly giant: the same little Word Club bee, just bigger, with long glowing wings and a warm golden light in her belly */
     function giantEl(GW,GH){ var g=document.createElement('div'); g.className='giant-bee';
       var hb=orb.querySelector('.wo-bee'), inner=hb?hb.innerHTML:'';
-      g.innerHTML='<div class="gb-in">'+inner+'<svg class="gb-crown" viewBox="0 0 64 52" aria-hidden="true"><defs><linearGradient id="gbcr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3a0"/><stop offset=".5" stop-color="#f5c400"/><stop offset="1" stop-color="#b8860b"/></linearGradient>'
-        +'<radialGradient id="gbhy" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fffbe0" stop-opacity="1"/><stop offset=".35" stop-color="#ffe066" stop-opacity=".95"/><stop offset=".7" stop-color="#ffb300" stop-opacity=".55"/><stop offset="1" stop-color="#ff9800" stop-opacity="0"/></radialGradient>'
-        +'<radialGradient id="gbhc" cx="45%" cy="45%" r="50%"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset=".5" stop-color="#fff2a8" stop-opacity=".7"/><stop offset="1" stop-color="#ffd23f" stop-opacity="0"/></radialGradient></defs>'
-        +'<g class="gb-honey"><ellipse class="h1" cx="41" cy="31" rx="11.5" ry="7.8" fill="url(#gbhy)"/><ellipse class="h2" cx="40" cy="30.5" rx="7" ry="4.8" fill="url(#gbhc)"/>'
-        +'<circle class="h3" cx="36" cy="29" r="1.6" fill="#fff8d0"/><circle class="h3 b" cx="45" cy="33" r="1.2" fill="#fff8d0"/></g>'
-        +'<path d="M5 19.5l1.4-8 3.6 4.2 2.8-6 2.8 6 3.6-4.2 1.4 8z" fill="url(#gbcr)" stroke="#8a6200" stroke-width=".6" stroke-linejoin="round"/>'
-        +'<circle cx="6.4" cy="11.3" r="1.1" fill="#ff4d6d"/><circle cx="12.8" cy="9.5" r="1.2" fill="#4dd2ff"/><circle cx="19.2" cy="11.3" r="1.1" fill="#ff4d6d"/>'
-        +'<path d="M6 21.5c2.5-2 5-2.6 8-2.2" stroke="#1c1208" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg></div>';
+      g.innerHTML='<div class="gb-in">'+inner+'<svg class="gb-crown" viewBox="0 0 64 52" aria-hidden="true"><defs>'
+        +'<radialGradient id="gbhc" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffffff" stop-opacity="1"/><stop offset=".3" stop-color="#fff2a0" stop-opacity=".95"/><stop offset=".65" stop-color="#ffc21a" stop-opacity=".6"/><stop offset="1" stop-color="#ff9a00" stop-opacity="0"/></radialGradient></defs>'
+        +'<g class="gb-honey"><ellipse class="h2" cx="41" cy="31.5" rx="6.2" ry="4.4" fill="url(#gbhc)"/><circle class="h3" cx="39.5" cy="30.5" r="1.3" fill="#fffbe6"/></g></svg></div>';
       g.style.cssText='width:'+GW+'px;height:'+GH+'px;opacity:0';
       var sv=g.querySelector('.gb-in svg'); if(sv){ sv.style.width='100%'; sv.style.height='100%'; }
       return g; }
+    /* ---------- the giant bee's bombing run (about 20 s while the little bee rests on the logo) ----------
+       0 s bears stroll home · 1 s she rises out of the comb to a high cruising height · the bears run for the door ·
+       she sweeps back and forth up high like a fighter plane, dropping word bombs that curve slowly down onto the bears, then onto their door ·
+       16.4 s the hardest word rockets to the logo rim · she glides back into the comb, and the little bee comes home. */
+    function bombTrails(){ var st=beeStage(), sv=document.getElementById('beeTrails');
+      if(!sv){ sv=document.createElementNS('http://www.w3.org/2000/svg','svg'); sv.id='beeTrails'; sv.setAttribute('class','bee-trails'); st.appendChild(sv); }
+      sv.setAttribute('width',st.offsetWidth); sv.setAttribute('height',st.offsetHeight); return sv; }
+    function bomb(text,g,targetFn,dur,side){ if(!g.isConnected) return;
+      var S=belly(g), fs=Math.round(Math.max(14,OW*.13)), off=Math.floor(Math.random()*WB_COL.length);
+      var el=document.createElement('div'); el.className='wb-word';
+      el.innerHTML=text.split('').map(function(ch,i){ return ch===' '?'<span class="sp"> </span>':'<span style="color:'+WB_COL[(i+off)%WB_COL.length]+'">'+ch+'</span>'; }).join('');
+      el.style.fontSize=fs+'px'; beeStage().appendChild(el); var W=el.offsetWidth, H=el.offsetHeight;
+      puff(S[0],S[1]); var t0=performance.now(), pts=[], done=false;
+      function cub3(a,b,c,d,u){ var v=1-u; return v*v*v*a+3*v*v*u*b+3*v*u*u*c+u*u*u*d; }
+      function frame(now){ if(done) return; var u=Math.min(1,(now-t0)/dur), ue=u*u*(3-2*u)*.45+u*.55, E=targetFn();
+        var dxs=E[0]-S[0], P1=[S[0]+dxs*.15+side*110, S[1]-80], P2=[E[0]-dxs*.1-side*70, E[1]-170];
+        var x=cub3(S[0],P1[0],P2[0],E[0],ue), y=cub3(S[1],P1[1],P2[1],E[1],ue), u2=Math.min(1,ue+.01);
+        var tx=cub3(S[0],P1[0],P2[0],E[0],u2)-x, ty=cub3(S[1],P1[1],P2[1],E[1],u2)-y, m=Math.hypot(tx,ty)||1, w=Math.sin(ue*Math.PI*3)*26*(1-ue);
+        x+=-ty/m*w; y+=tx/m*w; var tilt=Math.max(-14,Math.min(14,tx/m*16));
+        el.style.transform='translate('+(x-W/2).toFixed(1)+'px,'+(y-H/2).toFixed(1)+'px) rotate('+tilt.toFixed(1)+'deg) scale('+(.55+.45*Math.min(1,u*3)).toFixed(3)+')';
+        el.style.opacity=Math.min(1,u*6);
+        if(u<1) requestAnimationFrame(frame); else { done=true; crash(x,y); } }
+      function crash(x,y){ var R=el.getBoundingClientRect(), spans=[].slice.call(el.children);
+        spans.forEach(function(sp,i){ if(sp.className==='sp') return; var r=sp.getBoundingClientRect(), d=document.createElement('span'); d.className='word-bomb'; d.textContent=sp.textContent;
+          d.style.cssText='font-size:'+fs+'px;color:'+sp.style.color; beeStage().appendChild(d);
+          var lx=r.left+scrollX, ly=r.top+scrollY, fr=[{offset:0,opacity:1,filter:'blur(0px)',transform:'translate('+lx+'px,'+ly+'px) scale(1.15,.8)'}];
+          scatter(lx,ly,fs).forEach(function(f){ f.offset=.08+f.offset*.92; fr.push(f); }); fr[fr.length-1].offset=1;
+          d.animate(fr,{duration:1000,delay:i*10,easing:'linear',fill:'forwards'}).onfinish=function(){ d.remove(); }; });
+        el.remove(); boom(x,y,fs);
+        var b=targetFn.bear; if(b&&b.isConnected&&b.getBoundingClientRect().width>(b===mom?MW:CW0)*.7&&Math.abs(pg(b).x+pg(b).w*.6-x)<pg(b).w) bonk(b);
+      }
+      requestAnimationFrame(frame); }
+    function aimAt(b){ function f(){ var ok=b&&b.isConnected&&b.getBoundingClientRect().width>(b===mom?MW:CW0)*.7;
+        if(ok){ var r=pg(b); return [r.x+r.w*.78, r.y+r.h*.1]; } var d=pg(door); return [d.x+d.w*.5, d.y+d.h*.12]; }
+      f.bear=b; return f; }
     function chase(){ if(home) return; home=true; clearInterval(ateT);
-      var A=[], left=2, T0=Date.now();
+      var A=[], left=2;
       function walkHome(b,ms){
         var cur=getComputedStyle(b.el).transform; b.el.classList.remove('eat','sniff','walk','run'); b.el.classList.add('walk');
         var an=move(b.el,[{offset:0,opacity:1,transform:cur==='none'?tr(b.x1,b.y1,1):cur},{offset:.03,opacity:1,transform:tr(b.x1+2,b.y1,1,.08,0)},{offset:.06,opacity:1,transform:tr(b.x1+4,b.y1,1,-1,-1)}]
@@ -11281,48 +11317,44 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
         an.onfinish=function(){ b.el.remove(); if(--left===0){ door.classList.remove('open'); } };
         A.push({an:an,ms:ms,b:b}); }
       walkHome(D.cub,9000); walkHome(D.mom,9600);
-      /* the giant bee */
       var GW=Math.round(Math.max(OW*1.0,100)), GH=Math.round(GW*52/64), g=giantEl(GW,GH); beeStage().appendChild(g);
       var OX=sx+o.left+o.width/2, OY=sy+o.top+o.height/2, minY=sy+8;
-      var GX=dx-GW*.15, GY=Math.max(minY+GH*.6, dy-GH*.15);                       /* hovering just left of / above the door */
+      var ALT=Math.max(sy+GH*.8, dy-Math.max(190,OW*1.7)), XL=Math.max(sx+GW, OX-OW*.3), XR=Math.min(sx+innerWidth-GW*.7, dx+DW+GW*.9);
       var K=[], t=0, last=null;
       function k(x,y,s,f,r,op){ if(last&&last.f!==f) K.push({t:Math.min(t,last.t+1),x:last.x,y:last.y,s:last.s,f:f,r:last.r,op:last.op});
         K.push({t:t,x:x,y:y,s:s,f:f,r:r||0,op:op==null?1:op}); last=K[K.length-1]; }
-      /* burst out of the comb */
-      k(OX,OY,.08,1,0,0); t+=150; k(OX,OY-4,.2,1,0,1); t+=550; k(OX,OY-OW*.75,1,-1,0);
-      t+=150; k(OX,OY-OW*.75,1.05,-1,-9); t+=150; k(OX,OY-OW*.75,1.05,-1,9); t+=150; k(OX,OY-OW*.78,1,-1,0);     /* angry wiggle */
-      /* swift chase towards the bears */
-      var x0=OX,y0=OY-OW*.78, mx=(x0+GX)/2, my=Math.min(y0,GY)-OW*.5, n=16;
-      n=28; for(var i=1;i<=n;i++){ var u=i/n, e=u*u*(3-2*u); t+=4000/n;
-        k((1-e)*(1-e)*x0+2*(1-e)*e*mx+e*e*GX, (1-e)*(1-e)*y0+2*(1-e)*e*my+e*e*GY+Math.sin(u*Math.PI*5)*4, 1, -1, i<n?14:0); }
-      /* helicopter hover: up and down (3 s) ... */
-      for(i=1;i<=24;i++){ var q=i/24*Math.PI*2*4; t+=3000/24; k(GX+Math.sin(q*.5)*8, GY+Math.sin(q)*GH*.45, 1, (i%12<6?-1:1), Math.sin(q)*6); }
-      /* ... then in circles (3 s) */
-      var R=Math.max(40,GW*.45), CX=GX, CY=GY-R*.3;
-      for(i=1;i<=36;i++){ var th=i/36*Math.PI*2*2, px=CX+Math.sin(th)*R, py=CY-Math.cos(th)*R*.7+R*.7;
-        var vx=Math.cos(th); t+=3000/36; k(px,py,1,vx>0?-1:1,Math.cos(th)*12*(vx>0?1:-1)); }
-      /* back to the honeycomb and squeeze inside */
-      var bx=last.x, by=last.y; n=12;
-      for(i=1;i<=n;i++){ var u2=i/n, e2=u2*u2*(3-2*u2); t+=1500/n; k(bx+(OX-bx)*e2, by+(OY-OW*.55-by)*e2-Math.sin(u2*Math.PI)*OW*.35, 1, 1, i<n?-12:0); }
-      t+=400; k(OX,OY,.08,1,0,0);
+      /* rise gently out of the comb to cruising height */
+      k(OX,OY,.08,-1,0,0); t+=200; k(OX,OY-6,.25,-1,0,1);
+      var n=14, i; for(i=1;i<=n;i++){ var u=i/n, e=u*u*(3-2*u); t+=1300/n; k(OX+(XL-OX)*e, OY+(ALT-OY)*e, .25+.75*e, -1, -8*Math.sin(u*Math.PI)); }
+      /* fighter-style sweeps: long passes high above the door, gently banking and bobbing */
+      var x0=XL, dir=1;
+      for(var pass=0;pass<6;pass++){ var x1=dir>0?XR:XL; n=26;
+        for(i=1;i<=n;i++){ var u3=i/n, e3=u3*u3*(3-2*u3), bank=Math.sin(u3*Math.PI); t+=2900/n;
+          k(x0+(x1-x0)*e3, ALT+bank*24+Math.sin(u3*Math.PI*4)*5, 1, dir>0?-1:1, (dir>0?8:-8)*bank); }
+        t+=180; k(x1, ALT+4, 1, dir>0?1:-1, 0);        /* turn around at the end of each pass */
+        x0=x1; dir=-dir; }
+      /* glide home into the comb */
+      var bx=last.x, by=last.y; n=14;
+      for(i=1;i<=n;i++){ var u2=i/n, e2=u2*u2*(3-2*u2); t+=1700/n; k(bx+(OX-bx)*e2, by+(OY-OW*.5-by)*e2-Math.sin(u2*Math.PI)*OW*.3, 1, OX<bx?1:-1, 0); }
+      t+=450; k(OX,OY,.08,1,0,0);
       var tot=t, fr=K.map(function(z){ return {offset:Math.min(1,z.t/tot),opacity:z.op,transform:'translate('+(z.x-GW/2).toFixed(1)+'px,'+Math.max(minY,z.y-GH/2).toFixed(1)+'px) scale('+z.s.toFixed(3)+') scaleX('+z.f+') rotate('+z.r.toFixed(1)+'deg)'}; });
       fr[0].offset=0; fr[fr.length-1].offset=1;
-      at(1400,function(){ orb.classList.add('shake'); setTimeout(function(){ orb.classList.remove('shake'); },1500);
+      at(1000,function(){ orb.classList.add('shake'); setTimeout(function(){ orb.classList.remove('shake'); },1500);
         var an=g.animate(fr,{duration:tot,easing:'linear',fill:'forwards'}); an.onfinish=function(){ g.remove(); }; });
-      at(1400+tot-500,function(){ orb.classList.add('shake'); setTimeout(function(){ orb.classList.remove('shake'); },1500); });
+      at(1000+tot-500,function(){ orb.classList.add('shake'); setTimeout(function(){ orb.classList.remove('shake'); },1500); });
       /* the bears spot her and run for it */
-      at(1700,function(){ A.forEach(function(a,j){ try{ var ct=a.an.currentTime||0, rem=a.ms-ct, want=(j?6600:6200)-1700;
+      at(1300,function(){ A.forEach(function(a,j){ try{ var ct=a.an.currentTime||0, rem=a.ms-ct, want=(j?6200:6600)-1300;
           a.b.el.classList.remove('walk'); a.b.el.classList.add('run'); a.an.playbackRate=Math.max(1,rem/want); }catch(e){} }); });
-      var want0=0;
-      at(4800,function(){ door.classList.add('open'); });
-      /* three word bombs from the giant bee */
-      var WS=pickWords();
-      /* 1st burst: three words rocket out of her belly along the radii and form a ring around her, then dive onto the bears */
-      at(2000,function(){ ringShot(WS.ring,g,{dive:true}); });
-      /* 2nd burst: a message ring while she hovers at the door, then it explodes */
-      at(6800,function(){ ringShot(pickSentence(),g,{hold:2200}); });
-      /* last: the most challenging word rockets to the iCAN logo and crashes around its edge */
-      at(12500,function(){ logoShot(WS.monster,g); });
+      at(4500,function(){ door.classList.add('open'); });
+      /* the bombs: slow curving words and short sentences, easy to read as they fall */
+      var P=pickBombs();
+      at(2400,function(){ bomb(P[0],g,aimAt(mom),3000,1); });
+      at(3100,function(){ bomb(P[1],g,aimAt(cub),3000,-1); });
+      at(7800,function(){ bomb(P[2],g,aimAt(null),3000,1); });
+      at(10600,function(){ bomb(P[3],g,aimAt(null),3000,-1); });
+      at(13400,function(){ bomb(P[4],g,aimAt(null),3000,1); });
+      /* the grand finale: the hardest word rockets to the logo and crashes around its rim */
+      at(16400,function(){ logoShot(P.monster,g); });
     }
     /* word bombs: letters shoot out one by one, form a word above a bear, then crash on its head and vanish */
     function pg(el){ var r=el.getBoundingClientRect(); return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height}; }
@@ -11444,7 +11476,17 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
         [0,1,2].forEach(function(k){ var th=a0+span*(k+.5)/3; setTimeout(function(){ boom(cx+Math.cos(th)*R,cy+Math.sin(th)*R,fs); },k*120); });
       },endAt); }
     function OX0(){ var r=pg(orb); return r.x+r.w/2; } function OY0(){ var r=pg(orb); return r.y+r.h/2; }
-    var GIANT_MS=14500;
+    var GIANT_MS=23500;
+    /* five bombs: short sentences (3-5 words) and medium-length words, alternating, plus one monster word for the logo */
+    function pickBombs(){ var used={}; try{ used=JSON.parse(localStorage.getItem('wb_used')||'{}')||{}; }catch(e){}
+      function pick(P){ var fresh=P.filter(function(w){ return !used[w]; }); if(!fresh.length){ P.forEach(function(w){ delete used[w]; }); fresh=P.slice(); }
+        var w=fresh[Math.floor(Math.random()*fresh.length)]; used[w]=1; return w; }
+      var words=WB_POOL.m.concat(WB_POOL.l).map(function(w){ return w[0]; }), sents=WB_SENT.concat(WB_SENT2);
+      var out=[pick(sents),pick(words),pick(sents),pick(words),pick(sents)].map(function(w){ return w.toUpperCase()+(/[!?.]$/.test(w)?'':'!'); });
+      out.monster=pick(WB_POOL.x.map(function(w){ return w[0]; })).toUpperCase();
+      try{ localStorage.setItem('wb_used',JSON.stringify(used)); }catch(e){}
+      return out; }
+    var WB_SENT2=['Leave my honey alone!','You cannot hide forever!','Bears, this is my garden!','Honey belongs to busy bees!','Stop! Thief! Come back!','I will find you, bears!','Who ate all my honey?','Never take what is not yours!','Buzz off, sticky paws!','Next time, bring flowers!'];
     /* a fresh set of three words every time: one short (1 syllable), one medium, one long, each a different word class */
     var WB_POOL={s:[['run','v'],['stop','v'],['buzz','v'],['sting','v'],['shoo','i'],['quick','a'],['bold','a'],['thief','n'],['paw','n'],['wild','a'],['fast','r'],['now','r'],['sweet','a'],['grab','v'],['hive','n'],['wow','i']],
       m:[['honey','n'],['greedy','a'],['escape','v'],['sticky','a'],['quickly','r'],['danger','n'],['hungry','a'],['naughty','a'],['hurry','v'],['beehive','n'],['suddenly','r'],['forbidden','a'],['robbers','n'],['silly','a'],['vanish','v'],['oops','i'],['kerfuffle','n'],['bamboozle','v'],['skedaddle','v'],['brouhaha','n'],['lollygag','v'],['hullabaloo','n']],
