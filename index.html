@@ -11280,34 +11280,43 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
     function bombTrails(){ var st=beeStage(), sv=document.getElementById('beeTrails');
       if(!sv){ sv=document.createElementNS('http://www.w3.org/2000/svg','svg'); sv.id='beeTrails'; sv.setAttribute('class','bee-trails'); st.appendChild(sv); }
       sv.setAttribute('width',st.offsetWidth); sv.setAttribute('height',st.offsetHeight); return sv; }
-    function bomb(text,g,targetFn,dur,side){ if(!g.isConnected) return;
-      var S=belly(g), fs=Math.round(Math.max(14,OW*.13)), off=Math.floor(Math.random()*WB_COL.length);
-      var el=document.createElement('div'); el.className='wb-word';
-      el.innerHTML=text.split('').map(function(ch,i){ return ch===' '?'<span class="sp"> </span>':'<span style="color:'+WB_COL[(i+off)%WB_COL.length]+'">'+ch+'</span>'; }).join('');
-      el.style.fontSize=fs+'px'; beeStage().appendChild(el); var W=el.offsetWidth, H=el.offsetHeight;
-      puff(S[0],S[1]); var t0=performance.now(), pts=[], done=false;
-      function cub3(a,b,c,d,u){ var v=1-u; return v*v*v*a+3*v*v*u*b+3*v*u*u*c+u*u*u*d; }
-      function frame(now){ if(done) return; var u=Math.min(1,(now-t0)/dur), ue=u*u*(3-2*u)*.45+u*.55, E=targetFn();
-        var dxs=E[0]-S[0], P1=[S[0]+dxs*.15+side*110, S[1]-80], P2=[E[0]-dxs*.1-side*70, E[1]-170];
-        var x=cub3(S[0],P1[0],P2[0],E[0],ue), y=cub3(S[1],P1[1],P2[1],E[1],ue), u2=Math.min(1,ue+.01);
-        var tx=cub3(S[0],P1[0],P2[0],E[0],u2)-x, ty=cub3(S[1],P1[1],P2[1],E[1],u2)-y, m=Math.hypot(tx,ty)||1, w=Math.sin(ue*Math.PI*3)*26*(1-ue);
-        x+=-ty/m*w; y+=tx/m*w; var tilt=Math.max(-14,Math.min(14,tx/m*16));
-        el.style.transform='translate('+(x-W/2).toFixed(1)+'px,'+(y-H/2).toFixed(1)+'px) rotate('+tilt.toFixed(1)+'deg) scale('+(.55+.45*Math.min(1,u*3)).toFixed(3)+')';
-        el.style.opacity=Math.min(1,u*6);
-        if(u<1) requestAnimationFrame(frame); else { done=true; crash(x,y); } }
-      function crash(x,y){ var R=el.getBoundingClientRect(), spans=[].slice.call(el.children);
-        spans.forEach(function(sp,i){ if(sp.className==='sp') return; var r=sp.getBoundingClientRect(), d=document.createElement('span'); d.className='word-bomb'; d.textContent=sp.textContent;
-          d.style.cssText='font-size:'+fs+'px;color:'+sp.style.color; beeStage().appendChild(d);
-          var lx=r.left+scrollX, ly=r.top+scrollY, fr=[{offset:0,opacity:1,filter:'blur(0px)',transform:'translate('+lx+'px,'+ly+'px) scale(1.15,.8)'}];
-          scatter(lx,ly,fs).forEach(function(f){ f.offset=.08+f.offset*.92; fr.push(f); }); fr[fr.length-1].offset=1;
-          d.animate(fr,{duration:1000,delay:i*10,easing:'linear',fill:'forwards'}).onfinish=function(){ d.remove(); }; });
-        el.remove(); boom(x,y,fs);
-        var b=targetFn.bear; if(b&&b.isConnected&&b.getBoundingClientRect().width>(b===mom?MW:CW0)*.7&&Math.abs(pg(b).x+pg(b).w*.6-x)<pg(b).w) bonk(b);
-      }
-      requestAnimationFrame(frame); }
-    function aimAt(b){ function f(){ var ok=b&&b.isConnected&&b.getBoundingClientRect().width>(b===mom?MW:CW0)*.7;
-        if(ok){ var r=pg(b); return [r.x+r.w*.78, r.y+r.h*.1]; } var d=pg(door); return [d.x+d.w*.5, d.y+d.h*.12]; }
-      f.bear=b; return f; }
+    /* a word bomb: a sentence is fired word after word; every word swims down an invisible wavy S-curve (like a ribbon),
+       its letters rippling up and down, and lands on the target - head, back or body - with a crash */
+    var SPOTS=[[.78,.1],[.5,.18],[.3,.36],[.62,.45],[.45,.05]];
+    function bomb(text,g,aim,dur,side){ if(!g.isConnected) return;
+      var words=text.split(' '), PH=Math.random()*6, S0=belly(g); puff(S0[0],S0[1]);   /* one shared path, so the words follow each other in order like carriages */
+      words.forEach(function(w,k){ setTimeout(function(){ fly1(w,k,words.length); }, k*520); });
+      function fly1(word,k,n){ if(!g.isConnected) return;
+        var S=S0, fs=Math.round(Math.max(14,OW*.13)), off=Math.floor(Math.random()*WB_COL.length), spot=SPOTS[k%SPOTS.length];
+        var el=document.createElement('div'); el.className='wb-word';
+        el.innerHTML=word.split('').map(function(ch,i){ return '<span style="color:'+WB_COL[(i+off+k*3)%WB_COL.length]+'">'+ch+'</span>'; }).join('');
+        el.style.fontSize=fs+'px'; beeStage().appendChild(el); var W=el.offsetWidth, H=el.offsetHeight, SP=[].slice.call(el.children);
+        var t0=performance.now(), done=false, ph=PH;
+        function cub3(a,b,c,d,u){ var v=1-u; return v*v*v*a+3*v*v*u*b+3*v*u*u*c+u*u*u*d; }
+        function frame(now){ if(done) return; var u=Math.min(1,(now-t0)/dur), ue=u*u*(3-2*u)*.4+u*.6, E=aim(spot);
+          var dxs=E[0]-S[0], P1=[S[0]+dxs*.2+side*120, S[1]-60], P2=[E[0]-dxs*.15-side*90, E[1]-190];
+          var x=cub3(S[0],P1[0],P2[0],E[0],ue), y=cub3(S[1],P1[1],P2[1],E[1],ue), u2=Math.min(1,ue+.01);
+          var tx=cub3(S[0],P1[0],P2[0],E[0],u2)-x, ty=cub3(S[1],P1[1],P2[1],E[1],u2)-y, m=Math.hypot(tx,ty)||1;
+          var wv=Math.sin(ue*Math.PI*3+ph)*Math.max(14,OW*.42)*(1-ue*.85);           /* the big S-shaped sway */
+          x+=-ty/m*wv; y+=tx/m*wv;
+          var tilt=Math.max(-18,Math.min(18,Math.cos(ue*Math.PI*3+ph)*16*(1-ue*.7)));    /* leans with each swing, like the curves you drew */
+          el.style.transform='translate('+(x-W/2).toFixed(1)+'px,'+(y-H/2).toFixed(1)+'px) rotate('+tilt.toFixed(1)+'deg) scale('+(.6+.4*Math.min(1,u*3)).toFixed(3)+')';
+          el.style.opacity=Math.min(1,u*6);
+          var q=now/1000*7;                                                              /* letters ripple like a ribbon */
+          SP.forEach(function(sp,i){ sp.style.transform='translateY('+(Math.sin(q-i*.75)*fs*.32*(1-u*.6)).toFixed(1)+'px)'; });
+          if(u<1) requestAnimationFrame(frame); else { done=true; crash(x,y); } }
+        function crash(x,y){
+          SP.forEach(function(sp,i){ var r=sp.getBoundingClientRect(), d=document.createElement('span'); d.className='word-bomb'; d.textContent=sp.textContent;
+            d.style.cssText='font-size:'+fs+'px;color:'+sp.style.color; beeStage().appendChild(d);
+            var lx=r.left+scrollX, ly=r.top+scrollY, fr=[{offset:0,opacity:1,filter:'blur(0px)',transform:'translate('+lx+'px,'+ly+'px) scale(1.15,.8)'}];
+            scatter(lx,ly,fs).forEach(function(f){ f.offset=.08+f.offset*.92; fr.push(f); }); fr[fr.length-1].offset=1;
+            d.animate(fr,{duration:1000,delay:i*10,easing:'linear',fill:'forwards'}).onfinish=function(){ d.remove(); }; });
+          el.remove(); boom(x,y,k?fs*.75:fs);
+          if(aim.live&&aim.live()) bonk(aim.bear); }
+        requestAnimationFrame(frame); } }
+    function aimAt(b){ function live(){ return b&&b.isConnected&&b.getBoundingClientRect().width>(b===mom?MW:CW0)*.7; }
+      function f(spot){ spot=spot||[.78,.1]; if(live()){ var r=pg(b); return [r.x+r.w*spot[0], r.y+r.h*spot[1]]; } var d=pg(door); return [d.x+d.w*(.3+spot[0]*.4), d.y+d.h*(.1+spot[1]*.6)]; }
+      f.bear=b; f.live=live; return f; }
     function chase(){ if(home) return; home=true; clearInterval(ateT);
       var A=[], left=2;
       function walkHome(b,ms){
@@ -11316,7 +11325,7 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
           .concat(path(b.x1+5,b.y1,1,b.x0-b.W*.9,b.y0,1,-1,14,.07,.72,-1),path(b.x0-b.W*.9+1,b.y0,1,b.x0,b.y0,.34,-1,5,.73,.95,-1),[{offset:1,opacity:0,transform:tr(b.x0,b.y0,.2,-1,0)}]),ms);
         an.onfinish=function(){ b.el.remove(); if(--left===0){ door.classList.remove('open'); } };
         A.push({an:an,ms:ms,b:b}); }
-      walkHome(D.cub,9000); walkHome(D.mom,9600);
+      walkHome(D.cub,14000); walkHome(D.mom,15000);
       var GW=Math.round(Math.max(OW*1.0,100)), GH=Math.round(GW*52/64), g=giantEl(GW,GH); beeStage().appendChild(g);
       var OX=sx+o.left+o.width/2, OY=sy+o.top+o.height/2, minY=sy+8;
       var ALT=Math.max(sy+GH*.8, dy-Math.max(190,OW*1.7)), XL=Math.max(sx+GW, OX-OW*.3), XR=Math.min(sx+innerWidth-GW*.7, dx+DW+GW*.9);
@@ -11343,16 +11352,16 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
         var an=g.animate(fr,{duration:tot,easing:'linear',fill:'forwards'}); an.onfinish=function(){ g.remove(); }; });
       at(1000+tot-500,function(){ orb.classList.add('shake'); setTimeout(function(){ orb.classList.remove('shake'); },1500); });
       /* the bears spot her and run for it */
-      at(1300,function(){ A.forEach(function(a,j){ try{ var ct=a.an.currentTime||0, rem=a.ms-ct, want=(j?6200:6600)-1300;
+      at(1300,function(){ A.forEach(function(a,j){ try{ var ct=a.an.currentTime||0, rem=a.ms-ct, want=(j?12000:11000)-1300;
           a.b.el.classList.remove('walk'); a.b.el.classList.add('run'); a.an.playbackRate=Math.max(1,rem/want); }catch(e){} }); });
-      at(4500,function(){ door.classList.add('open'); });
+      at(9800,function(){ door.classList.add('open'); });
       /* the bombs: slow curving words and short sentences, easy to read as they fall */
       var P=pickBombs();
-      at(2400,function(){ bomb(P[0],g,aimAt(mom),3000,1); });
-      at(3100,function(){ bomb(P[1],g,aimAt(cub),3000,-1); });
-      at(7800,function(){ bomb(P[2],g,aimAt(null),3000,1); });
-      at(10600,function(){ bomb(P[3],g,aimAt(null),3000,-1); });
-      at(13400,function(){ bomb(P[4],g,aimAt(null),3000,1); });
+      at(2200,function(){ bomb(P[0],g,aimAt(mom),3200,1); });      /* the bears are still out: these three hit them */
+      at(4200,function(){ bomb(P[1],g,aimAt(cub),3200,-1); });
+      at(5800,function(){ bomb(P[2],g,aimAt(mom),3200,1); });
+      at(10400,function(){ bomb(P[3],g,aimAt(null),3200,-1); });   /* now they hide: the door gets the rest */
+      at(13000,function(){ bomb(P[4],g,aimAt(null),3200,1); });
       /* the grand finale: the hardest word rockets to the logo and crashes around its rim */
       at(16400,function(){ logoShot(P.monster,g); });
     }
@@ -11526,6 +11535,39 @@ function eoxMainIdea(){ var mi=EOX.I.E.reading[0].qs.filter(function(q){return /
       setTimeout(function(){ busy=false; sceneLater(skip?20000:GAPS-10000); }, 700+n*22+900);
     }
   }
+  /* ---------- gentle buzzing: a soft synthesised hum that swells as a bee comes closer to the middle of the screen and fades as it moves away ----------
+     very quiet by design; starts only after the first click/tap on the page (browser rule); a small 🐝 button turns it on/off */
+  var AC=null, VO={}, BZ_ON=true; try{ BZ_ON=localStorage.getItem('bee_sound')!=='off'; }catch(e){}
+  function acx(){ if(AC) return AC; try{ var C=window.AudioContext||window.webkitAudioContext; if(C) AC=new C(); }catch(e){} return AC; }
+  ['pointerdown','keydown','touchstart'].forEach(function(ev){ addEventListener(ev,function(){ var c=acx(); if(c&&c.state==='suspended') c.resume(); },{passive:true}); });
+  function voice(key,f0,maxV){ if(VO[key]) return VO[key]; var c=acx(); if(!c) return null;
+    var o1=c.createOscillator(), o2=c.createOscillator(), am=c.createGain(), lfo=c.createOscillator(), lg=c.createGain(), vib=c.createOscillator(), vg=c.createGain(),
+        lp=c.createBiquadFilter(), vol=c.createGain(), pan=c.createStereoPanner?c.createStereoPanner():null;
+    o1.type='sawtooth'; o2.type='triangle'; o1.frequency.value=f0; o2.frequency.value=f0*2.01;
+    vib.frequency.value=5.5; vg.gain.value=f0*.025; vib.connect(vg); vg.connect(o1.frequency); vg.connect(o2.frequency);
+    lfo.frequency.value=f0>160?26:18; lg.gain.value=.35; am.gain.value=.65; lfo.connect(lg); lg.connect(am.gain);      /* wing-beat flutter */
+    lp.type='lowpass'; lp.frequency.value=f0>160?1100:700; lp.Q.value=.6;
+    var m2=c.createGain(); m2.gain.value=.35; o1.connect(am); o2.connect(m2); m2.connect(am); am.connect(lp); lp.connect(vol);
+    vol.gain.value=0; if(pan){ vol.connect(pan); pan.connect(c.destination); } else vol.connect(c.destination);
+    [o1,o2,lfo,vib].forEach(function(x){ x.start(); });
+    window._beeBuzz=VO; return VO[key]={vol:vol,pan:pan,max:maxV}; }
+  function hum(key,el,f0,maxV,baseW){ var V=voice(key,f0,maxV); if(!V) return; var c=AC, tgt=0, p=0;
+    if(BZ_ON&&el&&el.isConnected&&c.state==='running'){ var r=el.getBoundingClientRect();
+      if(r.width>2&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth){
+        var cx=r.left+r.width/2, cy=r.top+r.height/2, d=Math.hypot(cx-innerWidth/2,cy-innerHeight/2)/Math.hypot(innerWidth/2,innerHeight/2);
+        var near=1-Math.min(1,d), size=Math.min(1.4,r.width/baseW), op=+getComputedStyle(el).opacity||0;
+        tgt=V.max*(.2+.8*near*near)*size*op; p=Math.max(-.8,Math.min(.8,(cx/innerWidth-.5)*1.6)); } }
+    V.vol.gain.setTargetAtTime(tgt,c.currentTime,.12); if(V.pan) V.pan.pan.setTargetAtTime(p,c.currentTime,.15); }
+  setInterval(function(){ if(!AC) return;
+    hum('small',document.querySelector('.bee-flyer'),205,.022,58);
+    hum('giant',document.querySelector('.giant-bee'),128,.03,110); },90);
+  /* the tiny on/off switch, bottom-right */
+  (function(){ var b=document.createElement('button'); b.id='beeSnd'; b.type='button';
+    function show(){ b.textContent=BZ_ON?'🐝🔈':'🐝🔇'; b.title=BZ_ON?'Bee buzzing: on (click to mute)':'Bee buzzing: off (click to turn on)'; }
+    b.onclick=function(){ BZ_ON=!BZ_ON; try{ localStorage.setItem('bee_sound',BZ_ON?'on':'off'); }catch(e){} show(); var c=acx(); if(c&&c.state==='suspended') c.resume(); };
+    b.style.cssText='position:fixed;right:12px;bottom:58px;z-index:9000;border:1px solid rgba(180,130,30,.35);background:rgba(255,248,225,.75);border-radius:16px;padding:3px 7px;font-size:12px;line-height:1;cursor:pointer;opacity:.55;box-shadow:0 2px 6px rgba(0,0,0,.12)';
+    b.onmouseenter=function(){ b.style.opacity='1'; }; b.onmouseleave=function(){ b.style.opacity='.55'; };
+    show(); (document.body?document.body.appendChild(b):addEventListener('DOMContentLoaded',function(){ document.body.appendChild(b); })); })();
   window.beeFly=beeFly; window.bearScene=bearScene;
   sceneLater(3000);                                   /* door appears 3 s after the page opens; the bee takes off 10 s later */
 })();
