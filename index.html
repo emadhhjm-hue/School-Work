@@ -8423,7 +8423,7 @@ var ROSTERS={
    sen:["Hammam Nasser Zainallah Hamdhan"],
    t1:["Omar Assad Mohd Said Alrajabi","Zayed Mohamed Ghanem"],
    t2:["Khaled Saddam Abdo Mohammed","Mohsen Abdulsalam Mohsin","Hussein Abdulrahman Hussein Al Baihani"],
-   t3:["Hamad Ali Abdulla Saeed Alyammahi","Saeed Khalid Sultan Hamad"]
+   t3:["Hamad Ali Abdulla Saeed Alyammahi"]
  },
  "10 Advanced":{
    sen:[],
@@ -8476,9 +8476,13 @@ function _autoSeating(gp){
   pool.forEach(function(name,idx){ var cyc=Math.floor(idx/G), pos=idx%G; var g=(cyc%2===0)?pos:(G-1-pos); groups[g].push(name); });
   return groups;
 }
+/* teacher-set seating order (used instead of the automatic mix) */
+var __SEAT_FIXED={ c3:{ 0:[["Omar Assad Mohd Said Alrajabi","Mohsen Abdulsalam Mohsin","Hussein Abdulrahman Hussein Al Baihani","Hamad Ali Abdulla Saeed Alyammahi"],
+                           ["Zayed Mohamed Ghanem","Khaled Saddam Abdo Mohammed","Hammam Nasser Zainallah Hamdhan"]] } };
 function _seatingArrange(cls, gi){
   __SEATING[cls]=__SEATING[cls]||{};
-  if(!__SEATING[cls][gi]){ var groups=_rosterGroups(cls); __SEATING[cls][gi]=_autoSeating(groups[gi]||{}); }
+  if(!__SEATING[cls][gi]){ var groups=_rosterGroups(cls), fx=__SEAT_FIXED[cls]&&__SEAT_FIXED[cls][gi];
+    __SEATING[cls][gi]=fx?JSON.parse(JSON.stringify(fx)):_autoSeating(groups[gi]||{}); }
   return __SEATING[cls][gi];
 }
 function _seatingGroupsHTML(cls, gi){
