@@ -12216,6 +12216,7 @@ function specsPDF(only){ var J=window.jspdf&&window.jspdf.jsPDF; if(!J){ alert("
 .cg-p.on{display:block}@keyframes cgIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .cg-p .h{font-weight:900;color:var(--gc);font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
 .cg-p .t{margin:4px 0 8px;font-size:1.08rem;line-height:1.6;color:#2b3a4b}.cg-p .t .lbl{font-weight:900;color:var(--gc);margin-right:3px}.cg-p .t b{color:#14233a;font-weight:800}
+.cg-p .tps{margin:-2px 0 6px;font-size:.92rem;font-weight:700;font-style:italic;color:var(--gc)}
 .cg-p .fa{font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:.86rem;color:#14233a;letter-spacing:.02em}
 .cg-p .f{margin:2px 0 6px;color:#3a4a5c;font-size:.86rem;line-height:1.5}
 .cg-p .q{font-weight:600;font-size:.88rem;color:#1b2a3a;margin:2px 0 6px;line-height:1.5}
@@ -12281,7 +12282,8 @@ function cgPDF(){ var J=window.jspdf&&window.jspdf.jsPDF; if(!J){ alert("The PDF
     var tw=d.getTextWidth("Task: "); d.setFont("helvetica","normal"); d.setTextColor(43,58,75);
     var fl=d.splitTextToSize(cl(x.f),cw-10-tw); d.text(fl[0],cx+5+tw,ty); ty+=lh;
     var rest=fl.slice(1).join(" "); if(rest){ var rl=d.splitTextToSize(rest,cw-10); d.text(rl,cx+5,ty); ty+=rl.length*lh; }
-    d.setFont("helvetica","bold"); d.setTextColor(20,35,58); var ql=d.splitTextToSize(cl(x.q),cw-10); d.text(ql,cx+5,ty); ty+=ql.length*lh+2;
+    d.setFont("helvetica","bold"); d.setTextColor(20,35,58); var wq=(CUR.stage==='warm'); var ql=d.splitTextToSize(cl(wq?cgTalk(x.q):x.q),cw-10); d.text(ql,cx+5,ty); ty+=ql.length*lh+2;
+    if(wq){ d.setFont("helvetica","bolditalic"); d.setFontSize(10); d.setTextColor(col[0],col[1],col[2]); d.text(cl("Discuss: Think, Pair & Share with partners/class"),cx+5,ty+1); ty+=6; d.setFontSize(12); }
     d.setFont("helvetica","normal"); d.setFontSize(8.5); d.setTextColor(120,130,140); d.text("Our points:",cx+5,ty); ty+=2;
     var bottom=cy+ch-14; d.setDrawColor(200,208,218); d.setLineWidth(.3);
     for(var ly=ty+7; ly<bottom; ly+=7.5) d.line(cx+5,ly,cx+cw-5,ly);
@@ -12293,6 +12295,43 @@ function cgPDF(){ var J=window.jspdf&&window.jspdf.jsPDF; if(!J){ alert("The PDF
   d.setFontSize(7); d.setTextColor(140,140,140); d.setFont("helvetica","italic"); d.text("Cut along the dashed lines - one card per group.  iCAN Academy - Emad Ali Mohamed, Dr.",W/2,293,{align:"center"});
   var name=cl("Group_Cards_"+(C.name||CUR.cls)+"_L"+(L.num||"")+"_"+stg).replace(/[^A-Za-z0-9_-]+/g,"_");
   if(typeof openPdfModal==="function"){ try{ openPdfModal(name,d); return; }catch(e){} } d.save(name+".pdf"); }
+/* Warm-up: turn a written task into a talk-about prompt (Think, Pair & Share) */
+function cgTalk(q){
+  var S={
+    "Predict how people will get the news in 2040. Write two short points.":"How will people get the news in 2040? Share two short points.",
+    "Choose a product and write its key benefit in one sentence.":"Which product would you choose, and what is its key benefit in one sentence?",
+    "Name two jobs that are new. Write the skill each one needs.":"Can you name two jobs that are new? Say the skill each one needs.",
+    "Name two jobs that need both. Write the key skill for each.":"Can you name two jobs that need both? Say the key skill for each.",
+    "Compare two of the jobs on page 28: education needed and working conditions.":"How would you compare two of the jobs on page 28: education needed and working conditions?",
+    "Choose the most frightening situation on page 36. Give two reasons.":"Which situation on page 36 is the most frightening? Give two reasons.",
+    "Write one sentence about who is more dangerous: sharks or people.":"Who is more dangerous: sharks or people? Explain in one sentence.",
+    "Write your opinion on face scanning in exams with one reason.":"What is your opinion on face scanning in exams? Give one reason.",
+    "Write the job of two health care workers in one sentence each.":"What do two health care workers do? Say it in one sentence each.",
+    "Write what 'launch' means in your own words.":"What does 'launch' mean in your own words?",
+    "Write why the body needs oxygen.":"Why does the body need oxygen?",
+    "Write how a wind tower works in one sentence.":"How does a wind tower work? Explain in one sentence.",
+"Retell Emma's story in four short sentences.":"How would you retell Emma's story in four short sentences?",
+    "Rewrite politely: 'How old are you?'":"How could you ask 'How old are you?' more politely?",
+    "Explain this idea to a younger student in two sentences.":"How would you explain this idea to a younger student in two sentences?",
+    "Paraphrase: 'The brain is the most complex organ in the body.'":"How would you say 'The brain is the most complex organ in the body.' in your own words?",
+    "Complete: 'I am…' in three different ways.":"How would you complete 'I am…' in three different ways?",
+    "Turn this problem into a business idea: 'Students forget their lunch.'":"How could you turn this problem into a business idea: 'Students forget their lunch'?",
+    "Should our school do the same? Give your view and two points.":"Should our school do the same? Share your view and two points."};
+  if(S[q]) return S[q];
+  var p=q.split(/(?<=[.?!])\s+/);
+  p=p.map(function(s,i){
+    var m;
+    if(i>0) return s.replace(/^Write\b/,"Say");
+    if(m=s.match(/^Write one sentence (?:explaining|about|on) (.+)\.$/)) return "How would you explain "+m[1]+" in one sentence?";
+    if(m=s.match(/^Write your (opinion|view) (.+)\.$/)) return "What is your "+m[1]+" "+m[2]+"?";
+    if(m=s.match(/^Write your (.+)\.$/)) return "Think of your "+m[1]+".";
+    if(m=s.match(/^Write ((?:what|how|why|which|when|where|who) .+)$/)) return "Think about "+m[1];
+    if(m=s.match(/^Write (.+)$/)) return "Think of "+m[1];
+    if(m=s.match(/^Rank (.+)\.$/)) return "How would you rank "+m[1]+"?";
+    if(m=s.match(/^(Choose|Name|Predict|Compare) (.+)$/)) return "Think: "+m[1].toLowerCase()+" "+m[2];
+    return s; });
+  return p.join(" "); }
+
 function cgN(){ try{ return +(localStorage.getItem('cg_n')||4)===3?3:4; }catch(e){ return 4; } }
 function cgHTML(set){ var n=cgN(), G=CG_COL.slice(0,n), hook=((CG_HOOK[CUR.cls]||{})[CUR.id]||{})[CUR.stage];
   return '<div class="cg-wrap" id="cgWrap"><div class="cg-top"><h4>👥 Group work</h4><button class="cg-pdf" onclick="cgPDF()" title="Download the group cards to print and hand out">📄 PDF</button><span class="cg-steps">Think · Write points · Presenter shares · Ask another group</span>'
@@ -12300,7 +12339,7 @@ function cgHTML(set){ var n=cgN(), G=CG_COL.slice(0,n), hook=((CG_HOOK[CUR.cls]|
    +'<div class="cg-row">'+G.map(function(g,i){ return '<button class="cg-c" style="--gc:'+g[0]+';background:radial-gradient(circle at 35% 30%,'+g[0]+'cc,'+g[0]+')" onclick="cgOpen('+i+')" id="cgC'+i+'"><small>GROUP</small><b>'+g[1]+'</b></button>'; }).join('')+'</div>'
    +(hook?'<p class="cg-hook"><b>Big Question:</b> '+esc(hook)+'</p>':'')
    +G.map(function(g,i){ var x=set[i], ask=x.a; if(n===3&&ask[0]==='D') ask=['A',ask[1]];
-     return '<div class="cg-p" id="cgP'+i+'" style="--gc:'+g[0]+'"><div class="h">Group '+g[1]+'</div><p class="t"><span class="lbl">Task:</span> '+esc(x.f)+' <b>'+esc(x.q)+'</b></p>'
+     return '<div class="cg-p" id="cgP'+i+'" style="--gc:'+g[0]+'"><div class="h">Group '+g[1]+'</div><p class="t"><span class="lbl">Task:</span> '+esc(x.f)+' <b>'+esc(CUR.stage==='warm'?cgTalk(x.q):x.q)+'</b></p>'+(CUR.stage==='warm'?'<p class="tps">💬 Discuss: Think, Pair &amp; Share with partners/class</p>':'')
       +'<textarea rows="2" placeholder="Group '+g[1]+' points…"></textarea><p class="a">❓ <b>Ask Group '+ask[0]+':</b> '+esc(ask[1])+'</p></div>'; }).join('')+'</div>'; }
 function cgOpen(i){ var p=document.getElementById('cgP'+i), was=p&&p.classList.contains('on');
   [].forEach.call(document.querySelectorAll('.cg-p.on,.cg-c.on'),function(e){ e.classList.remove('on'); });
